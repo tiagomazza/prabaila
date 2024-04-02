@@ -60,35 +60,35 @@ if st.button("Atualizar Estoque"):
     # Atualizar os dados no Google Sheets apenas se houver confirmação
     # Atualizar os dados no Google Sheets
     credentials = """
------BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC/ixUhV8aQNsDc
-WyE59KMOJqd3oxspKRmGMQIDSfjNLgZIEbv34b3gQqPCAmTGXrWMLvqr7axBvZTE
-sX2zRiltUC7qg3SBHVrtYOW7+L5+pe/Qh3S1HmbLjZikgppTm9f0uqmQh9Trz3Iu
-KwQy9UCFFYyZcKlhTSpow9r7CstTTERbymOsC9TUPnk1Nl4n+m1VEL2qjjY6JiZA
-ggNLlQccQ0GSZY71rqofZmVqao3Sh8anlQnurwPYcETxKse5Q24vlKNwx+39XaPc
-rYminu/L+PIhvJIkaLypzFSCDHs0EPcv3S7xj+Z3Xt7RRR7MPZzyHMHjroUk8Onp
-dYS2K1z/AgMBAAECggEAQAMtJp19AIkr3vidnA7Dx2DnqrXZx+GyZARQ1eSMv5VY
-CBHVLbxFhoL+00GViC3yoky4/WhKnxXKeAmRJq6V/bBEXZ9c+iFjV92AKVex4gV2
-pcv/FuB4HiLOFnyHMtXsUB9pt6GNaNlFIWTC3HzV+SQAfu8FzDzLpYN+1VMALG/F
-6mHsJHeAP3SPjYV7v11XyzAxCtOgWMAslbbRm8PqR41Zjcj8T40k9qGih2PbJLdU
-bfYPow7kW00miYrGZthW5luw/xY+zOyc8VJ4e0nke0P6mkrZ1gteKTIC9pcLvYKS
-LU0gIc9OkIHNzWE4zgtVDt9Pty6PiQFZmgSz7Y3dIQKBgQDzBdMzTqb1zssOkZS0
-z2hD10CI4e2WACBadot/wUnTJqBB8xwEEwzJcPZjgM1j/rns3hFKqKmAGtPpSNzP
-0CKwjT9OxOfWrMKFH0+evOcg1yf8t6/HmbpOGfoyR44iFxAQ5JuSzupBrnOaudTx
-loh66npg64zRGm+mmwXp6WUoZwKBgQDJxYWYOUHwE0HSjGH90e5M1MCEgqEaY8SD
-Iot6pnHwGkvEO1JOxu/nUrMh21N/JW452dltlOmKEtM/sMxkIGfPNJJyBgx8LB8b
-fbfxs+vBJoKT3AS/f1Rbwp3icwrE38af7l1jY4Y+g2RUxM/5Co1hHx+sANMaFgry
-DklKZ2QnqQKBgHVuNyPvuZXFmzEq/6RvJH7DoJeENH3rCbcs2TOefsHdREsZ4kvF
-uMQOJcDnGFhdWhIvLEPbRCx2yjdL0gdJF7ogRpsVYsHFMSmKe7rEpRqlXNktGW9l
-xTTAMLnjAbdPVaAUF2jVOzUJyyrU6STkDIb4jrIOoDjagWEMP8tL0Gm5AoGAEgd0
-SIXVPn56AzZIC0YW5QadrTl+67y+cnlDvVHiHHI9Euu6Dw/3n9Pj7cKLU3EkyEaP
-BxunQo8sESTbHpdGr10jOM0RkIbgwLQbG53YEwo94LhoNDRMdWaOdQ2SiMT2GpRS
-A++Ar1VOQcTUUIyA1YzSZ6wrMMmHcNmV8vAKIwECgYEAy3DVVZvk5vp9bwwenoka
-2o+31DQgWxVUL4kiSvKdSaycLueqMtQ+Zeeq28+bm1q4/fV6ZDV7V3p/Di5ItrsQ
-N1kYpfblyxcfZpiAvENQtHVaf3AThqVuBryKGZMZJKrxqU3Uh/si8qPELmPq/DFd
-4qBtb1mrK3IlM2WhevdFhg0=
------END PRIVATE KEY-----
-"""
+    -----BEGIN PRIVATE KEY-----
+    MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC/ixUhV8aQNsDc
+    WyE59KMOJqd3oxspKRmGMQIDSfjNLgZIEbv34b3gQqPCAmTGXrWMLvqr7axBvZTE
+    sX2zRiltUC7qg3SBHVrtYOW7+L5+pe/Qh3S1HmbLjZikgppTm9f0uqmQh9Trz3Iu
+    KwQy9UCFFYyZcKlhTSpow9r7CstTTERbymOsC9TUPnk1Nl4n+m1VEL2qjjY6JiZA
+    ggNLlQccQ0GSZY71rqofZmVqao3Sh8anlQnurwPYcETxKse5Q24vlKNwx+39XaPc
+    rYminu/L+PIhvJIkaLypzFSCDHs0EPcv3S7xj+Z3Xt7RRR7MPZzyHMHjroUk8Onp
+    dYS2K1z/AgMBAAECggEAQAMtJp19AIkr3vidnA7Dx2DnqrXZx+GyZARQ1eSMv5VY
+    CBHVLbxFhoL+00GViC3yoky4/WhKnxXKeAmRJq6V/bBEXZ9c+iFjV92AKVex4gV2
+    pcv/FuB4HiLOFnyHMtXsUB9pt6GNaNlFIWTC3HzV+SQAfu8FzDzLpYN+1VMALG/F
+    6mHsJHeAP3SPjYV7v11XyzAxCtOgWMAslbbRm8PqR41Zjcj8T40k9qGih2PbJLdU
+    bfYPow7kW00miYrGZthW5luw/xY+zOyc8VJ4e0nke0P6mkrZ1gteKTIC9pcLvYKS
+    LU0gIc9OkIHNzWE4zgtVDt9Pty6PiQFZmgSz7Y3dIQKBgQDzBdMzTqb1zssOkZS0
+    z2hD10CI4e2WACBadot/wUnTJqBB8xwEEwzJcPZjgM1j/rns3hFKqKmAGtPpSNzP
+    0CKwjT9OxOfWrMKFH0+evOcg1yf8t6/HmbpOGfoyR44iFxAQ5JuSzupBrnOaudTx
+    loh66npg64zRGm+mmwXp6WUoZwKBgQDJxYWYOUHwE0HSjGH90e5M1MCEgqEaY8SD
+    Iot6pnHwGkvEO1JOxu/nUrMh21N/JW452dltlOmKEtM/sMxkIGfPNJJyBgx8LB8b
+    fbfxs+vBJoKT3AS/f1Rbwp3icwrE38af7l1jY4Y+g2RUxM/5Co1hHx+sANMaFgry
+    DklKZ2QnqQKBgHVuNyPvuZXFmzEq/6RvJH7DoJeENH3rCbcs2TOefsHdREsZ4kvF
+    uMQOJcDnGFhdWhIvLEPbRCx2yjdL0gdJF7ogRpsVYsHFMSmKe7rEpRqlXNktGW9l
+    xTTAMLnjAbdPVaAUF2jVOzUJyyrU6STkDIb4jrIOoDjagWEMP8tL0Gm5AoGAEgd0
+    SIXVPn56AzZIC0YW5QadrTl+67y+cnlDvVHiHHI9Euu6Dw/3n9Pj7cKLU3EkyEaP
+    BxunQo8sESTbHpdGr10jOM0RkIbgwLQbG53YEwo94LhoNDRMdWaOdQ2SiMT2GpRS
+    A++Ar1VOQcTUUIyA1YzSZ6wrMMmHcNmV8vAKIwECgYEAy3DVVZvk5vp9bwwenoka
+    2o+31DQgWxVUL4kiSvKdSaycLueqMtQ+Zeeq28+bm1q4/fV6ZDV7V3p/Di5ItrsQ
+    N1kYpfblyxcfZpiAvENQtHVaf3AThqVuBryKGZMZJKrxqU3Uh/si8qPELmPq/DFd
+    4qBtb1mrK3IlM2WhevdFhg0=
+    -----END PRIVATE KEY-----
+    """
 
     # Abrir o arquivo do Google Sheets
     gc = gspread.service_account_from_dict(credentials)
