@@ -57,8 +57,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-url = ("https://docs.google.com/spreadsheets/d/"
-       "1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit?usp=drive_link")
+url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit?usp=drive_link"
 
 
 conn = GSheetsConnection(url)
