@@ -71,3 +71,4 @@ if st.button("Atualizar Estoque"):
         worksheet.update_cell(index + 2, 6, row['Estoque'])
 
     st.success('Estoque atualizado com sucesso!')
+
