@@ -59,7 +59,7 @@ st.write("")
 if st.button("Atualizar Estoque"):
     # Atualizar os dados no Google Sheets apenas se houver confirmação
     # Atualizar os dados no Google Sheets
-    credentials = st.secrets["connections.gsheets.private_key"]
+    credentials = st.secrets["private_key"]
 
     # Abrir o arquivo do Google Sheets
     gc = gspread.service_account_from_dict(credentials)
