@@ -3,6 +3,22 @@ import pandas as pd
 from streamlit_gsheets import GSheetsConnection
 import gspread
 
+# Inserir CSS personalizado para estilização
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: #363636;
+    }
+    .css-1bnyegh-buttonContainer button {
+        background-color: #f0ad4e !important;
+        color: #000000 !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit?usp=drive_link"
 
 conn = GSheetsConnection(url)
@@ -43,7 +59,7 @@ st.write("")
 if st.button("Atualizar Estoque"):
     # Atualizar os dados no Google Sheets apenas se houver confirmação
     # Atualizar os dados no Google Sheets
-    credentials = st.secrets["gcp_service_account"]
+    credentials = st.secrets["connections.gsheets.private_key"]
 
     # Abrir o arquivo do Google Sheets
     gc = gspread.service_account_from_dict(credentials)
