@@ -9,4 +9,3 @@ st-gsheets-connection==0.0.4
 streamlit==1.32.2
 tenacity==8.2.3
 toml==0.10.2
-json
