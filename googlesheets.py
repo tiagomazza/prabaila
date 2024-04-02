@@ -38,31 +38,17 @@ N1kYpfblyxcfZpiAvENQtHVaf3AThqVuBryKGZMZJKrxqU3Uh/si8qPELmPq/DFd
 4qBtb1mrK3IlM2WhevdFhg0=
 -----END PRIVATE KEY-----
 """,
+}
 
 
 
-# Inserir CSS personalizado para estilização
-st.markdown(
-    """
-    <style>
-    body {
-        background-color: #363636;
-    }
-    .css-1bnyegh-buttonContainer button {
-        background-color: #f0ad4e !important;
-        color: #000000 !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
-#url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit?usp=drive_link"
+url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit?usp=drive_link"
 
 
 conn = GSheetsConnection(url)
 
-data = conn.read(spreadsheet="https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit?usp=drive_link", usecols=[0,1,2,3,4,5])
+data = conn.read(spreadsheet=url, usecols=[0,1,2,3,4,5])
 
 # Filtrar por modelo
 modelos = data['Modelo'].unique()
