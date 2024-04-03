@@ -1,5 +1,5 @@
 ﻿google-auth==2.29.0
-google-auth-oauthlib
+google-auth-oauthlib==1.2.0
 greenlet==3.0.3
 gspread==5.12.4
 gspread-dataframe==3.3.1
