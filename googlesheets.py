@@ -30,8 +30,15 @@ for index, row in data_filtrada.iterrows():
     st.write(f"Descrição: {row['Descrição']}")
     st.write(f"Preço: R${row['Preço']}")
     
-    estoque_atualizado = st.number_input(f'Estoque atual: {row["Estoque"]}. Quantidade ({row["Modelo"]} - {row["Número"]})', min_value=-10, max_value=10, step=1, value=row['Estoque'])
-
+    # Verificando o valor de 'Estoque' antes de passá-lo para st.number_input()
+    st.write(f"Estoque: {row['Estoque']}")
+    
+    # Verificando se 'Estoque' é um número inteiro
+    if isinstance(row['Estoque'], int):
+        estoque_atualizado = st.number_input(f'Estoque atual: {row["Estoque"]}. Quantidade ({row["Modelo"]} - {row["Número"]})', min_value=-10, max_value=10, step=1, value=row['Estoque'])
+    else:
+        estoque_atualizado = st.number_input(f'Estoque atual: {row["Estoque"]}. Quantidade ({row["Modelo"]} - {row["Número"]})', min_value=-10, max_value=10, step=1, value=0)  # Default value
+    
     data_filtrada.loc[index, 'Estoque'] = estoque_atualizado
 
 # Botão para atualizar o estoque
