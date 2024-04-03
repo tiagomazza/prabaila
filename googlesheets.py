@@ -47,7 +47,7 @@ for index, row in data_filtrada.iterrows():
 if st.button("Atualizar Estoque"):
     gc = service_account.Credentials.from_service_account_info(credentials)
     spreadsheet = gc.open_by_url(url)
-    worksheet = spreadsheet.worksheet("Pag1")
+    worksheet = spreadsheet.worksheet("Pag")
 
     # Atualizar estoque em lotes de 100 linhas e 26 colunas
     batch_size = 100
