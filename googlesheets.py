@@ -20,15 +20,15 @@ url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2b
 conn = GSheetsConnection("gsheets")
 
 # Leitura dos dados da planilha
-data = conn.read(spreadsheet_url=url, worksheet="Pag1", start_cell="A1", end_cell="Z1000")
+data = conn.read(spreadsheet_url=url, worksheet="Pag1")
 
 # Filtragem por modelo
 modelos = data['Modelo'].unique()
-modelo_filtro = st.sidebar.multiselect('Filtrar por Modelo', modelos, default=[modelos[0]])
+modelo_filtro = st.sidebar.multiselect('Filtrar por Modelo', modelos, default=modelos)
 
 # Filtragem por número
 numeros = data['Número'].unique()
-numero_filtro = st.sidebar.multiselect('Filtrar por Número', numeros, default=[numeros[0]])
+numero_filtro = st.sidebar.multiselect('Filtrar por Número', numeros, default=numeros)
 
 # Aplicação dos filtros
 filtro = (data['Modelo'].isin(modelo_filtro)) & (data['Número'].isin(numero_filtro))
