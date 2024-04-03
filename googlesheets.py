@@ -1,61 +1,59 @@
 import streamlit as st
 import pandas as pd
-import gspread
-from google.auth import service_account
-import toml
+from streamlit_gsheets import GSheetsConnection
+from google.oauth2 import service_account
+import json
 
-# Carregue os segredos do Streamlit Cloud
-secrets = st.secrets["gsheets_credentials"]
-
-# Carregue as credenciais do arquivo TOML
-credentials = service_account.Credentials.from_service_account_info({
-    "type": secrets["type"],
-    "project_id": secrets["project_id"],
-    "private_key_id": secrets["private_key_id"],
-    "private_key": secrets["private_key"],
-    "client_email": secrets["client_email"],
-    "client_id": secrets["client_id"],
-    "auth_uri": secrets["auth_uri"],
-    "token_uri": secrets["token_uri"],
-    "auth_provider_x509_cert_url": secrets["auth_provider_x509_cert_url"],
-    "client_x509_cert_url": secrets["client_x509_cert_url"]
-})
+# Corrigindo a quebra de linha na chave privada
+credentials = json.loads("""
+{
+  "type": "service_account",
+  "project_id": "estoque-419114",
+  "private_key_id": "f677783283e52d4a78e70d756ec39f5f0207ec8a",
+  "private_key": "-----BEGIN PRIVATE KEY-----MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC/ixUhV8aQNsDcWyE59KMOJqd3oxspKRmGMQIDSfjNLgZIEbv34b3gQqPCAmTGXrWMLvqr7axBvZTEsX2zRiltUC7qg3SBHVrtYOW7+L5+pe/Qh3S1HmbLjZikgppTm9f0uqmQh9Trz3IuKwQy9UCFFYyZcKlhTSpow9r7CstTTERbymOsC9TUPnk1Nl4n+m1VEL2qjjY6JiZA...0WMAslbbRm8PqR41Zjcj8T40k9qGih2PbJLdUbfYPow7kW00miYrGZthW5luw/xY+zOyc8VJ4e0nke0P6mkrZ1gteKTIC9pcLvYKSLU0gIc9OkIHNzWE4zgtVDt9Pty6PiQFZmgSz7Y3dIQKBgQDzBdMzTqb1zssOkZS0z2hD10CI4e2WACBadot/wUnTJqBB8xwEEwzJcPZjgM1j/rns3hFKqKmAGtPpSNzP0CKwjT9OxOfWrMKFH0+evOcg1yf8t6/HmbpOGfoyR44iFxAQ5JuSzupBrnOaudTxloh66npg64zRGm+mmwXp6WUoZwKBgQDJxYWYOUHwE0HSjGH90e5M1MCEgqEaY8SDIot6pnHwGkvEO1JOxu/nUrMh21N/JW452dltlOmKEtM/sMxkIGfPNJJyBgx8LB8bfbfxs+vBJoKT3AS/f1Rbwp3icwrE38af7l1jY4Y+g2RUxM/5Co1hHx+sANMaFgryDklKZ2QnqQKBgHVuNyPvuZXFmzEq/6RvJH7DoJeENH3rCbcs2TOefsHdREsZ4kvFuMQOJcDnGFhdWhIvLEPbRCx2yjdL0gdJF7ogRpsVYsHFMSmKe7rEpRqlXNktGW9lxTTAMLnjAbdPVaAUF2jVOzUJyyrU6STkDIb4jrIOoDjagWEMP8tL0Gm5AoGAEgd0SIXVPn56AzZIC0YW5QadrTl+67y+cnlDvVHiHHI9Euu6Dw/3n9Pj7cKLU3EkyEaPBxunQo8sESTbHpdGr10jOM0RkIbgwLQbG53YEwo94LhoNDRMdWaOdQ2SiMT2GpRSA++Ar1VOQcTUUIyA1YzSZ6wrMMmHcNmV8vAKIwECgYEAy3DVVZvk5vp9bwwenoka2o+31DQgWxVUL4kiSvKdSaycLueqMtQ+Zeeq28+bm1q4/fV6ZDV7V3p/Di5ItrsQN1kYpfblyxcfZpiAvENQtHVaf3AThqVuBryKGZMZJKrxqU3Uh/si8qPELmPq/DFd4qBtb1mrK3IlM2WhevdFhg0=-----END PRIVATE KEY-----"
+}
+""")
 
 # URL da planilha
 url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit?usp=drive_link"
 
-# Autorize e abra a planilha
-gc = gspread.authorize(credentials)
-worksheet = gc.open_by_url(url).sheet1  # ou qualquer outra planilha que você tenha
+# Conexão com o Google Sheets
+conn = GSheetsConnection(url)
 
 # Leitura dos dados da planilha
-data = worksheet.get_all_records()
+data = conn.read(spreadsheet=url, usecols=[0, 1, 2, 3, 4, 5])
 
 # Filtragem por modelo
-modelos = pd.DataFrame(data)['Modelo'].unique()
+modelos = data['Modelo'].unique()
 modelo_filtro = st.sidebar.multiselect('Filtrar por Modelo', modelos, default=modelos)
 
 # Filtragem por número
-numeros = pd.DataFrame(data)['Número'].unique()
+numeros = data['Número'].unique()
 numero_filtro = st.sidebar.multiselect('Filtrar por Número', numeros, default=numeros)
 
 # Aplicação dos filtros
-data_filtrada = []
-for row in data:
-    if row['Modelo'] in modelo_filtro and row['Número'] in numero_filtro:
-        data_filtrada.append(row)
+filtro = (data['Modelo'].isin(modelo_filtro)) & (data['Número'].isin(numero_filtro))
+data_filtrada = data[filtro]
 
-# Exibição dos dados filtrados
-for row in data_filtrada:
+# DataFrame para armazenar as alterações de estoque
+estoque_atualizado = data_filtrada.copy()
+
+# Exibição dos dados e atualização do estoque
+for index, row in data_filtrada.iterrows():
     st.write(f"Modelo: {row['Modelo']} - Número: {row['Número']}")
     st.write(f"Descrição: {row['Descrição']}")
     st.write(f"Preço: R${row['Preço']}")
+    
+    if index in estoque_atualizado.index:
+        estoque_atualizado.loc[index, 'Estoque'] = st.number_input(f'Estoque atual: {row["Estoque"]}. Quantidade ({row["Modelo"]} - {row["Número"]})', min_value=-10, max_value=10, step=1, value=0)
 
 # Botão para atualizar o estoque
 if st.button("Atualizar Estoque"):
-    for row in data_filtrada:
-        # Suponha que 'Estoque' seja a quinta coluna
-        cell = worksheet.find(row['Estoque'])
-        worksheet.update_cell(cell.row, cell.col, row['Estoque'])
+    gc = service_account.Credentials.from_service_account_info(credentials)
+    spreadsheet = gc.open_by_url(url)
+    worksheet = spreadsheet.get_worksheet(0)
+
+    for i, (index, row) in enumerate(estoque_atualizado.iterrows()):
+        worksheet.update_cell(index + 2, 6, row['Estoque'])
 
     st.success('Estoque atualizado com sucesso!')
