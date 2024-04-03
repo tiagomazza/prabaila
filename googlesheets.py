@@ -21,6 +21,7 @@ secret_info = {
 # Conexão com o Google Sheets
 conn = GSheetsConnection(secret_info)
 
+
 # URL da planilha
 url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit?usp=drive_link"
 
