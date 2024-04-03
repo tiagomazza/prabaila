@@ -2,8 +2,9 @@ import streamlit as st
 import pandas as pd
 from streamlit_gsheets import GSheetsConnection
 from google.oauth2 import service_account
+import json
 
-# Segredo do Google Sheets
+# Segredos
 secret_info = {
   "type": "service_account",
   "project_id": "estoque-419114",
@@ -19,19 +20,7 @@ secret_info = {
 }
 
 # Conexão com o Google Sheets
-conn = GSheetsConnection(
-    type=secret_info["type"],
-    project_id=secret_info["project_id"],
-    private_key_id=secret_info["private_key_id"],
-    private_key=secret_info["private_key"],
-    client_email=secret_info["client_email"],
-    client_id=secret_info["client_id"],
-    auth_uri=secret_info["auth_uri"],
-    token_uri=secret_info["token_uri"],
-    auth_provider_x509_cert_url=secret_info["auth_provider_x509_cert_url"],
-    client_x509_cert_url=secret_info["client_x509_cert_url"],
-    universe_domain=secret_info["universe_domain"]
-)
+conn = GSheetsConnection(secret_info)
 
 # URL da planilha
 url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit?usp=drive_link"
