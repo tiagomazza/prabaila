@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import json
 
@@ -17,6 +18,7 @@ secret_info = {
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/gsheets-python-access%40estoque-419114.iam.gserviceaccount.com",
   "universe_domain": "googleapis.com"
 }
+
 
 # Conexão com o Google Sheets
 conn = GSheetsConnection(secret_info)
