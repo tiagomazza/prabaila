@@ -15,13 +15,13 @@ credentials = json.loads("""
 """)
 
 # URL da planilha
-url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit?usp=drive_link"
+
 
 # Conexão com o Google Sheets
-conn = GSheetsConnection(url)
+conn = GSheetsConnection("gsheets")
 
 # Leitura dos dados da planilha
-data = conn.read(spreadsheet=url, usecols=[0, 1, 2, 3, 4, 5])
+data = conn.read(worksheet"Pag1")
 
 # Filtragem por modelo
 modelos = data['Modelo'].unique()
