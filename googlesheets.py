@@ -22,14 +22,14 @@ conn = GSheetsConnection("gsheets")
 # Leitura dos dados da planilha
 data = conn.read(spreadsheet_url=url, worksheet="Pag")
 
+# Filtragem por modelo
+modelos = data['Modelo'].unique()
+modelo_filtro = st.sidebar.multiselect('Filtrar por Modelo', modelos, default=modelos)
+
 # Verificar se 'numeros' é None e atribuir uma lista vazia se for
 numeros = data['Número'].unique()
 if numeros is None:
     numeros = []
-
-# Filtragem por modelo
-modelos = data['Modelo'].unique()
-modelo_filtro = st.sidebar.multiselect('Filtrar por Modelo', modelos, default=modelos)
 
 # Filtragem por número
 numero_filtro = st.sidebar.multiselect('Filtrar por Número', numeros, default=numeros)
