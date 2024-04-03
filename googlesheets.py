@@ -28,7 +28,7 @@ modelo_filtro = st.sidebar.multiselect('Filtrar por Modelo', modelos, default=mo
 
 # Filtragem por número
 numeros = data['Número'].unique()
-default_numeros = [numero for numero in numeros if numero in default_numeros]
+default_numeros = [numero for numero in numeros if numero in numeros]
 numero_filtro = st.sidebar.multiselect('Filtrar por Número', numeros, default=default_numeros)
 
 # Aplicação dos filtros
