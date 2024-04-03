@@ -21,7 +21,7 @@ credentials = json.loads("""
 conn = GSheetsConnection("gsheets")
 
 # Leitura dos dados da planilha
-data = conn.read(worksheet"Pag1")
+data = conn.read(worksheet="Pag1")
 
 # Filtragem por modelo
 modelos = data['Modelo'].unique()
