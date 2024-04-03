@@ -1,8 +1,7 @@
 import streamlit as st
-from streamlit_gsheets import GSheetsConnection
-from google.auth import service_account
 import pandas as pd
-import json
+import gspread
+from google.auth import service_account
 
 # Segredos
 secret_info = {
@@ -19,46 +18,44 @@ secret_info = {
   "universe_domain": "googleapis.com"
 }
 
-# Conexão com o Google Sheets
-conn = GSheetsConnection(secret_info)
-
 # URL da planilha
 url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit?usp=drive_link"
 
+# Carregue as credenciais do arquivo JSON
+credentials = service_account.Credentials.from_service_account_info(secret_info)
+
+# Autorize e abra a planilha
+gc = gspread.authorize(credentials)
+worksheet = gc.open_by_url(url).sheet1  # ou qualquer outra planilha que você tenha
+
 # Leitura dos dados da planilha
-data = conn.read(spreadsheet=url, usecols=[0, 1, 2, 3, 4, 5])
+data = worksheet.get_all_records()
 
 # Filtragem por modelo
-modelos = data['Modelo'].unique()
+modelos = pd.DataFrame(data)['Modelo'].unique()
 modelo_filtro = st.sidebar.multiselect('Filtrar por Modelo', modelos, default=modelos)
 
 # Filtragem por número
-numeros = data['Número'].unique()
+numeros = pd.DataFrame(data)['Número'].unique()
 numero_filtro = st.sidebar.multiselect('Filtrar por Número', numeros, default=numeros)
 
 # Aplicação dos filtros
-filtro = (data['Modelo'].isin(modelo_filtro)) & (data['Número'].isin(numero_filtro))
-data_filtrada = data[filtro]
+data_filtrada = []
+for row in data:
+    if row['Modelo'] in modelo_filtro and row['Número'] in numero_filtro:
+        data_filtrada.append(row)
 
-# DataFrame para armazenar as alterações de estoque
-estoque_atualizado = data_filtrada.copy()
-
-# Exibição dos dados e atualização do estoque
-for index, row in data_filtrada.iterrows():
+# Exibição dos dados filtrados
+for row in data_filtrada:
     st.write(f"Modelo: {row['Modelo']} - Número: {row['Número']}")
     st.write(f"Descrição: {row['Descrição']}")
     st.write(f"Preço: R${row['Preço']}")
-    
-    if index in estoque_atualizado.index:
-        estoque_atualizado.loc[index, 'Estoque'] = st.number_input(f'Estoque atual: {row["Estoque"]}. Quantidade ({row["Modelo"]} - {row["Número"]})', min_value=-10, max_value=10, step=1, value=0)
 
 # Botão para atualizar o estoque
 if st.button("Atualizar Estoque"):
-    gc = service_account.Credentials.from_service_account_info(secret_info)
-    spreadsheet = gc.open_by_url(url)
-    worksheet = spreadsheet.get_worksheet(0)
-
-    for i, (index, row) in enumerate(estoque_atualizado.iterrows()):
-        worksheet.update_cell(index + 2, 6, row['Estoque'])
+    for row in data_filtrada:
+        # Suponha que 'Estoque' seja a quinta coluna
+        cell = worksheet.find(row['Estoque'])
+        worksheet.update_cell(cell.row, cell.col, row['Estoque'])
 
     st.success('Estoque atualizado com sucesso!')
