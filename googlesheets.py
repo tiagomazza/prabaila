@@ -3,7 +3,7 @@ from streamlit_gsheets import GSheetsConnection
 from google.oauth2 import service_account
 import json
 
-# Carregando as credenciais do arquivo JSON
+# Carregar as credenciais do arquivo JSON
 credentials = json.loads("""
 {
   "type": "service_account",
@@ -49,14 +49,19 @@ if st.button("Atualizar Estoque"):
     spreadsheet = gc.open_by_url(url)
     worksheet = spreadsheet.worksheet("Pag1")
 
-    # Atualizar estoque em lotes de 100 linhas
+    # Atualizar estoque em lotes de 100 linhas e 26 colunas
     batch_size = 100
     num_rows = data_filtrada.shape[0]
+    num_cols = data_filtrada.shape[1]
 
     for i in range(0, num_rows, batch_size):
-        batch_data = data_filtrada.iloc[i:i+batch_size]
-        cell_range = f"F{i+2}:F{i+2+len(batch_data)-1}"
-        batch_values = [[value] for value in batch_data['Estoque'].tolist()]
-        worksheet.update(cell_range, batch_values)
+        for j in range(0, num_cols, 26):
+            batch_data = data_filtrada.iloc[i:i+batch_size, j:j+26]
+            if not batch_data.empty:
+                start_row = i + 2  # Leva em consideração o cabeçalho
+                start_col = j + 1  # Leva em consideração o cabeçalho
+                cell_range = f"{worksheet.get_addr_int(start_row, start_col)}:{worksheet.get_addr_int(start_row+len(batch_data)-1, min(start_col+25, num_cols))}"
+                batch_values = batch_data.values.tolist()
+                worksheet.update(cell_range, batch_values)
 
     st.success('Estoque atualizado com sucesso!')
