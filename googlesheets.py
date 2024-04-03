@@ -26,13 +26,9 @@ data = conn.read(spreadsheet_url=url, worksheet="Pag")
 modelos = data['Modelo'].unique()
 modelo_filtro = st.sidebar.multiselect('Filtrar por Modelo', modelos, default=modelos)
 
-# Verificar se 'numeros' é None e atribuir uma lista vazia se for
-numeros = data['Número'].unique()
-if numeros is None:
-    numeros = []
-
 # Filtragem por número
-numero_filtro = st.sidebar.multiselect('Filtrar por Número', numeros, default=numeros)
+numeros = data['Número'].unique()
+numero_filtro = st.sidebar.multiselect('Filtrar por Número', numeros, default=numeros if numeros is not None else [])
 
 # Aplicação dos filtros
 filtro = (data['Modelo'].isin(modelo_filtro)) & (data['Número'].isin(numero_filtro))
