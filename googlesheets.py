@@ -1,5 +1,9 @@
 # Importações
-from pathlib import Path
+import streamlit as st
+from streamlit_gsheets import GSheetsConnection
+from google.auth import service_account
+import pandas as pd
+import jsonfrom pathlib import Path
 from typing import Dict, List
 
 # Carregamento das credenciais
