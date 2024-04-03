@@ -1,7 +1,7 @@
 import streamlit as st
-import pandas as pd
-import streamlit as st
 from streamlit_gsheets import GSheetsConnection
+from google.auth import service_account
+import pandas as pd
 import json
 
 # Segredos
@@ -19,10 +19,8 @@ secret_info = {
   "universe_domain": "googleapis.com"
 }
 
-
 # Conexão com o Google Sheets
 conn = GSheetsConnection(secret_info)
-
 
 # URL da planilha
 url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit?usp=drive_link"
