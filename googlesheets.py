@@ -20,7 +20,7 @@ url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2b
 conn = GSheetsConnection("gsheets")
 
 # Leitura dos dados da planilha
-data = conn.read(url, worksheet="Pag1")
+data = conn.read(spreadsheet_url=url, worksheet="Pag1")
 
 # Filtragem por modelo
 modelos = data['Modelo'].unique()
