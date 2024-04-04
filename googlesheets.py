@@ -1,8 +1,6 @@
-
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
-
-
+from google.oauth2 import service_account
 
 # URL da planilha
 url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit#gid=0"
@@ -11,11 +9,7 @@ url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2b
 conn = GSheetsConnection("gsheets")
 
 # Leitura dos dados da planilha
-data = conn.read(
-    spreadsheet_url=url,
-    worksheet="Pag",
-    credentials=credentials
-)
+data = conn.read(spreadsheet_url=url, worksheet="Pag")
 
 # Filtragem por modelo
 modelos = data['Modelo'].unique()
