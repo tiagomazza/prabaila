@@ -10,8 +10,8 @@ conn = GSheetsConnection("gsheets")
 st.title("Google Sheets as a DataBase")
 
 with st.sidebar:
-    modelo_filtro = st.multiselect('Filtrar por Modelo', data['Modelo'].unique())
-    numero_filtro = st.multiselect('Filtrar por Número', data['Número'].unique())
+    modelo_filtro = st.multiselect('Filtrar por Modelo', [])
+    numero_filtro = st.multiselect('Filtrar por Número', [])
 
 # Carregar dados da planilha
 data = conn.read(spreadsheet_url=url, worksheet="Pag")
