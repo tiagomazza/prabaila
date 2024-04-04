@@ -3,12 +3,20 @@ from streamlit_gsheets import GSheetsConnection
 from google.oauth2 import service_account
 import os
 
+# Verificação da variável de ambiente GSHEETS_PRIVATE_KEY
+private_key_env = os.environ.get("GSHEETS_PRIVATE_KEY")
+if private_key_env:
+    private_key = private_key_env.replace('\\n', '\n')
+else:
+    st.error("A variável de ambiente GSHEETS_PRIVATE_KEY não está definida ou está vazia. Verifique as configurações.")
+    st.stop()
+
 # Ler as credenciais do ambiente
 credentials = {
     "type": os.environ.get("GSHEETS_TYPE"),
     "project_id": os.environ.get("GSHEETS_PROJECT_ID"),
     "private_key_id": os.environ.get("GSHEETS_PRIVATE_KEY_ID"),
-    "private_key": os.environ.get("GSHEETS_PRIVATE_KEY").replace('\\n', '\n'),
+    "private_key": private_key,
     "client_email": os.environ.get("GSHEETS_CLIENT_EMAIL"),
     "client_id": os.environ.get("GSHEETS_CLIENT_ID"),
     "auth_uri": os.environ.get("GSHEETS_AUTH_URI"),
