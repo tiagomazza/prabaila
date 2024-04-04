@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
+from google.oauth2 import service_account  # Importando service_account
 
 # Carrega as credenciais do ambiente
 credentials = {
