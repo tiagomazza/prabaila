@@ -7,7 +7,7 @@ credentials = {
     "type": os.environ.get("GSHEETS_TYPE"),
     "project_id": os.environ.get("GSHEETS_PROJECT_ID"),
     "private_key_id": os.environ.get("GSHEETS_PRIVATE_KEY_ID"),
-    "private_key": os.environ.get("GSHEETS_PRIVATE_KEY").replace('\\n', '\n'),
+    "private_key": os.environ.get("GSHEETS_PRIVATE_KEY"),
     "client_email": os.environ.get("GSHEETS_CLIENT_EMAIL"),
     "client_id": os.environ.get("GSHEETS_CLIENT_ID"),
     "auth_uri": os.environ.get("GSHEETS_AUTH_URI"),
@@ -15,6 +15,11 @@ credentials = {
     "auth_provider_x509_cert_url": os.environ.get("GSHEETS_AUTH_PROVIDER_X509_CERT_URL"),
     "client_x509_cert_url": os.environ.get("GSHEETS_CLIENT_X509_CERT_URL")
 }
+
+# Substitui '\n' por quebra de linha apenas se a chave privada não for None
+private_key = credentials.get("private_key")
+if private_key:
+    credentials["private_key"] = private_key.replace('\\n', '\n')
 
 # URL da planilha
 url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit#gid=0"
