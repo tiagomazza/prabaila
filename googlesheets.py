@@ -1,6 +1,20 @@
+import os
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
-from google.oauth2 import service_account
+
+# Carrega as credenciais do ambiente
+credentials = {
+    "type": os.environ.get("GSHEETS_TYPE"),
+    "project_id": os.environ.get("GSHEETS_PROJECT_ID"),
+    "private_key_id": os.environ.get("GSHEETS_PRIVATE_KEY_ID"),
+    "private_key": os.environ.get("GSHEETS_PRIVATE_KEY").replace('\\n', '\n'),
+    "client_email": os.environ.get("GSHEETS_CLIENT_EMAIL"),
+    "client_id": os.environ.get("GSHEETS_CLIENT_ID"),
+    "auth_uri": os.environ.get("GSHEETS_AUTH_URI"),
+    "token_uri": os.environ.get("GSHEETS_TOKEN_URI"),
+    "auth_provider_x509_cert_url": os.environ.get("GSHEETS_AUTH_PROVIDER_X509_CERT_URL"),
+    "client_x509_cert_url": os.environ.get("GSHEETS_CLIENT_X509_CERT_URL")
+}
 
 # URL da planilha
 url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit#gid=0"
@@ -9,7 +23,11 @@ url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2b
 conn = GSheetsConnection("gsheets")
 
 # Leitura dos dados da planilha
-data = conn.read(spreadsheet_url=url, worksheet="Pag")
+data = conn.read(
+    spreadsheet_url=url,
+    worksheet="Pag",
+    credentials=credentials
+)
 
 # Filtragem por modelo
 modelos = data['Modelo'].unique()
