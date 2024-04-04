@@ -14,7 +14,7 @@ with st.sidebar:
     numero_filtro = st.multiselect('Filtrar por Número', [])
 
 # Carregar dados da planilha
-data = conn.read(spreadsheet_url=url, worksheet="Pag")
+data = conn.read(spreadsheet_url=url, worksheet="ws")
 
 # Filtrar dados com base nos filtros do usuário
 filtro = (data['Modelo'].isin(modelo_filtro)) & (data['Número'].isin(numero_filtro))
@@ -37,7 +37,7 @@ for index, row in data_filtrada.iterrows():
 
 # Botão para atualizar o estoque na planilha
 if st.button("Atualizar Estoque"):
-    conn.write(data_filtrada, spreadsheet_url=url, worksheet="Pag")
+    conn.write(data_filtrada, spreadsheet_url=url, worksheet="ws")
     st.success('Estoque atualizado com sucesso!')
 
 st.divider()
