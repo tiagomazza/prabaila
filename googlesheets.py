@@ -2,38 +2,29 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 from google.oauth2 import service_account
 
-# URL da planilha
 url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit#gid=0"
 
-# Conexão com o Google Sheets
 conn = GSheetsConnection("gsheets")
-
-# Leitura dos dados da planilha
 data = conn.read(spreadsheet_url=url, worksheet="Pag")
 
-# Filtragem por modelo
+
 modelos = data['Modelo'].unique()
 modelo_filtro = st.sidebar.multiselect('Filtrar por Modelo', modelos, default=modelos)
 
-# Filtragem por número
 numeros = data['Número'].unique()
 default_numeros = [numero for numero in numeros if numero in numeros]
 numero_filtro = st.sidebar.multiselect('Filtrar por Número', numeros, default=default_numeros)
 
-# Aplicação dos filtros
 filtro = (data['Modelo'].isin(modelo_filtro)) & (data['Número'].isin(numero_filtro))
 data_filtrada = data[filtro]
 
-# Exibição dos dados e atualização do estoque
 for index, row in data_filtrada.iterrows():
     st.write(f"Modelo: {row['Modelo']} - Número: {row['Número']}")
     st.write(f"Descrição: {row['Descrição']}")
     st.write(f"Preço: R${row['Preço']}")
     
-    # Verificando o valor de 'Estoque' antes de passá-lo para st.number_input()
     st.write(f"Estoque: {row['Estoque']}")
     
-    # Verificando se 'Estoque' é um número inteiro
     if isinstance(row['Estoque'], int):
         estoque_atualizado = st.number_input(f'Estoque atual: {row["Estoque"]}. Quantidade ({row["Modelo"]} - {row["Número"]})', min_value=-10, max_value=10, step=1, value=row['Estoque'])
     else:
@@ -41,7 +32,6 @@ for index, row in data_filtrada.iterrows():
     
     data_filtrada.loc[index, 'Estoque'] = estoque_atualizado
 
-# Botão para atualizar o estoque
 if st.button("Atualizar Estoque"):
     gc = service_account.Credentials.from_service_account_info(credentials)
     spreadsheet = gc.open_by_url(url)
