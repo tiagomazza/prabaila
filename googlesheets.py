@@ -1,12 +1,12 @@
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
-from google.oauth2 import service_account
 
+# URL da planilha
 url = "https://docs.google.com/spreadsheets/d/1j0iFYpsSh3JwQu9ej6g8C9oCfVseQsu2beEPvj512rw/edit#gid=0"
 
+# Conexão com o Google Sheets
 conn = GSheetsConnection("gsheets")
 data = conn.read(spreadsheet_url=url, worksheet="Pag")
-
 
 modelos = data['Modelo'].unique()
 modelo_filtro = st.sidebar.multiselect('Filtrar por Modelo', modelos, default=modelos)
@@ -33,9 +33,7 @@ for index, row in data_filtrada.iterrows():
     data_filtrada.loc[index, 'Estoque'] = estoque_atualizado
 
 if st.button("Atualizar Estoque"):
-    gc = service_account.Credentials.from_service_account_info(credentials)
-    spreadsheet = gc.open_by_url(url)
-    worksheet = spreadsheet.worksheet("Pag")
+    worksheet = conn.get_worksheet("Pag")
 
     # Atualizar estoque em lotes de 100 linhas e 26 colunas
     batch_size = 100
@@ -48,7 +46,8 @@ if st.button("Atualizar Estoque"):
             if not batch_data.empty:
                 start_row = i + 2  # Leva em consideração o cabeçalho
                 start_col = j + 1  # Leva em consideração o cabeçalho
-                cell_range = f"{worksheet.get_addr_int(start_row, start_col)}:{worksheet.get_addr_int(start_row+len(batch_data)-1, min(start_col+25, num_cols))}"
+                end_col = min(start_col + 25, num_cols)
+                cell_range = f"A{start_row}:Z{start_row + len(batch_data)}"
                 batch_values = batch_data.values.tolist()
                 worksheet.update(cell_range, batch_values)
 
