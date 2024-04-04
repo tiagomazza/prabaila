@@ -33,22 +33,5 @@ for index, row in data_filtrada.iterrows():
     data_filtrada.loc[index, 'Estoque'] = estoque_atualizado
 
 if st.button("Atualizar Estoque"):
-    worksheet = conn.get_worksheet("Pag")
-
-    # Atualizar estoque em lotes de 100 linhas e 26 colunas
-    batch_size = 100
-    num_rows = data_filtrada.shape[0]
-    num_cols = data_filtrada.shape[1]
-
-    for i in range(0, num_rows, batch_size):
-        for j in range(0, num_cols, 26):
-            batch_data = data_filtrada.iloc[i:i+batch_size, j:j+26]
-            if not batch_data.empty:
-                start_row = i + 2  # Leva em consideração o cabeçalho
-                start_col = j + 1  # Leva em consideração o cabeçalho
-                end_col = min(start_col + 25, num_cols)
-                cell_range = f"A{start_row}:Z{start_row + len(batch_data)}"
-                batch_values = batch_data.values.tolist()
-                worksheet.update(cell_range, batch_values)
-
+    conn.write(data_filtrada, spreadsheet_url=url, worksheet="Pag")
     st.success('Estoque atualizado com sucesso!')
