@@ -3,7 +3,7 @@ from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
 # Imagem para exibir no menu lateral
-menu_lateral_imagem = "https://drive.usercontent.google.com/download?id=1ZbJ30G7B47Bt93O-YWp-1G955s6X0-jN&authuser=0"
+menu_lateral_imagem = "https://aborgesdoamaral.pt/wp-content/uploads/2021/04/marca-de-75-anos.png"
 
 # Exibir imagem no menu lateral
 st.sidebar.image(menu_lateral_imagem, use_column_width=True)
@@ -64,7 +64,7 @@ for index, row in filtered_data.iterrows():
     st.text(f"Estoque: {row['Estoque']}")
     
     # Quantity input for adding or reducing stock
-    quantity = st.number_input(f"Ajustar Estoque para '{row['Modelo']}' (Digite um valor positivo para adicionar e negativo para reduzir):", value=0, step=1)
+    quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
 
     # Update the inventory if quantity is provided
     if quantity != 0:
