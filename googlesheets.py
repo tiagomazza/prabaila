@@ -31,7 +31,7 @@ filtered_data = existing_data[
 ]
 
 # Add a toggle button to show/hide shoes with zero stock
-show_zero_stock = st.sidebar.checkbox("Mostrar Sapatos com Estoque 0")
+show_zero_stock = st.sidebar.checkbox("Mostrar sem stock")
 
 # Apply filter to show/hide shoes with zero stock
 if not show_zero_stock:
