@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import gspread
 from streamlit_gsheets import GSheetsConnection
 
 st.title("Google Sheets as a DataBase")
@@ -49,3 +50,16 @@ if st.button("Update Worksheet"):
 if st.button("Clear Worksheet"):
     conn.clear(worksheet="Orders")
     st.success("Worksheet Cleared 🧹")
+
+# Conectar ao workbook
+gc = gspread.service_account(filename="service_account.json")
+ws = gc.open_by_url("https://docs.google.com/spreadsheets/d/18PgkCySwFnghk_iHsW6bpzkqjnbtsbG4y-UH_dinO_E/edit#gid=0")
+
+# Obter a planilha principal
+worksheet = ws.sheet1
+
+# Obter os artigos da primeira coluna (supondo que os artigos estejam na primeira coluna)
+articles = worksheet.col_values(1)
+
+# Exibir os artigos
+st.write("Artigos:", articles)
