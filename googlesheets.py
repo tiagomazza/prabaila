@@ -30,6 +30,13 @@ filtered_data = existing_data[
     (existing_data["Modelo"].isin(modelos_filtro)) & (existing_data["Número"].isin(numeros_filtro))
 ]
 
+# Add a toggle button to show/hide shoes with zero stock
+show_zero_stock = st.sidebar.checkbox("Mostrar Sapatos com Estoque 0")
+
+# Apply filter to show/hide shoes with zero stock
+if not show_zero_stock:
+    filtered_data = filtered_data[filtered_data["Estoque"] > 0]
+
 # Display shoes information separately
 for index, row in filtered_data.iterrows():
     st.subheader(f"{row['Modelo']}")
