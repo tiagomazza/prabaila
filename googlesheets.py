@@ -3,8 +3,8 @@ from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
 # Display Title and Description
-st.title("Shoe Inventory System")
-st.markdown("View and manage shoes inventory.")
+st.title("Inventário Prábaila Quinta Clandestina")
+st.markdown("Sistema de controle de modelos.")
 
 # Establishing a Google Sheets connection
 conn = st.connection("gsheets", type=GSheetsConnection)
@@ -18,9 +18,8 @@ existing_data["Modelo"] = existing_data["Modelo"].astype(str)
 existing_data["Descrição"] = existing_data["Descrição"].astype(str)
 
 # Display shoes information separately
-st.header("Shoes Information")
 for index, row in existing_data.iterrows():
-    st.subheader(f"Modelo: {row['Modelo']}")
+    st.subheader(f"{row['Modelo']}")
     st.text(f"Número: {row['Número']}")
     
     # Display the image from the URL
