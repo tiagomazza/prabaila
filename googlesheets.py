@@ -4,7 +4,7 @@ import pandas as pd
 
 # Display Title and Description
 st.title("Shoe Inventory System")
-st.markdown("View shoes information from the workbook.")
+st.markdown("View and manage shoes inventory.")
 
 # Establishing a Google Sheets connection
 conn = st.connection("gsheets", type=GSheetsConnection)
@@ -27,4 +27,16 @@ for index, row in existing_data.iterrows():
     st.text(f"Descrição: {row['Descrição']}")
     st.text(f"Preço: R${row['Preço']}")
     st.text(f"Estoque: {row['Estoque']}")
-    st.write("---")
+    
+    # Quantity input for adding or reducing stock
+    quantity = st.number_input(f"Alterar Estoque para '{row['Modelo']}' (Digite um valor positivo para adicionar e negativo para reduzir):", value=0, step=1)
+    
+    # Update the inventory if quantity is provided
+    if quantity != 0:
+        updated_stock = row['Estoque'] + quantity
+        existing_data.at[index, 'Estoque'] = updated_stock
+
+# Update Google Sheets with the updated inventory
+if st.button("Atualizar Estoque"):
+    conn.update(worksheet="Shoes", data=existing_data)
+    st.success("Estoque atualizado com sucesso!")
