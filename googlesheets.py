@@ -2,8 +2,14 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
+# Imagem para exibir no menu lateral
+menu_lateral_imagem = "https://drive.google.com/uc?id=1ZbJ30G7B47Bt93O-YWp-1G955s6X0-jN"
+
+# Exibir imagem no menu lateral
+st.sidebar.image(menu_lateral_imagem, use_column_width=True)
+
 # Display Title and Description
-st.title("Inventário Prábaila Quinta Clandestina")
+st.title("🌟Loja da Quinta🌵")
 st.markdown("Sistema de controle de modelos.")
 
 # Establishing a Google Sheets connection
@@ -36,6 +42,11 @@ show_zero_stock = st.sidebar.checkbox("Mostrar sem stock")
 # Apply filter to show/hide shoes with zero stock
 if not show_zero_stock:
     filtered_data = filtered_data[filtered_data["Estoque"] > 0]
+
+# Display total stock count in the sidebar
+total_stock = filtered_data["Estoque"].sum()
+st.sidebar.header("Total de Estoque")
+st.sidebar.write(total_stock)
 
 # Display shoes information separately
 for index, row in filtered_data.iterrows():
