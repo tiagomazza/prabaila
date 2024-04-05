@@ -91,7 +91,7 @@ st.markdown("View shoes information from the workbook.")
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 # Fetch existing shoes data
-existing_data = conn.read(worksheet="Shoes", usecols=list(range(6)), ttl=5)
+existing_data = conn.read(worksheet="ws", usecols=list(range(6)), ttl=5)
 existing_data = existing_data.dropna(how="all")
 
 # Convert "Modelo" and "Descrição" columns to string
