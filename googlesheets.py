@@ -33,7 +33,7 @@ for index, row in existing_data.iterrows():
     st.text(f"Estoque: {row['Estoque']}")
     
     # Quantity input for adding or reducing stock
-    quantity = st.number_input(f"", value=0, step=1)
+    quantity = st.number_input(f"ajuste de stock", value=0, step=1)
     
     # Update the inventory if quantity is provided
     if quantity != 0:
