@@ -23,7 +23,13 @@ for index, row in existing_data.iterrows():
     st.subheader(f"Sapato {index + 1}")
     st.text(f"Modelo: {row['Modelo']}")
     st.text(f"Número: {row['Número']}")
-    st.text(f"Imagem: {row['Imagem']}")
+    
+    # Display the image from the URL
+    if row['Imagem']:
+        st.image(row['Imagem'], caption=f"Imagem para '{row['Modelo']}'")
+    else:
+        st.text("Imagem não disponível")
+    
     st.text(f"Descrição: {row['Descrição']}")
     st.text(f"Preço: R${row['Preço']}")
     st.text(f"Estoque: {row['Estoque']}")
