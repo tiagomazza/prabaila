@@ -77,3 +77,27 @@ with st.form(key="vendor_form"):
             conn.update(worksheet="Vendors", data=updated_df)
 
             st.success("Vendor details successfully submitted!")
+
+
+import streamlit as st
+from streamlit_gsheets import GSheetsConnection
+import pandas as pd
+
+# Display Title and Description
+st.title("Shoe Inventory System")
+st.markdown("View shoes information from the workbook.")
+
+# Establishing a Google Sheets connection
+conn = st.connection("gsheets", type=GSheetsConnection)
+
+# Fetch existing shoes data
+existing_data = conn.read(worksheet="Shoes", usecols=list(range(6)), ttl=5)
+existing_data = existing_data.dropna(how="all")
+
+# Convert "Modelo" and "Descrição" columns to string
+existing_data["Modelo"] = existing_data["Modelo"].astype(str)
+existing_data["Descrição"] = existing_data["Descrição"].astype(str)
+
+# Display shoes information
+st.write("Shoes Information")
+st.dataframe(existing_data)

@@ -13,6 +13,9 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 existing_data = conn.read(worksheet="Vendors", usecols=list(range(6)), ttl=5)
 existing_data = existing_data.dropna(how="all")
 
+# Convert "CompanyName" column to string
+existing_data["CompanyName"] = existing_data["CompanyName"].astype(str)
+
 # List of Business Types and Products
 BUSINESS_TYPES = [
     "Manufacturer",
