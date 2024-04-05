@@ -20,12 +20,13 @@ existing_data["Descrição"] = existing_data["Descrição"].astype(str)
 # Display shoes information separately
 st.header("Shoes Information")
 for index, row in existing_data.iterrows():
-    st.subheader(f"Modelo: {row['Modelo']}")
+    st.subheader(f"Sapato {index + 1}")
+    st.text(f"Modelo: {row['Modelo']}")
     st.text(f"Número: {row['Número']}")
     
     # Display the image from the URL
     if row['Imagem']:
-        st.image(row['Imagem'])
+        st.image(row['Imagem'], caption=f"Imagem para '{row['Modelo']}'")
     else:
         st.text("Imagem não disponível")
     
@@ -45,3 +46,19 @@ for index, row in existing_data.iterrows():
 if st.button("Atualizar Estoque"):
     conn.update(worksheet="Shoes", data=existing_data)
     st.success("Estoque atualizado com sucesso!")
+
+"""
+google-auth==2.29.0
+google-auth-oauthlib==1.2.0
+greenlet==3.0.3
+gspread==5.12.4
+gspread-dataframe==3.3.1
+gspread-formatting==1.1.2
+gspread-pandas==3.3.0
+st-gsheets-connection==0.0.4
+streamlit==1.32.2
+tenacity==8.2.3
+toml==0.10.2
+git+https://github.com/streamlit/gsheets-connection
+st-gsheets-connection
+"""
