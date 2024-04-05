@@ -17,8 +17,21 @@ existing_data = existing_data.dropna(how="all")
 existing_data["Modelo"] = existing_data["Modelo"].astype(str)
 existing_data["Descrição"] = existing_data["Descrição"].astype(str)
 
+# Sidebar filters
+st.sidebar.header("Filtros")
+modelos = existing_data["Modelo"].unique()
+modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos, default=modelos)
+
+numeros = existing_data["Número"].unique()
+numeros_filtro = st.sidebar.multiselect("Filtrar por Número", numeros, default=numeros)
+
+# Filter the data based on the selected filters
+filtered_data = existing_data[
+    (existing_data["Modelo"].isin(modelos_filtro)) & (existing_data["Número"].isin(numeros_filtro))
+]
+
 # Display shoes information separately
-for index, row in existing_data.iterrows():
+for index, row in filtered_data.iterrows():
     st.subheader(f"{row['Modelo']}")
     st.text(f"Número: {row['Número']}")
     
@@ -33,8 +46,7 @@ for index, row in existing_data.iterrows():
     st.text(f"Estoque: {row['Estoque']}")
     
     # Quantity input for adding or reducing stock
-    
-    quantity = st.number_input(f"ajuste de stock {row['Modelo']}", value=0, step=1)
+    quantity = st.number_input(f"Ajustar Estoque para '{row['Modelo']}' (Digite um valor positivo para adicionar e negativo para reduzir):", value=0, step=1)
 
     # Update the inventory if quantity is provided
     if quantity != 0:
