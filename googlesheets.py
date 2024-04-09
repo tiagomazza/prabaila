@@ -83,7 +83,6 @@ if pagina_selecionada == "Vendas":
 
 # Página Reservas
 elif pagina_selecionada == "Reservas":
-    # Copiar o código da página Vendas
     # Fetch existing shoes data
     existing_data = conn.read(worksheet="Shoes", usecols=list(range(6)), ttl=5)
     existing_data = existing_data.dropna(how="all")
@@ -138,9 +137,25 @@ elif pagina_selecionada == "Reservas":
             updated_stock = row['Estoque'] + quantity
             existing_data.at[index, 'Estoque'] = updated_stock
 
-    # Update Google Sheets with the updated inventory
+            # Adding a text input field to enter content for Vendas workbook
+            text_input = st.text_input("Conteúdo para Vendas:", "")
+
+    # Update Google Sheets with the updated inventory and content for Vendas workbook
     if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
         conn.update(worksheet="Shoes", data=existing_data)
         st.success("Estoque atualizado com sucesso!")
+
+        # Writing the content to the Vendas workbook
+        vendas_content = {
+            "Conteúdo para Vendas": [text_input] * len(filtered_data),
+            "Modelo": filtered_data["Modelo"],
+            "Número": filtered_data["Número"],
+            "Descrição": filtered_data["Descrição"],
+            "Preço": filtered_data["Preço"],
+            "Estoque": filtered_data["Estoque"]
+        }
+        vendas_df = pd.DataFrame(vendas_content)
+        conn.append(worksheet="Vendas", data=vendas_df)
+
         # Reload the page after updating the inventory
         st.experimental_rerun()
