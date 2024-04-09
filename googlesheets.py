@@ -83,7 +83,6 @@ if pagina_selecionada == "Vendas":
 
 # Página Reservas
 elif pagina_selecionada == "Reservas":
-    # Copiar o código da página Vendas
     # Fetch existing shoes data
     existing_data = conn.read(worksheet="Shoes", usecols=list(range(6)), ttl=5)
     existing_data = existing_data.dropna(how="all")
@@ -133,14 +132,12 @@ elif pagina_selecionada == "Reservas":
         # Quantity input for adding or reducing stock
         quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
 
+        # Text area to enter content for Vendas workbook
+        unique_key = f"text_area_{index}"  # Unique key for each text area
+        text_input = st.text_area("Conteúdo para Vendas:", key=unique_key)
+
         # Update the inventory if quantity is provided
         if quantity != 0:
             updated_stock = row['Estoque'] + quantity
             existing_data.at[index, 'Estoque'] = updated_stock
 
-    # Update Google Sheets with the updated inventory
-    if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
-        conn.update(worksheet="Shoes", data=existing_data)
-        st.success("Estoque atualizado com sucesso!")
-        # Reload the page after updating the inventory
-        st.experimental_rerun()
