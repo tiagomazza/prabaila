@@ -2,10 +2,6 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
-# Função para converter números em strings sem .0
-def format_number(number):
-    return str(int(number))
-
 # Imagem para exibir no menu lateral
 menu_lateral_imagem = "https://acdn.mitiendanube.com/stores/003/310/899/themes/common/logo-1595099445-1706530812-af95f05363b68e950e5bd6a386042dd21706530812-320-0.webp"
 
@@ -30,14 +26,14 @@ existing_data["Descrição"] = existing_data["Descrição"].astype(str)
 # Sidebar filters
 st.sidebar.header("Filtros")
 modelos = existing_data["Modelo"].unique()
-modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", [format_number(m) for m in modelos], default=[format_number(m) for m in modelos])
+modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(int), default=modelos.astype(int))
 
 numeros = existing_data["Número"].unique()
-numeros_filtro = st.sidebar.multiselect("Filtrar por Número", [format_number(n) for n in numeros], default=[format_number(n) for n in numeros])
+numeros_filtro = st.sidebar.multiselect("Filtrar por Número", numeros.astype(int), default=numeros.astype(int))
 
 # Filter the data based on the selected filters
 filtered_data = existing_data[
-    (existing_data["Modelo"].isin(modelos_filtro)) & (existing_data["Número"].isin(numeros_filtro))
+    (existing_data["Modelo"].astype(int).isin(modelos_filtro)) & (existing_data["Número"].astype(int).isin(numeros_filtro))
 ]
 
 # Add a toggle button to show/hide shoes with zero stock
@@ -51,12 +47,6 @@ if not show_zero_stock:
 total_stock = filtered_data["Estoque"].sum()
 st.sidebar.header("Total de Estoque")
 st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
-
-# Link para a segunda página
-st.sidebar.markdown("---")
-st.sidebar.markdown("### Ir para a Segunda Página")
-if st.sidebar.button("Segunda Página"):
-    st.markdown("Você foi para a Segunda Página!")
 
 # Display shoes information separately
 for index, row in filtered_data.iterrows():
@@ -74,14 +64,4 @@ for index, row in filtered_data.iterrows():
     # Quantity input for adding or reducing stock
     quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
 
-    # Update the inventory if quantity is provided
-    if quantity != 0:
-        updated_stock = row['Estoque'] + quantity
-        existing_data.at[index, 'Estoque'] = updated_stock
-
-# Update Google Sheets with the updated inventory
-if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
-    conn.update(worksheet="Shoes", data=existing_data)
-    st.success("Estoque atualizado com sucesso!")
-    # Reload the page after updating the inventory
-    st.experimental_rerun()
+    # Updat
