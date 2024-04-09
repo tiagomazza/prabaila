@@ -51,15 +51,15 @@ st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
 # Display shoes information separately
 for index, row in filtered_data.iterrows():
     st.subheader(f"{row['Modelo']}")
-    st.text(f"Número: {int(row['Número'])}")  # Remove .0
+    st.markdown(f"**Número:** {int(row['Número'])}")  # Remove .0 and make bold
     # Display the image from the URL
     if row['Imagem']:
         st.image(row['Imagem'])
     else:
         st.text("Imagem não disponível")
-    st.text(f"Descrição: {row['Descrição']}")
-    st.text(f"Preço: €{int(row['Preço'])}")  # Displaying price in €
-    st.text(f"Estoque: {int(row['Estoque'])}")  # Remove .0
+    st.markdown(f"**Descrição:** {row['Descrição']}")  # Make bold
+    st.markdown(f"**Preço:** €{int(row['Preço'])}")  # Displaying price in € and make bold
+    st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
 
     # Quantity input for adding or reducing stock
     quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
