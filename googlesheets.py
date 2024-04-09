@@ -50,7 +50,7 @@ if pagina_selecionada == "Vendas":
 
     # Display total stock count in the sidebar
     total_stock = filtered_data["Estoque"].sum()
-    st.sidebar.header("Total de Estoque")
+    st.sidebar.header("Total do Estoque:")
     st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
 
     # Display shoes information separately
