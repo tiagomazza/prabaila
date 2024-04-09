@@ -132,8 +132,8 @@ elif pagina_selecionada == "Reservas":
         # Quantity input for adding or reducing stock
         quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
 
-        # Adding a text input field to enter content for Vendas workbook
-        text_input = st.text_input("Conteúdo para Vendas:", "")
+        # Adding a text area to enter content for Vendas workbook
+        text_input = st.text_area("Conteúdo para Vendas:", "")
 
         # Update the inventory if quantity is provided
         if quantity != 0:
