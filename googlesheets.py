@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
+import datetime
 
 # Imagem para exibir no menu lateral
 menu_lateral_imagem = "https://acdn.mitiendanube.com/stores/003/310/899/themes/common/logo-1595099445-1706530812-af95f05363b68e950e5bd6a386042dd21706530812-320-0.webp"
@@ -62,12 +63,31 @@ for index, row in filtered_data.iterrows():
     st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
 
     # Quantity input for adding or reducing stock
-    quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, width=200)  # Reducing width
+    quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
+
+    # Text input for writing something
+    text_input = st.text_input("Algo a escrever:", "")
 
     # Update the inventory if quantity is provided
     if quantity != 0:
         updated_stock = row['Estoque'] + quantity
         existing_data.at[index, 'Estoque'] = updated_stock
+
+        # Get current date/time
+        current_datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Write to the "vendas" worksheet
+        vendas_data = {
+            "Modelo": [row["Modelo"]],
+            "Número": [row["Número"]],
+            "Descrição": [row["Descrição"]],
+            "Preço": [row["Preço"]],
+            "Estoque": [updated_stock],
+            "Data/Hora": [current_datetime],
+            "Texto": [text_input]
+        }
+        vendas_df = pd.DataFrame(vendas_data)
+        conn.append(worksheet="vendas", data=vendas_df)
 
 # Update Google Sheets with the updated inventory
 if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
