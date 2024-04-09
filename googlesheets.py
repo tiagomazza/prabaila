@@ -74,11 +74,9 @@ if pagina_selecionada == "Vendas":
             updated_stock = row['Estoque'] + quantity
             existing_data.at[index, 'Estoque'] = updated_stock
 
-            # Update Google Sheets with the updated inventory
-            conn.update(worksheet="Shoes", data=existing_data)
-
     # Update Google Sheets with the updated inventory
-    if st.button("Atualizar Estoque"):  # Moved button below the stock adjustment field
+    if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
+        conn.update(worksheet="Shoes", data=existing_data)
         st.success("Estoque atualizado com sucesso!")
         # Reload the page after updating the inventory
         st.experimental_rerun()
