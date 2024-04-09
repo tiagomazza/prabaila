@@ -62,7 +62,7 @@ for index, row in filtered_data.iterrows():
     st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
 
     # Quantity input for adding or reducing stock
-    quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
+    quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, width=200)  # Reducing width
 
     # Update the inventory if quantity is provided
     if quantity != 0:
