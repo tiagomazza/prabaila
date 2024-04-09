@@ -132,7 +132,7 @@ elif pagina_selecionada == "Reservas":
         # Quantity input for adding or reducing stock
         quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
 
-        # Adding a text area to enter content for Vendas workbook
+        # Text area to enter content for Vendas workbook
         unique_key = f"text_area_{index}"  # Unique key for each text area
         text_input = st.text_area("Conteúdo para Vendas:", key=unique_key)
 
@@ -141,15 +141,12 @@ elif pagina_selecionada == "Reservas":
             updated_stock = row['Estoque'] + quantity
             existing_data.at[index, 'Estoque'] = updated_stock
 
-    # Update Google Sheets with the updated inventory and content for Vendas workbook
-    if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
-        conn.update(worksheet="Shoes", data=existing_data)
-        st.success("Estoque atualizado com sucesso!")
+            # Update Google Sheets with the updated inventory
+            conn.update(worksheet="Shoes", data=existing_data)
 
-        # Writing the content to the Vendas workbook
-        for index, row in filtered_data.iterrows():
+            # Writing the content to the Vendas workbook
             vendas_content = {
-                "Conteúdo para Vendas": [text_input] * len(filtered_data),
+                "Conteúdo para Vendas": [text_input],
                 "Modelo": row["Modelo"],
                 "Número": row["Número"],
                 "Descrição": row["Descrição"],
@@ -159,5 +156,5 @@ elif pagina_selecionada == "Reservas":
             vendas_df = pd.DataFrame(vendas_content)
             conn.append(worksheet="Vendas", data=vendas_df)
 
-        # Reload the page after updating the inventory
-        st.experimental_rerun()
+    # Reload the page after updating the inventory
+    st.experimental_rerun()
