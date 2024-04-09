@@ -66,7 +66,8 @@ for index, row in filtered_data.iterrows():
     quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
 
     # Text input for writing something
-    text_input = st.text_input("Algo a escrever:", "")
+    text_input_id = f"text_input_{index}"  # Unique ID for each text input
+    text_input = st.text_input(f"Algo a escrever ({row['Modelo']})", key=text_input_id)
 
     # Update the inventory if quantity is provided
     if quantity != 0:
