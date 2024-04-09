@@ -1,98 +1,68 @@
 import streamlit as st
-from streamlit_gsheets import GSheetsConnection
 import pandas as pd
+from google.oauth2 import service_account
+import gspread
+from gspread_dataframe import set_with_dataframe
 import datetime
 
-# Imagem para exibir no menu lateral
-menu_lateral_imagem = "https://acdn.mitiendanube.com/stores/003/310/899/themes/common/logo-1595099445-1706530812-af95f05363b68e950e5bd6a386042dd21706530812-320-0.webp"
+# Carregar as credenciais do arquivo JSON
+credentials = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"]
+)
 
-# Exibir imagem no menu lateral
-st.sidebar.image(menu_lateral_imagem, use_column_width=True)
+# Conectar com o Google Sheets
+gc = gspread.authorize(credentials)
 
-# Display Title and Description
-st.title("🌟Loja da Quinta🌵")
-st.markdown("Sistema de controle de modelos.")
+# Abrir a planilha
+sh = gc.open_by_key("<ID_da_planilha>")
 
-# Establishing a Google Sheets connection
-conn = st.connection("gsheets", type=GSheetsConnection)
+# Escolher a aba "Shoes" e converter para DataFrame
+existing_data = pd.DataFrame(sh.worksheet("Shoes").get_all_records())
 
-# Fetch existing shoes data
-existing_data = conn.read(worksheet="Shoes", usecols=list(range(6)), ttl=5)
-existing_data = existing_data.dropna(how="all")
-
-# Convert "Modelo" and "Descrição" columns to string
-existing_data["Modelo"] = existing_data["Modelo"].astype(str)
-existing_data["Descrição"] = existing_data["Descrição"].astype(str)
-
-# Sidebar filters
+# Filtros
 st.sidebar.header("Filtros")
-modelos = existing_data["Modelo"].unique()
-modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos, default=modelos)
+modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", existing_data["Modelo"].unique(), existing_data["Modelo"].unique())
+numeros_filtro = st.sidebar.multiselect("Filtrar por Número", existing_data["Número"].unique(), existing_data["Número"].unique())
 
-numeros = existing_data["Número"].unique()
-numeros_filtro = st.sidebar.multiselect("Filtrar por Número", numeros, default=numeros)
-
-# Filter the data based on the selected filters
+# Aplicar filtros
 filtered_data = existing_data[
-    (existing_data["Modelo"].isin(modelos_filtro)) & (existing_data["Número"].isin(numeros_filtro))
+    (existing_data["Modelo"].isin(modelos_filtro)) & 
+    (existing_data["Número"].isin(numeros_filtro))
 ]
 
-# Add a toggle button to show/hide shoes with zero stock
-show_zero_stock = st.sidebar.checkbox("Mostrar sem stock")
-
-# Apply filter to show/hide shoes with zero stock
-if not show_zero_stock:
-    filtered_data = filtered_data[filtered_data["Estoque"] > 0]
-
-# Display total stock count in the sidebar
+# Mostrar o total de estoque
 total_stock = filtered_data["Estoque"].sum()
 st.sidebar.header("Total de Estoque")
-st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
+st.sidebar.write(str(total_stock).split('.')[0])  # Mostrar estoque sem .0
 
-# Display shoes information separately
-for index, row in filtered_data.iterrows():
-    st.subheader(f"{row['Modelo']}")
-    st.markdown(f"**Número:** {int(row['Número'])}")  # Remove .0 and make bold
-    # Display the image from the URL
-    if row['Imagem']:
-        st.image(row['Imagem'])
-    else:
-        st.text("Imagem não disponível")
-    st.markdown(f"**Descrição:** {row['Descrição']}")  # Make bold
-    st.markdown(f"**Preço:** €{int(row['Preço'])}")  # Displaying price in € and make bold
-    st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
-
-    # Quantity input for adding or reducing stock
-    quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
-
-    # Text input for writing something
-    text_input_id = f"text_input_{index}"  # Unique ID for each text input
-    text_input = st.text_input(f"Algo a escrever ({row['Modelo']})", key=text_input_id)
-
-    # Update the inventory if quantity is provided
-    if quantity != 0:
-        updated_stock = row['Estoque'] + quantity
-        existing_data.at[index, 'Estoque'] = updated_stock
-
-        # Get current date/time
-        current_datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        # Write to the "vendas" worksheet
-        vendas_data = {
-            "Modelo": [row["Modelo"]],
-            "Número": [row["Número"]],
-            "Descrição": [row["Descrição"]],
-            "Preço": [row["Preço"]],
-            "Estoque": [updated_stock],
-            "Data/Hora": [current_datetime],
-            "Texto": [text_input]
-        }
-        vendas_df = pd.DataFrame(vendas_data)
-        conn.append(worksheet="vendas", data=vendas_df)
-
-# Update Google Sheets with the updated inventory
-if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
-    conn.update(worksheet="Shoes", data=existing_data)
+# Atualizar estoque
+if st.sidebar.button("Atualizar Estoque"):
+    # Atualizar a planilha "Shoes"
+    sh.worksheet("Shoes").update([filtered_data.columns.values.tolist()] + filtered_data.values.tolist())
     st.success("Estoque atualizado com sucesso!")
-    # Reload the page after updating the inventory
-    st.experimental_rerun()
+
+# Adicionar campo de texto
+st.sidebar.header("Registrar Venda")
+modelo = st.sidebar.selectbox("Modelo", filtered_data["Modelo"].unique())
+numero = st.sidebar.selectbox("Número", filtered_data[filtered_data["Modelo"] == modelo]["Número"].unique())
+quantidade = st.sidebar.number_input("Quantidade", value=1, min_value=1)
+texto = st.sidebar.text_input("Informações adicionais", "")
+
+# Registrar a venda
+if st.sidebar.button("Registrar Venda"):
+    # Obter a data e hora atual
+    current_datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    # Criar registro de venda
+    venda = {
+        "Modelo": [modelo],
+        "Número": [numero],
+        "Quantidade": [quantidade],
+        "Data/Hora": [current_datetime],
+        "Texto": [texto]
+    }
+    
+    # Adicionar registro de venda à planilha "Vendas"
+    venda_df = pd.DataFrame(venda)
+    set_with_dataframe(sh.worksheet("Vendas"), venda_df, include_index=False, include_column_header=False)
+    st.success("Venda registrada com sucesso!")
