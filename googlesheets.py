@@ -26,14 +26,14 @@ existing_data["Descrição"] = existing_data["Descrição"].astype(str)
 # Sidebar filters
 st.sidebar.header("Filtros")
 modelos = existing_data["Modelo"].unique()
-modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(int), default=modelos.astype(int))
+modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
 
 numeros = existing_data["Número"].unique()
 numeros_filtro = st.sidebar.multiselect("Filtrar por Número", numeros.astype(int), default=numeros.astype(int))
 
 # Filter the data based on the selected filters
 filtered_data = existing_data[
-    (existing_data["Modelo"].astype(int).isin(modelos_filtro)) & (existing_data["Número"].astype(int).isin(numeros_filtro))
+    (existing_data["Modelo"].isin(modelos_filtro)) & (existing_data["Número"].isin(numeros_filtro))
 ]
 
 # Add a toggle button to show/hide shoes with zero stock
@@ -58,10 +58,20 @@ for index, row in filtered_data.iterrows():
     else:
         st.text("Imagem não disponível")
     st.markdown(f"**Descrição:** {row['Descrição']}")  # Make bold
-    st.markdown(f"**Preço:** €{int(row['Preço'])}")  # Displaying price in € and make bold
+    st.markdown(f"**Preço:** {int(row['Preço'])}€")  # Displaying price in € and make bold
     st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
 
     # Quantity input for adding or reducing stock
     quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
 
-    # Updat
+    # Update the inventory if quantity is provided
+    if quantity != 0:
+        updated_stock = row['Estoque'] + quantity
+        existing_data.at[index, 'Estoque'] = updated_stock
+
+# Update Google Sheets with the updated inventory
+if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
+    conn.update(worksheet="Shoes", data=existing_data)
+    st.success("Estoque atualizado com sucesso!")
+    # Reload the page after updating the inventory
+    st.experimental_rerun()
