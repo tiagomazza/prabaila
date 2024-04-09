@@ -132,13 +132,13 @@ elif pagina_selecionada == "Reservas":
         # Quantity input for adding or reducing stock
         quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
 
+        # Adding a text input field to enter content for Vendas workbook
+        text_input = st.text_input("Conteúdo para Vendas:", "")
+
         # Update the inventory if quantity is provided
         if quantity != 0:
             updated_stock = row['Estoque'] + quantity
             existing_data.at[index, 'Estoque'] = updated_stock
-
-            # Adding a text input field to enter content for Vendas workbook
-            text_input = st.text_input("Conteúdo para Vendas:", "")
 
     # Update Google Sheets with the updated inventory and content for Vendas workbook
     if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
