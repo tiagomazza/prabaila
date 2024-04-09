@@ -3,7 +3,7 @@ from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
 # Imagem para exibir no menu lateral
-menu_lateral_imagem = "https://aborgesdoamaral.pt/wp-content/uploads/2021/04/marca-de-75-anos.png"
+menu_lateral_imagem = "https://wp06.dnscpanel.com:2083/cpsess5143900391/frontend/jupiter/filemanager/showfile.html?file=logo_quinta_clandestina.png"
 
 # Exibir imagem no menu lateral
 st.sidebar.image(menu_lateral_imagem, use_column_width=True)
