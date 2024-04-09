@@ -133,7 +133,8 @@ elif pagina_selecionada == "Reservas":
         quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
 
         # Adding a text area to enter content for Vendas workbook
-        text_input = st.text_area("Conteúdo para Vendas:", "")
+        unique_key = f"text_area_{index}"  # Unique key for each text area
+        text_input = st.text_area("Conteúdo para Vendas:", key=unique_key)
 
         # Update the inventory if quantity is provided
         if quantity != 0:
@@ -146,16 +147,17 @@ elif pagina_selecionada == "Reservas":
         st.success("Estoque atualizado com sucesso!")
 
         # Writing the content to the Vendas workbook
-        vendas_content = {
-            "Conteúdo para Vendas": [text_input] * len(filtered_data),
-            "Modelo": filtered_data["Modelo"],
-            "Número": filtered_data["Número"],
-            "Descrição": filtered_data["Descrição"],
-            "Preço": filtered_data["Preço"],
-            "Estoque": filtered_data["Estoque"]
-        }
-        vendas_df = pd.DataFrame(vendas_content)
-        conn.append(worksheet="Vendas", data=vendas_df)
+        for index, row in filtered_data.iterrows():
+            vendas_content = {
+                "Conteúdo para Vendas": [text_input] * len(filtered_data),
+                "Modelo": row["Modelo"],
+                "Número": row["Número"],
+                "Descrição": row["Descrição"],
+                "Preço": row["Preço"],
+                "Estoque": row["Estoque"]
+            }
+            vendas_df = pd.DataFrame(vendas_content)
+            conn.append(worksheet="Vendas", data=vendas_df)
 
         # Reload the page after updating the inventory
         st.experimental_rerun()
