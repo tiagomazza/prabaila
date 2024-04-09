@@ -46,23 +46,21 @@ if not show_zero_stock:
 # Display total stock count in the sidebar
 total_stock = filtered_data["Estoque"].sum()
 st.sidebar.header("Total de Estoque")
-st.sidebar.write(total_stock)
+st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
 
 # Display shoes information separately
 for index, row in filtered_data.iterrows():
     st.subheader(f"{row['Modelo']}")
-    st.text(f"Número: {row['Número']}")
-    
+    st.text(f"Número: {int(row['Número'])}")  # Remove .0
     # Display the image from the URL
     if row['Imagem']:
         st.image(row['Imagem'])
     else:
         st.text("Imagem não disponível")
-    
     st.text(f"Descrição: {row['Descrição']}")
-    st.text(f"Preço: R${row['Preço']}")
-    st.text(f"Estoque: {row['Estoque']}")
-    
+    st.text(f"Preço: €{int(row['Preço'])}")  # Displaying price in €
+    st.text(f"Estoque: {int(row['Estoque'])}")  # Remove .0
+
     # Quantity input for adding or reducing stock
     quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
 
@@ -72,6 +70,8 @@ for index, row in filtered_data.iterrows():
         existing_data.at[index, 'Estoque'] = updated_stock
 
 # Update Google Sheets with the updated inventory
-if st.button("Atualizar Estoque"):
+if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
     conn.update(worksheet="Shoes", data=existing_data)
     st.success("Estoque atualizado com sucesso!")
+    # Reload the page after updating the inventory
+    st.experimental_rerun()
