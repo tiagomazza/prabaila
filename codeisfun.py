@@ -20,16 +20,16 @@ if st.button("New Entry"):
     # Get existing data from the worksheet
     existing_data = conn.query('SELECT * FROM reservas;')
 
-    if existing_data:
+    if not existing_data.empty:
         # Combine existing data with new data
-        updated_data = existing_data + data_to_insert
+        updated_data = existing_data.append(data_to_insert, ignore_index=True)
     else:
         # If no existing data, use only new data
         updated_data = data_to_insert
 
     # Write updated data back to the worksheet, overwriting existing data
     conn.clear(worksheet="reservas")
-    conn.create(data=updated_data, worksheet="reservas")
+    conn.create(data=updated_data.values.tolist(), worksheet="reservas")
     st.success("New Entry Added 🎉")
 
 if st.button("Calculate Total Orders Sum"):
