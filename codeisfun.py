@@ -30,12 +30,12 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 # Placeholder for orders DataFrame
 orders_df = pd.DataFrame()
 
-# Taking actions based on user input
-if st.button("New Order"):
-    new_order_df = create_custom_dataframe()
-    if not new_order_df.empty:
-        orders_df = pd.concat([orders_df, new_order_df], ignore_index=True)
-        st.success("Order Added 🎉")
+# Displaying the form and processing user input
+st.write("Add New Order:")
+new_order_df = create_custom_dataframe()
+if not new_order_df.empty:
+    orders_df = pd.concat([orders_df, new_order_df], ignore_index=True)
+    st.success("Order Added 🎉")
 
 # Displaying current orders DataFrame
 if not orders_df.empty:
