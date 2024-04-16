@@ -15,16 +15,10 @@ if st.button("New Entry"):
     new_entry['OrderDate'] = st.date_input("OrderDate")
 
     # Prepare the data for insertion
-    data_to_insert = [list(new_entry.values())]
+    data_to_insert = [list(new_entry.values())]  # Convert values to list for a single row
 
-    # Get existing data from the worksheet
-    existing_data = conn.query('SELECT * FROM reservas;')
-
-    # Combine existing data with new data
-    updated_data = existing_data + data_to_insert
-
-    # Write updated data back to the worksheet
-    conn.create(data=updated_data, worksheet="reservas")
+    # Write new entry to Google Sheets
+    conn.create(data=data_to_insert, worksheet="reservas")
     st.success("New Entry Added 🎉")
 
 if st.button("Calculate Total Orders Sum"):
