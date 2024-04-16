@@ -20,7 +20,10 @@ def create_custom_dataframe():
             'TotalPrice': [total_price],
             'OrderDate': [order_date.strftime('%Y-%m-%d')]
         }
-        return pd.DataFrame(order_data)
+        new_order_df = pd.DataFrame(order_data)
+        conn.create(worksheet="Orders", data=new_order_df, append_row=True)
+        st.success("Order Added 🎉")
+        return new_order_df
     else:
         return pd.DataFrame()
 
@@ -35,7 +38,6 @@ st.write("Add New Order:")
 new_order_df = create_custom_dataframe()
 if not new_order_df.empty:
     orders_df = pd.concat([orders_df, new_order_df], ignore_index=True)
-    st.success("Order Added 🎉")
 
 # Displaying current orders DataFrame
 if not orders_df.empty:
