@@ -52,3 +52,11 @@ if not orders_df.empty:
             st.success("Worksheet Updated 🎉")
         except Exception as e:
             st.error(f"Error: {e}")
+
+# Button to write "1" in the first row of the "Reservas" sheet
+if st.button("Write '1' to Reservas Sheet"):
+    try:
+        conn.create(worksheet="Reservas", data=pd.DataFrame({'Reserva': [1]}))
+        st.success("Value '1' written to Reservas Sheet 🎉")
+    except Exception as e:
+        st.error(f"Error: {e}")
