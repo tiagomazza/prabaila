@@ -48,7 +48,7 @@ if not orders_df.empty:
     confirm_button = st.button("Confirm")
     if confirm_button:
         try:
-            conn.create(worksheet="Orders", data=orders_df)
-            st.success("Worksheet Created 🎉")
+            conn.create(worksheet="Orders", data=orders_df, append_row=True)
+            st.success("Worksheet Updated 🎉")
         except Exception as e:
             st.error(f"Error: {e}")
