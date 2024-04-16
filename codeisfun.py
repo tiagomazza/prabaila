@@ -4,15 +4,20 @@ from streamlit_gsheets import GSheetsConnection
 
 st.title("Google Sheets as a DataBase")
 
+# Function to get the number of rows in "Reservas" sheet
+def get_num_rows():
+    try:
+        reservas_sheet = conn.get(worksheet="Reservas")
+        return len(reservas_sheet.dataframe())
+    except Exception as e:
+        st.error(f"Error: {e}")
+        return 0
+
 # Function to write data to "Reservas" sheet
 def write_to_reservas(data):
     try:
-        # Get the number of rows in the "Reservas" sheet
-        reservas_sheet = conn.get(worksheet="Reservas")
-        num_rows = len(reservas_sheet)
-
-        # Append data to the next row
-        conn.append(worksheet="Reservas", data=data, index=num_rows + 1)
+        num_rows = get_num_rows()
+        conn.append(worksheet="Reservas", data=data, index=num_rows + 2)  # Add data to the next row
         st.success("Data written to Reservas Sheet 🎉")
     except Exception as e:
         st.error(f"Error: {e}")
