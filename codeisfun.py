@@ -43,19 +43,8 @@ if not orders_df.empty:
     st.write("Current Orders:")
     st.dataframe(orders_df)
 
-if st.button("Confirm"):
-    if not orders_df.empty:
+# Confirm button only appears if there are orders to confirm
+if not orders_df.empty:
+    if st.button("Confirm"):
         conn.create(worksheet="Orders", data=orders_df)
         st.success("Worksheet Created 🎉")
-    else:
-        st.warning("No orders to confirm.")
-        
-if st.button("Calculate Total Orders Sum"):
-    sql = 'SELECT SUM("TotalPrice") as "TotalOrdersPrice" FROM Orders;'
-    total_orders = conn.query(sql=sql)  # default ttl=3600 seconds / 60 min
-    st.dataframe(total_orders)
-
-if st.button("Clear Orders"):
-    conn.clear(worksheet="Orders")
-    orders_df = pd.DataFrame()
-    st.success("Orders Cleared 🧹")
