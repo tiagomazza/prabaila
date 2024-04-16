@@ -1,11 +1,10 @@
 import streamlit as st
-from streamlit_gsheets import GSheetsConnection
+from streamlit_gsheets import GSheetsDB
 
 st.title("Google Sheets as a DataBase")
 
-st.write("CRUD Operations:")
-# Establishing a Google Sheets connection
-conn = st.connection("gsheets", type=GSheetsConnection)
+# Create a connection to Google Sheets
+db = GSheetsDB()
 
 if st.button("New Entry"):
     new_entry = {}
@@ -16,14 +15,15 @@ if st.button("New Entry"):
     new_entry['OrderDate'] = st.date_input("OrderDate")
 
     # Write new entry to Google Sheets
-    conn.write(data=[new_entry], worksheet="Orders")
+    db.write(new_entry, "Orders")
     st.success("New Entry Added 🎉")
 
 if st.button("Calculate Total Orders Sum"):
-    sql = 'SELECT SUM("TotalPrice") as "TotalOrdersPrice" FROM Orders;'
-    total_orders = conn.query(sql=sql)  # default ttl=3600 seconds / 60 min
-    st.dataframe(total_orders)
+    # Query the total sum of TotalPrice from the Orders worksheet
+    total_orders = db.query("SELECT SUM(TotalPrice) FROM Orders;")
+    st.write("Total Orders Price:", total_orders)
 
 if st.button("Clear Worksheet"):
-    conn.clear(worksheet="Orders")
+    # Clear the Orders worksheet
+    db.clear("Orders")
     st.success("Worksheet Cleared 🧹")
