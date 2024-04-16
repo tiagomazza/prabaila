@@ -21,7 +21,6 @@ def create_custom_dataframe():
             'OrderDate': [order_date.strftime('%Y-%m-%d')]
         }
         new_order_df = pd.DataFrame(order_data)
-        conn.create(worksheet="Orders", data=new_order_df, append_row=True)
         st.success("Order Added 🎉")
         return new_order_df
     else:
@@ -44,6 +43,13 @@ if not orders_df.empty:
     st.write("Current Orders:")
     st.dataframe(orders_df)
 
+if st.button("Confirm"):
+    if not orders_df.empty:
+        conn.create(worksheet="Orders", data=orders_df)
+        st.success("Worksheet Created 🎉")
+    else:
+        st.warning("No orders to confirm.")
+        
 if st.button("Calculate Total Orders Sum"):
     sql = 'SELECT SUM("TotalPrice") as "TotalOrdersPrice" FROM Orders;'
     total_orders = conn.query(sql=sql)  # default ttl=3600 seconds / 60 min
