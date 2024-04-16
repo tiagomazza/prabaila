@@ -18,16 +18,16 @@ if st.button("New Entry"):
     data_to_insert = [list(new_entry.values())]
 
     # Write new entry to Google Sheets
-    conn.create(worksheet="Orders", data=data_to_insert)
+    conn.append(data=data_to_insert, worksheet="reservas")
     st.success("New Entry Added 🎉")
 
 if st.button("Calculate Total Orders Sum"):
-    # Query the total sum of TotalPrice from the Orders worksheet
-    sql = 'SELECT SUM("TotalPrice") as "TotalOrdersPrice" FROM Orders;'
+    # Query the total sum of TotalPrice from the reservas worksheet
+    sql = 'SELECT SUM("TotalPrice") as "TotalOrdersPrice" FROM reservas;'
     total_orders = conn.query(sql=sql)  # default ttl=3600 seconds / 60 min
     st.write("Total Orders Price:", total_orders)
 
 if st.button("Clear Worksheet"):
-    # Clear the Orders worksheet
-    conn.clear(worksheet="Orders")
+    # Clear the reservas worksheet
+    conn.clear(worksheet="reservas")
     st.success("Worksheet Cleared 🧹")
