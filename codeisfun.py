@@ -7,7 +7,12 @@ st.title("Google Sheets as a DataBase")
 # Function to write data to "Reservas" sheet
 def write_to_reservas(data):
     try:
-        conn.append(worksheet="Reservas", data=data)
+        # Get the number of rows in the "Reservas" sheet
+        reservas_sheet = conn.get(worksheet="Reservas")
+        num_rows = len(reservas_sheet)
+
+        # Append data to the next row
+        conn.append(worksheet="Reservas", data=data, index=num_rows + 1)
         st.success("Data written to Reservas Sheet 🎉")
     except Exception as e:
         st.error(f"Error: {e}")
