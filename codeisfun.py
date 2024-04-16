@@ -17,8 +17,19 @@ if st.button("New Entry"):
     # Prepare the data for insertion
     data_to_insert = [list(new_entry.values())]  # Convert values to list for a single row
 
-    # Write new entry to Google Sheets
-    conn.create(data=data_to_insert, worksheet="reservas")
+    # Get existing data from the worksheet
+    existing_data = conn.query('SELECT * FROM reservas;')
+
+    if existing_data:
+        # Combine existing data with new data
+        updated_data = existing_data + data_to_insert
+    else:
+        # If no existing data, use only new data
+        updated_data = data_to_insert
+
+    # Write updated data back to the worksheet, overwriting existing data
+    conn.clear(worksheet="reservas")
+    conn.create(data=updated_data, worksheet="reservas")
     st.success("New Entry Added 🎉")
 
 if st.button("Calculate Total Orders Sum"):
