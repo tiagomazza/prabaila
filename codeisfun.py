@@ -33,9 +33,18 @@ st.write("CRUD Operations:")
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 # Taking actions based on user input
-if st.button("New Worksheet"):
+if st.button("New Entry"):
+    new_entry = {}
+    new_entry['OrderID'] = st.number_input("OrderID", min_value=0)
+    new_entry['CustomerName'] = st.text_input("CustomerName")
+    new_entry['ProductList'] = st.text_input("ProductList")
+    new_entry['TotalPrice'] = st.number_input("TotalPrice", min_value=0)
+    new_entry['OrderDate'] = st.date_input("OrderDate")
+
+    # Append new entry to orders dataframe
+    orders = orders.append(new_entry, ignore_index=True)
     conn.create(worksheet="Orders", data=orders)
-    st.success("Worksheet Created 🎉")
+    st.success("New Entry Added 🎉")
 
 if st.button("Calculate Total Orders Sum"):
     sql = 'SELECT SUM("TotalPrice") as "TotalOrdersPrice" FROM Orders;'
