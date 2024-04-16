@@ -27,12 +27,20 @@ def create_custom_dataframe():
 # Establishing a Google Sheets connection
 conn = st.connection("gsheets", type=GSheetsConnection)
 
+# Placeholder for orders DataFrame
+orders_df = pd.DataFrame()
+
 # Taking actions based on user input
 if st.button("New Order"):
     new_order_df = create_custom_dataframe()
     if not new_order_df.empty:
-        conn.create(worksheet="Orders", data=new_order_df)
+        orders_df = pd.concat([orders_df, new_order_df], ignore_index=True)
         st.success("Order Added 🎉")
+
+# Displaying current orders DataFrame
+if not orders_df.empty:
+    st.write("Current Orders:")
+    st.dataframe(orders_df)
 
 if st.button("Calculate Total Orders Sum"):
     sql = 'SELECT SUM("TotalPrice") as "TotalOrdersPrice" FROM Orders;'
@@ -41,4 +49,5 @@ if st.button("Calculate Total Orders Sum"):
 
 if st.button("Clear Orders"):
     conn.clear(worksheet="Orders")
+    orders_df = pd.DataFrame()
     st.success("Orders Cleared 🧹")
