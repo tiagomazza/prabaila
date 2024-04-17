@@ -191,7 +191,7 @@ def active_reservations_page():
         display_existing_data(existing_data)
 
 # Configuração da aplicação
-pagina_selecionada = st.sidebar.radio("Página", ["Active Reservations"])
+#pagina_selecionada = st.sidebar.radio("Página", ["Active Reservations"])
 
 # Determinar qual página exibir com base na seleção do usuário
 if pagina_selecionada == "Active Reservations":
