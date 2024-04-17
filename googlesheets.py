@@ -14,7 +14,7 @@ st.title("🌟Loja da Quinta🌵")
 st.markdown("Sistema de controle de modelos.")
 
 # Sidebar navigation
-pagina_selecionada = st.sidebar.radio("Navegação", ["Stock","Reservation & Discount", "Existing Reservation"])
+pagina_selecionada = st.sidebar.radio("Navegação", ["Stock","Reservation & Discount"])
 
 # Estabelecendo uma conexão com o Google Sheets
 conn = st.connection("gsheets", type=GSheetsConnection)
@@ -153,24 +153,9 @@ if pagina_selecionada == "Reservation & Discount":
                 size = 34
                 additional_info = ""
 
-"""
-if pagina_selecionada == "Existing Reservation":
-    st.title("Active Reservations")
-
-    conn = st.experimental_connection("gsheets", type=GSheetsConnection)
-
-    existing_data = conn.read(worksheet="Reservations", usecols=list(range(6)), ttl=5)
-    existing_data = existing_data.dropna(how="all")
-
-    # Display existing reservation data
-    if not existing_data.empty:
-        st.write(existing_data)
-    else:
-        st.write("No existing reservations.")
-"""
 
 def protected_page():
-    st.sidebar.title("Senha de Acesso")
+    st.sidebar.title("Active Reservations")
     password_input = st.sidebar.text_input("Digite a senha:", type="password")
 
     if password_input == st.secrets["SENHA"]:
