@@ -69,3 +69,10 @@ with st.form(key="vendor_form"):
             products = []
             size = 34
             additional_info = ""
+
+# Display existing reservation data
+st.subheader("Existing Reservations")
+if not existing_data.empty:
+    st.write(existing_data)
+else:
+    st.write("No existing reservations.")
