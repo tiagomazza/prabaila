@@ -21,11 +21,11 @@ PRODUCTS = [
 ]
 
 with st.form(key="vendor_form"):
-    name = st.text_input(label="Name")
+    name = st.text_input(label="Name*")
     email = st.text_input("e-mail")
-    whatsapp = st.text_input("whatsapp")
+    whatsapp = st.text_input("whatsapp with international code")
     products = st.multiselect("Wished shoes", options=PRODUCTS)
-    size = st.slider("Years in Business", 34, 45, 5)
+    size = st.slider("Years in Business", 34, 45, 34)
     additional_info = st.text_area(label="Additional Notes")
 
     # Mark mandatory fields
@@ -36,11 +36,11 @@ with st.form(key="vendor_form"):
     # If the submit button is pressed
     if submit_button:
         # Check if all mandatory fields are filled
-        if not name or not business_type:
+        if not name:
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
-        elif existing_data["CompanyName"].astype(str).str.contains(company_name).any():
-            st.warning("A vendor with this company name already exists.")
+        elif existing_data["Name"].astype(str).str.contains(company_name).any():
+            st.warning("This name already exists.")
             st.stop()
         else:
             # Create a new row of vendor data
