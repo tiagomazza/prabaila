@@ -61,3 +61,11 @@ with st.form(key="vendor_form"):
             conn.update(worksheet="Reservations", data=updated_df)
 
             st.success("Details successfully submitted!")
+
+            # Clear the form fields after submission
+            name = ""
+            email = ""
+            whatsapp = ""
+            products = []
+            size = 34
+            additional_info = ""
