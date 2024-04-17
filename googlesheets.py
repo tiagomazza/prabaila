@@ -152,12 +152,6 @@ if pagina_selecionada == "Reservation & Discount":
                 size = 34
                 additional_info = ""
 
-    # Display existing reservation data
-    st.subheader("Existing Reservations")
-    if not existing_data.empty:
-        st.write(existing_data)
-    else:
-        st.write("No existing reservations.")
 
 if pagina_selecionada == "Existing Reservation":
     st.title("Active Reservations")
@@ -168,7 +162,6 @@ if pagina_selecionada == "Existing Reservation":
     existing_data = existing_data.dropna(how="all")
 
     # Display existing reservation data
-    st.subheader("Existing Reservations")
     if not existing_data.empty:
         st.write(existing_data)
     else:
