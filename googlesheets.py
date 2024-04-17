@@ -82,79 +82,78 @@ if pagina_selecionada == "Vendas":
         st.experimental_rerun()
 
 # Página Reservas
-elif pagina_selecionada == "Reservas":
-    # Fetch existing shoes data
-    existing_data = conn.read(worksheet="Shoes", usecols=list(range(6)), ttl=5)
-    existing_data = existing_data.dropna(how="all")
+st.title("Reservation system")
+st.markdown("Type your data to be advised about new arrivals")
 
-    # Convert "Modelo" and "Descrição" columns to string
-    existing_data["Modelo"] = existing_data["Modelo"].astype(str)
-    existing_data["Descrição"] = existing_data["Descrição"].astype(str)
+conn = st.experimental_connection("gsheets", type=GSheetsConnection)
 
-    # Sidebar filters
-    st.sidebar.header("Filtros")
-    modelos = existing_data["Modelo"].unique()
-    modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
+existing_data = conn.read(worksheet="Reservations", usecols=list(range(6)), ttl=5)
+existing_data = existing_data.dropna(how="all")
 
-    numeros = existing_data["Número"].unique()
-    numeros_filtro = st.sidebar.multiselect("Filtrar por Número", numeros.astype(int), default=numeros.astype(int))
+# List of Business Types and Products
 
-    # Filter the data based on the selected filters
-    filtered_data = existing_data[
-        (existing_data["Modelo"].isin(modelos_filtro)) & (existing_data["Número"].isin(numeros_filtro))
-    ]
+PRODUCTS = [
+    "Light Palha",
+    "Chuteirinha Vegana Preta",
+]
 
-    # Add a toggle button to show/hide shoes with zero stock
-    show_zero_stock = st.sidebar.checkbox("Mostrar sem stock")
+with st.form(key="vendor_form"):
+    name = st.text_input(label="Name*")
+    email = st.text_input("e-mail")
+    whatsapp = st.text_input("whatsapp with international code")
+    products = st.multiselect("Wished shoes", options=PRODUCTS)
+    size = st.slider("Numeração", 34, 45, 34)
+    additional_info = st.text_area(label="Additional Notes")
 
-    # Apply filter to show/hide shoes with zero stock
-    if not show_zero_stock:
-        filtered_data = filtered_data[filtered_data["Estoque"] > 0]
+    # Mark mandatory fields
+    st.markdown("**required*")
 
-    # Display total stock count in the sidebar
-    total_stock = filtered_data["Estoque"].sum()
-    st.sidebar.header("Total de Estoque")
-    st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
+    submit_button = st.form_submit_button(label="Submit Details")
 
-    # Display shoes information separately
-    for index, row in filtered_data.iterrows():
-        st.subheader(f"{row['Modelo']}")
-        st.markdown(f"**Número:** {int(row['Número'])}")  # Remove .0 and make bold
-        # Display the image from the URL
-        if row['Imagem']:
-            st.image(row['Imagem'])
+    # If the submit button is pressed
+    if submit_button:
+        # Check if all mandatory fields are filled
+        if not name:
+            st.warning("Ensure all mandatory fields are filled.")
+            st.stop()
+        elif existing_data["Name"].astype(str).str.contains(name).any():
+            st.warning("This name already exists.")
+            st.stop()
         else:
-            st.text("Imagem não disponível")
-        st.markdown(f"**Descrição:** {row['Descrição']}")  # Make bold
-        st.markdown(f"**Preço:** {int(row['Preço'])}€")  # Displaying price in € and make bold
-        st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
+            # Create a new row of vendor data
+            vendor_data = pd.DataFrame(
+                [
+                    {
+                        "Name": name,
+                        "Email": email,
+                        "Whatsapp": whatsapp,
+                        "Products": ", ".join(products),
+                        "Size": size,
+                        "AdditionalInfo": additional_info,
+                    }
+                ]
+            )
 
-        # Quantity input for adding or reducing stock
-        quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
+            # Add the new vendor data to the existing data
+            updated_df = pd.concat([existing_data, vendor_data], ignore_index=True)
 
-        # Text area to enter content for Vendas workbook
-        unique_key = f"text_area_{index}"  # Unique key for each text area
-        text_input = st.text_area("Conteúdo para Vendas:", key=unique_key)
+            # Update Google Sheets with the new vendor data
+            conn.update(worksheet="Reservations", data=updated_df)
 
-        # Update the inventory if quantity is provided
-        if quantity != 0:
-            updated_stock = row['Estoque'] + quantity
-            existing_data.at[index, 'Estoque'] = updated_stock
+            st.success("Details successfully submitted!")
 
-            # Update Google Sheets with the updated inventory and content for Vendas workbook
-            conn.update(worksheet="Shoes", data=existing_data)
+            # Clear the form fields after submission
+            name = ""
+            email = ""
+            whatsapp = ""
+            products = []
+            size = 34
+            additional_info = ""
 
-            # Writing the content to the Vendas workbook
-            vendas_content = {
-                "Conteúdo para Vendas": [text_input],
-                "Modelo": row["Modelo"],
-                "Número": row["Número"],
-                "Descrição": row["Descrição"],
-                "Preço": row["Preço"],
-                "Estoque": row["Estoque"]
-            }
-            vendas_df = pd.DataFrame(vendas_content)
-            conn.append(worksheet="Vendas", data=vendas_df)
+# Display existing reservation data
+st.subheader("Existing Reservations")
+if not existing_data.empty:
+    st.write(existing_data)
+else:
+    st.write("No existing reservations.")
 
-    # Reload the page after updating the inventory
-    st.experimental_rerun()
