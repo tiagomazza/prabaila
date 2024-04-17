@@ -2,49 +2,7 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
-def protected_page():
-    st.sidebar.title("Senha de Acesso")
-    password_input = st.sidebar.text_input("Digite a senha:", type="password")
 
-    if password_input == st.secrets["SENHA"]:
-        return True
-    else:
-        st.error("Senha incorreta. Por favor, tente novamente.")
-        return False
-
-# Função para carregar os dados existentes
-def load_existing_data(worksheet_name):
-    conn = st.experimental_connection("gsheets", type=GSheetsConnection)
-    existing_data = conn.read(worksheet=worksheet_name, usecols=list(range(6)), ttl=5)
-    return existing_data.dropna(how="all")
-
-# Função para exibir os dados existentes
-def display_existing_data(existing_data):
-    st.subheader("Existing Reservations")
-    if not existing_data.empty:
-        st.write(existing_data)
-    else:
-        st.write("No existing reservations.")
-
-# Página Active Reservations
-def active_reservations_page():
-    st.title("Active Reservations")
-
-    # Proteger a página com uma senha
-    if protected_page():
-        # Carregar os dados existentes
-        existing_data = load_existing_data("Reservations")
-
-        # Exibir os dados existentes
-        display_existing_data(existing_data)
-
-# Configuração da aplicação
-pagina_selecionada = st.sidebar.radio("Página", ["Active Reservations"])
-
-# Determinar qual página exibir com base na seleção do usuário
-if pagina_selecionada == "Active Reservations":
-    active_reservations_page()
-    
 # Imagem para exibir no menu lateral
 menu_lateral_imagem = "https://acdn.mitiendanube.com/stores/003/310/899/themes/common/logo-1595099445-1706530812-af95f05363b68e950e5bd6a386042dd21706530812-320-0.webp"
 
@@ -195,7 +153,7 @@ if pagina_selecionada == "Reservation & Discount":
                 size = 34
                 additional_info = ""
 
-
+"""
 if pagina_selecionada == "Existing Reservation":
     st.title("Active Reservations")
 
@@ -209,4 +167,47 @@ if pagina_selecionada == "Existing Reservation":
         st.write(existing_data)
     else:
         st.write("No existing reservations.")
+"""
 
+def protected_page():
+    st.sidebar.title("Senha de Acesso")
+    password_input = st.sidebar.text_input("Digite a senha:", type="password")
+
+    if password_input == st.secrets["SENHA"]:
+        return True
+    else:
+        st.error("Senha incorreta. Por favor, tente novamente.")
+        return False
+
+# Função para carregar os dados existentes
+def load_existing_data(worksheet_name):
+    conn = st.experimental_connection("gsheets", type=GSheetsConnection)
+    existing_data = conn.read(worksheet=worksheet_name, usecols=list(range(6)), ttl=5)
+    return existing_data.dropna(how="all")
+
+# Função para exibir os dados existentes
+def display_existing_data(existing_data):
+    st.subheader("Existing Reservations")
+    if not existing_data.empty:
+        st.write(existing_data)
+    else:
+        st.write("No existing reservations.")
+
+# Página Active Reservations
+def active_reservations_page():
+    st.title("Active Reservations")
+
+    # Proteger a página com uma senha
+    if protected_page():
+        # Carregar os dados existentes
+        existing_data = load_existing_data("Reservations")
+
+        # Exibir os dados existentes
+        display_existing_data(existing_data)
+
+# Configuração da aplicação
+pagina_selecionada = st.sidebar.radio("Página", ["Active Reservations"])
+
+# Determinar qual página exibir com base na seleção do usuário
+if pagina_selecionada == "Active Reservations":
+    active_reservations_page()
