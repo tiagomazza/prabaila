@@ -12,7 +12,7 @@ def protected_page():
     if password_input == st.secrets["SENHA"]:
         return True
     else:
-        st.error("Senha incorreta. Por favor, tente novamente.")
+        st.error("Digite a senha no sidebar.")
         return False
 
 # Função para carregar os dados existentes
