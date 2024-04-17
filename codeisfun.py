@@ -2,25 +2,16 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
-# Display Title and Description
-st.title("Vendor Management Portal")
-st.markdown("Enter the details of the new vendor below.")
+st.title("Reservation system")
+st.markdown("Type your data to be advised about new arrivals")
 
-# Establishing a Google Sheets connection
 conn = st.experimental_connection("gsheets", type=GSheetsConnection)
 
-# Fetch existing vendors data
-existing_data = conn.read(worksheet="Vendors", usecols=list(range(6)), ttl=5)
+existing_data = conn.read(worksheet="Reservations", usecols=list(range(6)), ttl=5)
 existing_data = existing_data.dropna(how="all")
 
 # List of Business Types and Products
-BUSINESS_TYPES = [
-    "Manufacturer",
-    "Distributor",
-    "Wholesaler",
-    "Retailer",
-    "Service Provider",
-]
+
 PRODUCTS = [
     "Electronics",
     "Apparel",
@@ -29,24 +20,23 @@ PRODUCTS = [
     "Other",
 ]
 
-# Onboarding New Vendor Form
 with st.form(key="vendor_form"):
-    company_name = st.text_input(label="Company Name*")
-    business_type = st.selectbox("Business Type*", options=BUSINESS_TYPES, index=None)
-    products = st.multiselect("Products Offered", options=PRODUCTS)
-    years_in_business = st.slider("Years in Business", 0, 50, 5)
-    onboarding_date = st.date_input(label="Onboarding Date")
+    name = st.text_input(label="Name")
+    email = st.text_input("e-mail")
+    whatsapp = st.text_input("whatsapp")
+    products = st.multiselect("Wished shoes", options=PRODUCTS)
+    size = st.slider("Years in Business", 34, 45, 5)
     additional_info = st.text_area(label="Additional Notes")
 
     # Mark mandatory fields
     st.markdown("**required*")
 
-    submit_button = st.form_submit_button(label="Submit Vendor Details")
+    submit_button = st.form_submit_button(label="Submit Details")
 
     # If the submit button is pressed
     if submit_button:
         # Check if all mandatory fields are filled
-        if not company_name or not business_type:
+        if not name or not business_type:
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
         elif existing_data["CompanyName"].astype(str).str.contains(company_name).any():
@@ -57,11 +47,11 @@ with st.form(key="vendor_form"):
             vendor_data = pd.DataFrame(
                 [
                     {
-                        "CompanyName": company_name,
-                        "BusinessType": business_type,
+                        "Name": name,
+                        "Email": email,
+                        "Whatsapp": whatsapp,
                         "Products": ", ".join(products),
-                        "YearsInBusiness": years_in_business,
-                        "OnboardingDate": onboarding_date.strftime("%Y-%m-%d"),
+                        "Size": size,
                         "AdditionalInfo": additional_info,
                     }
                 ]
@@ -71,6 +61,6 @@ with st.form(key="vendor_form"):
             updated_df = pd.concat([existing_data, vendor_data], ignore_index=True)
 
             # Update Google Sheets with the new vendor data
-            conn.update(worksheet="Vendors", data=updated_df)
+            conn.update(worksheet="Reservations", data=updated_df)
 
-            st.success("Vendor details successfully submitted!")
+            st.success("Details successfully submitted!")
