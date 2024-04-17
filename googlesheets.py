@@ -54,7 +54,7 @@ st.markdown("Sistema de controle de modelos.")
 pagina_selecionada = st.sidebar.radio("Página", ["Stock", "Reservation & Discount", "Active Reservations"])
 
 # Determinar qual página exibir com base na seleção do usuário
-f pagina_selecionada == "Stock":
+if pagina_selecionada == "Stock":
     # Fetch existing shoes data
     existing_data = conn.read(worksheet="Shoes", usecols=list(range(6)), ttl=5)
     existing_data = existing_data.dropna(how="all")
