@@ -13,11 +13,8 @@ existing_data = existing_data.dropna(how="all")
 # List of Business Types and Products
 
 PRODUCTS = [
-    "Electronics",
-    "Apparel",
-    "Groceries",
-    "Software",
-    "Other",
+    "Light Palha",
+    "Chuteirinha Vegana Preta",
 ]
 
 with st.form(key="vendor_form"):
@@ -25,7 +22,7 @@ with st.form(key="vendor_form"):
     email = st.text_input("e-mail")
     whatsapp = st.text_input("whatsapp with international code")
     products = st.multiselect("Wished shoes", options=PRODUCTS)
-    size = st.slider("Years in Business", 34, 45, 34)
+    size = st.slider("Years in Business", 1, 45, 34)
     additional_info = st.text_area(label="Additional Notes")
 
     # Mark mandatory fields
