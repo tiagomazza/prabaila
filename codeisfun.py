@@ -22,7 +22,7 @@ with st.form(key="vendor_form"):
     email = st.text_input("e-mail")
     whatsapp = st.text_input("whatsapp with international code")
     products = st.multiselect("Wished shoes", options=PRODUCTS)
-    size = st.slider("Years in Business", 1, 45, 34)
+    size = st.slider("Years in Business", 34, 45, 34)
     additional_info = st.text_area(label="Additional Notes")
 
     # Mark mandatory fields
@@ -36,7 +36,7 @@ with st.form(key="vendor_form"):
         if not name:
             st.warning("Ensure all mandatory fields are filled.")
             st.stop()
-        elif existing_data["Name"].astype(str).str.contains(company_name).any():
+        elif existing_data["Name"].astype(str).str.contains(name).any():
             st.warning("This name already exists.")
             st.stop()
         else:
