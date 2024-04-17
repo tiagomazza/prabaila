@@ -2,6 +2,7 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
+conn = st.experimental_connection("gsheets", type=GSheetsConnection)
 
 # Função para proteger a página com senha
 def protected_page():
