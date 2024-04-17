@@ -159,7 +159,7 @@ if pagina_selecionada == "Reservation & Discount":
     else:
         st.write("No existing reservations.")
 
-if pagina_selecionada == "Existing Reservations":
+if pagina_selecionada == "Existing Reservation":
     st.title("Active Reservations")
 
     conn = st.experimental_connection("gsheets", type=GSheetsConnection)
