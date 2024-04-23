@@ -104,36 +104,7 @@ if pagina_selecionada == "Stock":
         # Botão para abrir janela abaixo de cada sapato
         button_key = f"details_button_{index}"
         if st.button(f"Movimentar stock do {row['Modelo']}", key=button_key):
-            form_key = f"form_{index}"
-            name = st.text_input(f"Nome do {row['Modelo']}", key=f"name_{index}")
-            valor_pago = st.number_input(f"Valor Pago do {row['Modelo']}", step=0.01, key=f"valor_pago_{index}")
-            metodo_pagamento = st.selectbox(f"Método de Pagamento do {row['Modelo']}", ["Dinheiro", "Cartão de Crédito", "Cartão de Débito"], key=f"metodo_pagamento_{index}")
-
-            # Menu deslizante para o preço com incremento de 5€
-            preco_min = int(row['Preço'])  # Preço mínimo será o preço atual do sapato
-            preco_max = preco_min + 50  # Definindo um preço máximo de 50€ a mais
-            preco_step = 5  # Incremento de 5€
-            novo_preco = st.slider(f"Novo Preço do {row['Modelo']}", min_value=preco_min, max_value=preco_max, step=preco_step, value=preco_min, key=f"novo_preco_{index}")
-
-            submit_button = st.button(f"Registrar Movimentação do {row['Modelo']}", key=f"submit_button_{index}")
-
-            if submit_button:
-                # Criar uma nova entrada de movimentação de estoque
-                new_entry = pd.DataFrame({
-                    "Nome": [name],
-                    "Valor Pago": [valor_pago],
-                    "Método de Pagamento": [metodo_pagamento],
-                    "Preço": [novo_preco]  # Usar o novo preço selecionado
-                })
-
-                # Adicionar a nova entrada ao DataFrame existing_data
-                existing_data = existing_data.append(new_entry, ignore_index=True)
-
-                # Atualizar a planilha com os novos dados
-                conn.update(worksheet="Shoes", data=existing_data)
-
-                st.success("Movimentação de estoque registrada com sucesso!")
-
+            st.experimental_rerun()
 elif pagina_selecionada == "Reservation & Discount":
     # Página Reservas
     st.title("Reservation system")
