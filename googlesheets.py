@@ -164,10 +164,8 @@ elif pagina_selecionada == "Reservation & Discount":
             # Check if all mandatory fields are filled
             if not name:
                 st.warning("Ensure all mandatory fields are filled.")
-                st.stop()
             elif existing_data["Name"].astype(str).str.contains(name).any():
                 st.warning("This name already exists.")
-                st.stop()
             else:
                 # Create a new row of vendor data
                 vendor_data = pd.DataFrame(
