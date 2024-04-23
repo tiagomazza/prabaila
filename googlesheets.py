@@ -88,43 +88,45 @@ if pagina_selecionada == "Stock":
     st.sidebar.header("Total do Estoque:")
     st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
 
-    # Display shoes information separately
-    for index, row in filtered_data.iterrows():
-        st.subheader(f"{row['Modelo']}")
-        st.markdown(f"**Número:** {int(row['Número'])}")  # Remove .0 and make bold
-        # Display the image from the URL
-        if row['Imagem']:
-            st.image(row['Imagem'])
-        else:
-            st.text("Imagem não disponível")
-        st.markdown(f"**Descrição:** {row['Descrição']}")  # Make bold
-        st.markdown(f"**Preço:** {int(row['Preço'])}€")  # Displaying price in € and make bold
-        st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
+ for index, row in filtered_data.iterrows():
+    st.subheader(f"{row['Modelo']}")
+    st.markdown(f"**Número:** {int(row['Número'])}")  # Remove .0 and make bold
+    # Display the image from the URL
+    if row['Imagem']:
+        st.image(row['Imagem'])
+    else:
+        st.text("Imagem não disponível")
+    st.markdown(f"**Descrição:** {row['Descrição']}")  # Make bold
+    st.markdown(f"**Preço:** {int(row['Preço'])}€")  # Displaying price in € and make bold
+    st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
 
-        # Botão para abrir janela abaixo de cada sapato
-        button_key = f"details_button_{index}"
-        if st.button(f"Movimentar stock do {row['Modelo']}", key=button_key):
-            with st.form(key=f"form_{index}"):
-                st.subheader("Movimentação de Estoque")
-                # Adicionar campos para Nome, Valor Pago e Método de Pagamento
-                name = st.text_input("Nome")
-                valor_pago = st.number_input("Valor Pago", step=0.01)
-                metodo_pagamento = st.selectbox("Método de Pagamento", ["Dinheiro", "Cartão de Crédito", "Cartão de Débito"])
+    # Botão para abrir janela abaixo de cada sapato
+    button_key = f"details_button_{index}"
+    if st.button(f"Movimentar stock do {row['Modelo']}", key=button_key):
+        with st.form(key=f"form_{index}"):
+            st.subheader("Movimentação de Estoque")
+            # Adicionar campos para Nome, Valor Pago e Método de Pagamento
+            name = st.text_input("Nome")
+            valor_pago = st.number_input("Valor Pago", step=0.01)
+            metodo_pagamento = st.selectbox("Método de Pagamento", ["Dinheiro", "Cartão de Crédito", "Cartão de Débito"])
 
-                submit_button = st.form_submit_button("Registrar Movimentação")
+            submit_button = st.form_submit_button("Registrar Movimentação")
 
-                if submit_button:
-                    # Adicionar os dados ao final da aba "Registro" da planilha
-                    new_entry = pd.DataFrame({
-                        "Nome": [name],
-                        "Valor Pago": [valor_pago],
-                        "Método de Pagamento": [metodo_pagamento]
-                    })
-                    conn.update(worksheet="Registro", data=new_entry, append=True)
+            if submit_button:
+                # Criar uma nova entrada de movimentação de estoque
+                new_entry = pd.DataFrame({
+                    "Nome": [name],
+                    "Valor Pago": [valor_pago],
+                    "Método de Pagamento": [metodo_pagamento]
+                })
 
-                    st.success("Movimentação de estoque registrada com sucesso!")
+                # Adicionar a nova entrada ao DataFrame existing_data
+                existing_data = existing_data.append(new_entry, ignore_index=True)
 
+                # Atualizar a planilha com os novos dados
+                conn.update(worksheet="Registro", data=existing_data)
 
+                st.success("Movimentação de estoque registrada com sucesso!")
 
 
     # Update Google Sheets with the updated inventory
