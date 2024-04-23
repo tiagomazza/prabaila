@@ -139,8 +139,14 @@ elif pagina_selecionada == "Análise":
     # Sidebar filters
     st.sidebar.header("Filtros")
     modelo_filtro = st.sidebar.selectbox("Filtrar por Modelo", ["Todos"] + existing_data["Products"].str.split(", ", expand=True).stack().unique())
-    movimentacao_filtro = st.sidebar.selectbox("Filtrar por Tipo de Movimentação", ["Todos"] + existing_data["Tipo de Movimentação"].unique())
-    pagamento_filtro = st.sidebar.selectbox("Filtrar por Método de Pagamento", ["Todos"] + existing_data["Method of Payment"].unique())
+    
+    # Converter os valores exclusivos da coluna "Tipo de Movimentação" em uma lista de strings
+    tipo_movimentacao_unique = existing_data["Tipo de Movimentação"].dropna().astype(str).unique()
+    movimentacao_filtro = st.sidebar.selectbox("Filtrar por Tipo de Movimentação", ["Todos"] + tipo_movimentacao_unique.tolist())
+    
+    # Converter os valores exclusivos da coluna "Method of Payment" em uma lista de strings
+    pagamento_unique = existing_data["Method of Payment"].dropna().astype(str).unique()
+    pagamento_filtro = st.sidebar.selectbox("Filtrar por Método de Pagamento", ["Todos"] + pagamento_unique.tolist())
 
     # Aplicar filtros
     filtered_data = existing_data
@@ -173,4 +179,5 @@ elif pagina_selecionada == "Análise":
     st.write("Movimentação por forma de pagamento:")
     total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum().to_string()
     st.write(total_by_payment_method)
+
 
