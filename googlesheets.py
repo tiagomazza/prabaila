@@ -145,6 +145,11 @@ elif pagina_selecionada == "Análise":
     st.write("Total vendido por modelo:")
     st.write(total_sold_by_model)
 
+    # Total vendido por numeração
+    total_sold_by_size = existing_data.groupby("Size").size()
+    st.write("Total vendido por numeração:")
+    st.write(total_sold_by_size)
+
     # Total de cada tipo de movimentação de stock
     st.write("Total de cada tipo de movimentação de stock:")
     total_stock_movements = existing_data["Tipo de Movimentação"].value_counts()
