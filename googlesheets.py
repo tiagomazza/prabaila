@@ -136,26 +136,6 @@ elif pagina_selecionada == "Análise":
     # Carregar os dados existentes
     existing_data = load_existing_data("Reservations")
 
-    # Sidebar filters
-    st.sidebar.header("Filtros")
-    modelo_filtro = st.sidebar.selectbox("Filtrar por Modelo", ["Todos"] + existing_data["Products"].str.split(", ", expand=True).stack().unique())
-    
-    # Converter os valores exclusivos da coluna "Tipo de Movimentação" em uma lista de strings
-    tipo_movimentacao_unique = existing_data["Tipo de Movimentação"].dropna().astype(str).unique()
-    movimentacao_filtro = st.sidebar.selectbox("Filtrar por Tipo de Movimentação", ["Todos"] + tipo_movimentacao_unique.tolist())
-    
-    # Converter os valores exclusivos da coluna "Method of Payment" em uma lista de strings
-    pagamento_unique = existing_data["Method of Payment"].dropna().astype(str).unique()
-    pagamento_filtro = st.sidebar.selectbox("Filtrar por Método de Pagamento", ["Todos"] + pagamento_unique.tolist())
-
-    # Aplicar filtros
-    filtered_data = existing_data
-    if modelo_filtro != "Todos":
-        filtered_data = filtered_data[filtered_data["Products"].apply(lambda x: any(modelo_filtro in item for item in x))]
-    if movimentacao_filtro != "Todos":
-        filtered_data = filtered_data[filtered_data["Tipo de Movimentação"] == movimentacao_filtro]
-    if pagamento_filtro != "Todos":
-        filtered_data = filtered_data[filtered_data["Method of Payment"] == pagamento_filtro]
 
     # Número total de artigos vendidos
     total_articles_sold = filtered_data.shape[0]
