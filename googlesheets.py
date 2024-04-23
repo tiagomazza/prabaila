@@ -179,5 +179,3 @@ elif pagina_selecionada == "Análise":
     st.write("Movimentação por forma de pagamento:")
     total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum().to_string()
     st.write(total_by_payment_method)
-
-
