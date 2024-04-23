@@ -110,6 +110,12 @@ if pagina_selecionada == "Stock":
             valor_pago = st.number_input("Valor Pago", step=0.01)
             metodo_pagamento = st.selectbox("Método de Pagamento", ["Dinheiro", "Cartão de Crédito", "Cartão de Débito"])
 
+            # Menu deslizante para o preço com incremento de 5€
+            preco_min = int(row['Preço'])  # Preço mínimo será o preço atual do sapato
+            preco_max = preco_min + 100  # Definindo um preço máximo de 50€ a mais
+            preco_step = 5  # Incremento de 5€
+            novo_preco = st.slider("Preço", min_value=preco_min, max_value=preco_max, step=preco_step, value=preco_min)
+
             submit_button = st.form_submit_button("Registrar Movimentação")
 
             if submit_button:
@@ -117,7 +123,8 @@ if pagina_selecionada == "Stock":
                 new_entry = pd.DataFrame({
                     "Nome": [name],
                     "Valor Pago": [valor_pago],
-                    "Método de Pagamento": [metodo_pagamento]
+                    "Método de Pagamento": [metodo_pagamento],
+                    "Preço": [novo_preco]  # Usar o novo preço selecionado
                 })
 
                 # Adicionar a nova entrada ao DataFrame existing_data
