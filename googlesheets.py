@@ -104,37 +104,69 @@ if pagina_selecionada == "Stock":
         # Botão para abrir janela abaixo de cada sapato
         button_key = f"details_button_{index}"
         if st.button(f"Movimentar stock do {row['Modelo']}", key=button_key):
-            with st.form(key=f"form_{index}"):
-                st.subheader("Movimentação de Estoque")
-                # Adicionar campos para Nome, Valor Pago e Método de Pagamento
-                name = st.text_input("Nome")
-                valor_pago = st.number_input("Valor Pago", step=0.01)
-                metodo_pagamento = st.selectbox("Método de Pagamento", ["Dinheiro", "Cartão de Crédito", "Cartão de Débito"])
+            # Página Reservas
+            st.title("Reservation system")
+            st.markdown("Type your data to be advised about new arrivals")
 
-                # Menu deslizante para o preço com incremento de 5€
-                preco_min = int(row['Preço'])  # Preço mínimo será o preço atual do sapato
-                preco_max = preco_min + 50  # Definindo um preço máximo de 50€ a mais
-                preco_step = 5  # Incremento de 5€
-                novo_preco = st.slider("Preço", min_value=preco_min, max_value=preco_max, step=preco_step, value=preco_min)
+            existing_data = load_existing_data("Reservations")
 
-                submit_button = st.form_submit_button("Registrar Movimentação")
+            # List of Business Types and Products
+            PRODUCTS = [
+                "Light Palha",
+                "Chuteirinha Vegana Preta",
+            ]
+
+            with st.form(key="vendor_form"):
+                name = st.text_input(label="Name*")
+                email = st.text_input("e-mail")
+                whatsapp = st.text_input("whatsapp with international code")
+                products = st.multiselect("Wished shoes", options=PRODUCTS)
+                size = st.slider("Numeração", 34, 45, 34)
+                additional_info = st.text_area(label="Additional Notes")
+
+                # Mark mandatory fields
+                st.markdown("**required*")
+
+                submit_button = st.form_submit_button(label="Submit Details")
 
                 if submit_button:
-                    # Criar uma nova entrada de movimentação de estoque
-                    new_entry = pd.DataFrame({
-                        "Nome": [name],
-                        "Valor Pago": [valor_pago],
-                        "Método de Pagamento": [metodo_pagamento],
-                        "Preço": [novo_preco]  # Usar o novo preço selecionado
-                    })
+                    # Check if all mandatory fields are filled
+                    if not name:
+                        st.warning("Ensure all mandatory fields are filled.")
+                        st.stop()
+                    elif existing_data["Name"].astype(str).str.contains(name).any():
+                        st.warning("This name already exists.")
+                        st.stop()
+                    else:
+                        # Create a new row of vendor data
+                        vendor_data = pd.DataFrame(
+                            [
+                                {
+                                    "Name": name,
+                                    "Email": email,
+                                    "Whatsapp": whatsapp,
+                                    "Products": ", ".join(products),
+                                    "Size": size,
+                                    "AdditionalInfo": additional_info,
+                                }
+                            ]
+                        )
 
-                    # Adicionar a nova entrada ao DataFrame existing_data
-                    existing_data = existing_data.append(new_entry, ignore_index=True)
+                        # Add the new vendor data to the existing data
+                        updated_df = pd.concat([existing_data, vendor_data], ignore_index=True)
 
-                    # Atualizar a planilha com os novos dados
-                    conn.update(worksheet="Registro", data=existing_data)
+                        # Update Google Sheets with the new vendor data
+                        conn.update(worksheet="Reservations", data=updated_df)
 
-                    st.success("Movimentação de estoque registrada com sucesso!")
+                        st.success("Details successfully submitted!")
+
+                        # Clear the form fields after submission
+                        name = ""
+                        email = ""
+                        whatsapp = ""
+                        products = []
+                        size = 34
+                        additional_info = ""
 
 elif pagina_selecionada == "Reservation & Discount":
     # Página Reservas
