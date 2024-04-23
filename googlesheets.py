@@ -114,12 +114,16 @@ if pagina_selecionada == "Stock":
                 submit_button = st.form_submit_button("Registrar Movimentação")
 
                 if submit_button:
-                    # Realizar ações necessárias com os dados do formulário
-                    # Por exemplo, atualizar o estoque no banco de dados
-                    # e registrar a movimentação de estoque
-                    st.write(f"Nome: {name}")
-                    st.write(f"Valor Pago: {valor_pago}")
-                    st.write(f"Método de Pagamento: {metodo_pagamento}")
+                    # Adicionar os dados ao final da aba "Registro" da planilha
+                    new_entry = pd.DataFrame({
+                        "Nome": [name],
+                        "Valor Pago": [valor_pago],
+                        "Método de Pagamento": [metodo_pagamento]
+                    })
+                    conn.update(worksheet="Registro", data=new_entry, append=True)
+
+                    st.success("Movimentação de estoque registrada com sucesso!")
+
 
 
 
