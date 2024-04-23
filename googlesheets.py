@@ -52,7 +52,7 @@ st.title("🌟Loja da Quinta🌵")
 st.markdown("Sistema de controle de modelos.")
 
 # Configuração da aplicação
-pagina_selecionada = st.sidebar.radio("Página", ["Stock", "Registro", "Reservation & Discount", "Active Reservations"])
+pagina_selecionada = st.sidebar.radio("Página", ["Stock", "Registro", "Reservation & Discount", "Active Reservations","Análise"])
 
 # Determinar qual página exibir com base na seleção do usuário
 if pagina_selecionada == "Stock":
@@ -74,7 +74,7 @@ elif pagina_selecionada == "Registro":
         whatsapp = st.text_input("WhatsApp with international code")
         products = st.multiselect("Wished shoes", options=modelos_existentes)
         size = st.slider("Numeração", 34, 45, 34)
-        method_of_payment = st.selectbox("Method of Payment", ["Credit Card", "Cash", "Bank Transfer"])
+        method_of_payment = st.selectbox("Method of Payment", ["Dinheiro", "Mbway", "Transferência","Wise","Revolut","Paypal"])
         value = st.slider("Valor (€)", 5, 150, 5, step=5)
         movimentacao = st.slider("Movimentação de Stock", -10, 10, 0)
         movimentacao_type = st.selectbox("Tipo de Movimentação", movimentacao_options)
@@ -128,3 +128,29 @@ elif pagina_selecionada == "Reservation & Discount":
 elif pagina_selecionada == "Active Reservations":
     # Exibir a página de reservas ativas
     active_reservations_page()
+
+elif pagina_selecionada == "Análise":
+    st.title("Análise dos Dados de Reservations")
+
+    # Carregar os dados existentes
+    existing_data = load_existing_data("Reservations")
+
+    # Número total de artigos vendidos
+    total_articles_sold = existing_data.shape[0]
+    st.write(f"Número total de artigos vendidos: {total_articles_sold}")
+
+    # Numeração mais popular
+    popular_sizes = existing_data["Size"].value_counts().idxmax()
+    st.write(f"Numeração mais popular: {popular_sizes}")
+
+    # Valor médio das reservas
+    average_value = existing_data["Value"].mean()
+    st.write(f"Valor médio das reservas: €{average_value:.2f}")
+
+    # Tipos de pagamento mais comuns
+    common_payment_methods = existing_data["Method of Payment"].value_counts().idxmax()
+    st.write(f"Tipo de pagamento mais comum: {common_payment_methods}")
+
+    # Tipos de movimentação mais frequentes
+    common_movement_types = existing_data["Tipo de Movimentação"].value_counts().idxmax()
+    st.write(f"Tipo de movimentação mais frequente: {common_movement_types}")
