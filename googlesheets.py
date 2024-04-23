@@ -154,7 +154,8 @@ elif pagina_selecionada == "Análise":
     total_values_received = existing_data["Value"].sum()
     st.write(f"Total de valores recebidos: {total_values_received}")
 
-    # Tabela que mostra a soma de cada tipo de movimentação
-    st.write("Soma de cada tipo de movimentação:")
-    total_by_movement_type = existing_data.groupby("Tipo de Movimentação")["Value"].sum()
-    st.write(total_by_movement_type)
+    # Movimentação por forma de pagamento
+    st.write("Movimentação por forma de pagamento:")
+    total_by_payment_method = existing_data.groupby("Method of Payment")["Value"].sum()
+    st.write(total_by_payment_method)
+
