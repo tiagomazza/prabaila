@@ -140,10 +140,10 @@ elif pagina_selecionada == "Análise":
     total_articles_sold = existing_data.shape[0]
     st.write(f"Número total de artigos vendidos: {total_articles_sold}")
 
-    # Total vendido de cada número de calçado
-    total_sold_by_size = existing_data["Size"].value_counts()
-    st.write("Total vendido por número de calçado:")
-    st.write(total_sold_by_size)
+    # Total vendido de cada modelo
+    total_sold_by_model = existing_data["Products"].str.split(", ", expand=True).stack().value_counts()
+    st.write("Total vendido por modelo:")
+    st.write(total_sold_by_model)
 
     # Total de cada método de pagamento abaixo de cada tipo de movimentação
     st.write("Total de cada método de pagamento abaixo de cada tipo de movimentação:")
@@ -153,5 +153,9 @@ elif pagina_selecionada == "Análise":
         payment_method_counts = movimentacao_data.groupby("Method of Payment").size()
         st.write(payment_method_counts)
 
+    # Total do valor pago por cada meio de pagamento
+    st.write("Total do valor pago por cada meio de pagamento:")
+    payment_method_totals = existing_data.groupby("Method of Payment")["Value"].sum()
+    st.write(payment_method_totals)
 
 
