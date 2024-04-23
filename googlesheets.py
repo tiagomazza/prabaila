@@ -101,17 +101,26 @@ if pagina_selecionada == "Stock":
         st.markdown(f"**Preço:** {int(row['Preço'])}€")  # Displaying price in € and make bold
         st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
 
-        
-
         # Botão para abrir janela abaixo de cada sapato
         button_key = f"details_button_{index}"
         if st.button(f"Movimentar stock do {row['Modelo']}", key=button_key):
-            quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=f"quantity_{index}")
+            with st.form(key=f"form_{index}"):
+                st.subheader("Movimentação de Estoque")
+                # Adicionar campos para Nome, Valor Pago e Método de Pagamento
+                name = st.text_input("Nome")
+                valor_pago = st.number_input("Valor Pago", step=0.01)
+                metodo_pagamento = st.selectbox("Método de Pagamento", ["Dinheiro", "Cartão de Crédito", "Cartão de Débito"])
 
-            # Update the inventory if quantity is provided
-            if quantity != 0:
-                updated_stock = row['Estoque'] + quantity
-                existing_data.at[index, 'Estoque'] = updated_stock
+                submit_button = st.form_submit_button("Registrar Movimentação")
+
+                if submit_button:
+                    # Realizar ações necessárias com os dados do formulário
+                    # Por exemplo, atualizar o estoque no banco de dados
+                    # e registrar a movimentação de estoque
+                    st.write(f"Nome: {name}")
+                    st.write(f"Valor Pago: {valor_pago}")
+                    st.write(f"Método de Pagamento: {metodo_pagamento}")
+
 
     # Update Google Sheets with the updated inventory
     if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
