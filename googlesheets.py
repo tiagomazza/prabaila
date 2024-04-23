@@ -56,67 +56,9 @@ pagina_selecionada = st.sidebar.radio("Página", ["Stock", "Registro", "Reservat
 
 # Determinar qual página exibir com base na seleção do usuário
 if pagina_selecionada == "Stock":
-    # Fetch existing shoes data
-    existing_data = conn.read(worksheet="Shoes", usecols=list(range(6)), ttl=5)
-    existing_data = existing_data.dropna(how="all")
-
-    # Convert "Modelo" and "Descrição" columns to string
-    existing_data["Modelo"] = existing_data["Modelo"].astype(str)
-    existing_data["Descrição"] = existing_data["Descrição"].astype(str)
-
-    # Sidebar filters
-    st.sidebar.header("Filtros")
-    modelos = existing_data["Modelo"].unique()
-    modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
-
-    numeros = existing_data["Número"].unique()
-    numeros_filtro = st.sidebar.multiselect("Filtrar por Número", numeros.astype(int), default=numeros.astype(int))
-
-    # Filter the data based on the selected filters
-    filtered_data = existing_data[
-        (existing_data["Modelo"].isin(modelos_filtro)) & (existing_data["Número"].isin(numeros_filtro))
-    ]
-
-    # Add a toggle button to show/hide shoes with zero stock
-    show_zero_stock = st.sidebar.checkbox("Mostrar sem stock")
-
-    # Apply filter to show/hide shoes with zero stock
-    if not show_zero_stock:
-        filtered_data = filtered_data[filtered_data["Estoque"] > 0]
-
-    # Display total stock count in the sidebar
-    total_stock = filtered_data["Estoque"].sum()
-    st.sidebar.header("Total do Estoque:")
-    st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
-
-    # Display shoes information separately
-    for index, row in filtered_data.iterrows():
-        st.subheader(f"{row['Modelo']}")
-        st.markdown(f"**Número:** {int(row['Número'])}")  # Remove .0 and make bold
-        # Display the image from the URL
-        if row['Imagem']:
-            st.image(row['Imagem'])
-        else:
-            st.text("Imagem não disponível")
-        st.markdown(f"**Descrição:** {row['Descrição']}")  # Make bold
-        st.markdown(f"**Preço:** {int(row['Preço'])}€")  # Displaying price in € and make bold
-        st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
-
-        # Quantity input for adding or reducing stock
-        quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
-
-        # Update the inventory if quantity is provided
-        if quantity != 0:
-            updated_stock = row['Estoque'] + quantity
-            existing_data.at[index, 'Estoque'] = updated_stock
-
-    # Update Google Sheets with the updated inventory
-    if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
-        conn.update(worksheet="Shoes", data=existing_data)
-        st.success("Estoque atualizado com sucesso!")
-        # Reload the page after updating the inventory
-        st.experimental_rerun()
+    # Código para a página de estoque
     pass
+
 elif pagina_selecionada == "Registro":
     # Página Registro
     st.title("Registro")
@@ -126,28 +68,27 @@ elif pagina_selecionada == "Registro":
     existing_data = conn.read(worksheet="Reservations", usecols=list(range(6)), ttl=5)
     existing_data = existing_data.dropna(how="all")
 
-    # List of Business Types and Products
-    PRODUCTS = [
-        "Light Palha",
-        "Chuteirinha Vegana Preta",
-    ]
+    # Lista de modelos existentes
+    modelos_existentes = existing_data["Modelo"].unique()
 
     with st.form(key="vendor_form"):
         name = st.text_input(label="Name*")
-        email = st.text_input("e-mail")
-        whatsapp = st.text_input("whatsapp with international code")
-        products = st.multiselect("Wished shoes", options=PRODUCTS)
+        email = st.text_input("E-mail")
+        whatsapp = st.text_input("WhatsApp with international code")
+        products = st.multiselect("Wished shoes", options=modelos_existentes)
         size = st.slider("Numeração", 34, 45, 34)
+        method_of_payment = st.selectbox("Method of Payment", ["Credit Card", "Cash", "Bank Transfer"])
+        value = st.slider("Valor (€)", 5, 10, 5, step=5)
         additional_info = st.text_area(label="Additional Notes")
 
-        # Mark mandatory fields
+        # Marcar campos obrigatórios
         st.markdown("**required*")
 
         submit_button = st.form_submit_button(label="Submit Details")
 
-        # If the submit button is pressed
+        # Se o botão de envio for pressionado
         if submit_button:
-            # Check if all mandatory fields are filled
+            # Verificar se todos os campos obrigatórios foram preenchidos
             if not name:
                 st.warning("Ensure all mandatory fields are filled.")
                 st.stop()
@@ -155,7 +96,7 @@ elif pagina_selecionada == "Registro":
                 st.warning("This name already exists.")
                 st.stop()
             else:
-                # Create a new row of vendor data
+                # Criar uma nova linha de dados do fornecedor
                 vendor_data = pd.DataFrame(
                     [
                         {
@@ -164,95 +105,34 @@ elif pagina_selecionada == "Registro":
                             "Whatsapp": whatsapp,
                             "Products": ", ".join(products),
                             "Size": size,
+                            "Method of Payment": method_of_payment,
+                            "Value": value,
                             "AdditionalInfo": additional_info,
                         }
                     ]
                 )
 
-                # Add the new vendor data to the existing data
+                # Adicionar os novos dados do fornecedor aos dados existentes
                 updated_df = pd.concat([existing_data, vendor_data], ignore_index=True)
 
-                # Update Google Sheets with the new vendor data
+                # Atualizar o Google Sheets com os novos dados do fornecedor
                 conn.update(worksheet="Reservations", data=updated_df)
 
                 st.success("Details successfully submitted!")
 
-                # Clear the form fields after submission
+                # Limpar os campos do formulário após o envio
                 name = ""
                 email = ""
                 whatsapp = ""
                 products = []
                 size = 34
+                method_of_payment = ""
+                value = 5
                 additional_info = ""
-    pass
+
 elif pagina_selecionada == "Reservation & Discount":
-    # Página Reservas
-    st.title("Reservation system")
-    st.markdown("Type your data to be advised about new arrivals")
-
-    conn = st.experimental_connection("gsheets", type=GSheetsConnection)
-
-    existing_data = conn.read(worksheet="Reservations", usecols=list(range(6)), ttl=5)
-    existing_data = existing_data.dropna(how="all")
-
-    # List of Business Types and Products
-    PRODUCTS = [
-        "Light Palha",
-        "Chuteirinha Vegana Preta",
-    ]
-
-    with st.form(key="vendor_form"):
-        name = st.text_input(label="Name*")
-        email = st.text_input("e-mail")
-        whatsapp = st.text_input("whatsapp with international code")
-        products = st.multiselect("Wished shoes", options=PRODUCTS)
-        size = st.slider("Numeração", 34, 45, 34)
-        additional_info = st.text_area(label="Additional Notes")
-
-        # Mark mandatory fields
-        st.markdown("**required*")
-
-        submit_button = st.form_submit_button(label="Submit Details")
-
-        # If the submit button is pressed
-        if submit_button:
-            # Check if all mandatory fields are filled
-            if not name:
-                st.warning("Ensure all mandatory fields are filled.")
-                st.stop()
-            elif existing_data["Name"].astype(str).str.contains(name).any():
-                st.warning("This name already exists.")
-                st.stop()
-            else:
-                # Create a new row of vendor data
-                vendor_data = pd.DataFrame(
-                    [
-                        {
-                            "Name": name,
-                            "Email": email,
-                            "Whatsapp": whatsapp,
-                            "Products": ", ".join(products),
-                            "Size": size,
-                            "AdditionalInfo": additional_info,
-                        }
-                    ]
-                )
-
-                # Add the new vendor data to the existing data
-                updated_df = pd.concat([existing_data, vendor_data], ignore_index=True)
-
-                # Update Google Sheets with the new vendor data
-                conn.update(worksheet="Reservations", data=updated_df)
-
-                st.success("Details successfully submitted!")
-
-                # Clear the form fields after submission
-                name = ""
-                email = ""
-                whatsapp = ""
-                products = []
-                size = 34
-                additional_info = ""
+    # Código para a página de reservas e descontos
+    pass
 
 elif pagina_selecionada == "Active Reservations":
     # Exibir a página de reservas ativas
