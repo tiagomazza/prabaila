@@ -140,25 +140,9 @@ elif pagina_selecionada == "Análise":
     total_articles_sold = existing_data.shape[0]
     st.write(f"Número total de artigos vendidos: {total_articles_sold}")
 
-    # Numeração mais popular
-    popular_sizes = existing_data["Size"].value_counts().idxmax()
-    st.write(f"Numeração mais popular: {popular_sizes}")
+    # Total vendido de cada número de calçado
+    total_sold_by_size = existing_data["Size"].value_counts()
+    st.write("Total vendido por número de calçado:")
+    st.write(total_sold_by_size)
 
-    # Valor médio das reservas
-    average_value = existing_data["Value"].mean()
-    st.write(f"Valor médio das reservas: €{average_value:.2f}")
-
-    # Tipos de pagamento mais comuns
-    common_payment_methods = existing_data["Method of Payment"].value_counts().idxmax()
-    st.write(f"Tipo de pagamento mais comum: {common_payment_methods}")
-
-    # Tipos de movimentação mais frequentes
-    common_movement_types = existing_data["Tipo de Movimentação"].value_counts().idxmax()
-    st.write(f"Tipo de movimentação mais frequente: {common_movement_types}")
-
-    # Gráfico de barras para mostrar o número de artigos vendidos por tamanho
-    size_counts = existing_data["Size"].value_counts()
-    size_counts_fig = px.bar(x=size_counts.index, y=size_counts.values, labels={"x": "Tamanho", "y": "Número de Artigos Vendidos"}, 
-                             title="Número de Artigos Vendidos por Tamanho")
-    st.plotly_chart(size_counts_fig)
 
