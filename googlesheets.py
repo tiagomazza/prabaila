@@ -59,9 +59,10 @@ if pagina_selecionada == "Stock":
     # Código para a página de estoque
     pass
 
+# Página Registro
 elif pagina_selecionada == "Registro":
-    # Página Registro
-    
+    st.title("Registro")
+
     existing_data_reservations = load_existing_data("Reservations")
     existing_data_shoes = load_existing_data("Shoes")
     modelos_existentes = existing_data_shoes["Modelo"].unique()
@@ -98,9 +99,13 @@ elif pagina_selecionada == "Registro":
                 "AdditionalInfo": additional_info,
                 "SubmissionDateTime": submission_datetime,
             }
-            existing_data_reservations = existing_data_reservations.append(new_row, ignore_index=True)
 
-            conn.update(worksheet="Reservations", data=existing_data_reservations)
+            # Adiciona a nova linha à lista de dicionários
+            new_rows = existing_data_reservations.to_dict(orient="records")
+            new_rows.append(new_row)
+
+            # Atualiza a planilha com todas as informações
+            conn.update(worksheet="Reservations", data=new_rows)
 
             st.success("Details successfully submitted!")
 
