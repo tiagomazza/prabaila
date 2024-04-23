@@ -17,6 +17,7 @@ def protected_page():
 
 # Função para carregar os dados existentes
 def load_existing_data(worksheet_name):
+    conn = st.experimental_connection("gsheets", type=GSheetsConnection)
     existing_data = conn.read(worksheet=worksheet_name, usecols=list(range(6)), ttl=5)
     return existing_data.dropna(how="all")
 
@@ -102,7 +103,7 @@ if pagina_selecionada == "Stock":
         st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
 
         # Quantity input for adding or reducing stock
-        quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=f"quantity_{index}")
+        quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
 
         # Update the inventory if quantity is provided
         if quantity != 0:
@@ -115,16 +116,19 @@ if pagina_selecionada == "Stock":
         st.success("Estoque atualizado com sucesso!")
         # Reload the page after updating the inventory
         st.experimental_rerun()
-
+    pass
 elif pagina_selecionada == "Reservation & Discount":
-    # Página Reservas
+# Página Reservas
     st.title("Reservation system")
     st.markdown("Type your data to be advised about new arrivals")
+
+    conn = st.experimental_connection("gsheets", type=GSheetsConnection)
 
     existing_data = conn.read(worksheet="Reservations", usecols=list(range(6)), ttl=5)
     existing_data = existing_data.dropna(how="all")
 
     # List of Business Types and Products
+
     PRODUCTS = [
         "Light Palha",
         "Chuteirinha Vegana Preta",
@@ -183,6 +187,8 @@ elif pagina_selecionada == "Reservation & Discount":
                 size = 34
                 additional_info = ""
 
+
+    pass
 elif pagina_selecionada == "Active Reservations":
     # Exibir a página de reservas ativas
     active_reservations_page()
