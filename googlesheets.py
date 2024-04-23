@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
+from datetime import datetime
 
 conn = st.experimental_connection("gsheets", type=GSheetsConnection)
 
@@ -100,6 +101,9 @@ elif pagina_selecionada == "Registro":
                 st.warning("This name already exists.")
                 st.stop()
             else:
+                # Obter a data/hora atual
+                submission_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
                 # Criar uma nova linha de dados do fornecedor
                 vendor_data = pd.DataFrame(
                     [
@@ -112,6 +116,7 @@ elif pagina_selecionada == "Registro":
                             "Method of Payment": method_of_payment,
                             "Value": value,
                             "AdditionalInfo": additional_info,
+                            "SubmissionDateTime": submission_datetime,  # Adicionar a data/hora da submissão
                         }
                     ]
                 )
