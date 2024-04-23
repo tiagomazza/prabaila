@@ -108,6 +108,9 @@ if pagina_selecionada == "Stock":
         if quantity != 0:
             updated_stock = row['Estoque'] + quantity
             existing_data.at[index, 'Estoque'] = updated_stock
+            
+        if st.button(f"Ver detalhes do {row['Modelo']}"):
+        st.write("Detalhes do sapato aqui...")
 
     # Update Google Sheets with the updated inventory
     if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
