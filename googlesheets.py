@@ -2,7 +2,6 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
-# Conexão com a planilha
 conn = st.experimental_connection("gsheets", type=GSheetsConnection)
 
 # Função para proteger a página com senha
@@ -18,6 +17,7 @@ def protected_page():
 
 # Função para carregar os dados existentes
 def load_existing_data(worksheet_name):
+    conn = st.experimental_connection("gsheets", type=GSheetsConnection)
     existing_data = conn.read(worksheet=worksheet_name, usecols=list(range(6)), ttl=5)
     return existing_data.dropna(how="all")
 
@@ -52,12 +52,13 @@ st.title("🌟Loja da Quinta🌵")
 st.markdown("Sistema de controle de modelos.")
 
 # Configuração da aplicação
-pagina_selecionada = st.sidebar.radio("Página", ["Stock", "Reservation & Discount", "Active Reservations"], index=0)
+pagina_selecionada = st.sidebar.radio("Página", ["Stock", "Registro", "Reservation & Discount", "Active Reservations"])
 
 # Determinar qual página exibir com base na seleção do usuário
 if pagina_selecionada == "Stock":
     # Fetch existing shoes data
-    existing_data = load_existing_data("Shoes")
+    existing_data = conn.read(worksheet="Shoes", usecols=list(range(6)), ttl=5)
+    existing_data = existing_data.dropna(how="all")
 
     # Convert "Modelo" and "Descrição" columns to string
     existing_data["Modelo"] = existing_data["Modelo"].astype(str)
@@ -101,17 +102,29 @@ if pagina_selecionada == "Stock":
         st.markdown(f"**Preço:** {int(row['Preço'])}€")  # Displaying price in € and make bold
         st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
 
-        # Botão para abrir janela abaixo de cada sapato
-        button_key = f"details_button_{index}"
-        if st.button(f"Movimentar stock do {row['Modelo']}", key=button_key):
-            pagina_selecionada = "Reservation & Discount"
+        # Quantity input for adding or reducing stock
+        quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
 
-elif pagina_selecionada == "Reservation & Discount":
-    # Página Reservas
-    st.title("Reservation system")
-    st.markdown("Type your data to be advised about new arrivals")
+        # Update the inventory if quantity is provided
+        if quantity != 0:
+            updated_stock = row['Estoque'] + quantity
+            existing_data.at[index, 'Estoque'] = updated_stock
 
-    existing_data = load_existing_data("Reservations")
+    # Update Google Sheets with the updated inventory
+    if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
+        conn.update(worksheet="Shoes", data=existing_data)
+        st.success("Estoque atualizado com sucesso!")
+        # Reload the page after updating the inventory
+        st.experimental_rerun()
+    pass
+elif pagina_selecionada == "Registro":
+    # Página Registro
+    st.title("Registro")
+
+    conn = st.experimental_connection("gsheets", type=GSheetsConnection)
+
+    existing_data = conn.read(worksheet="Reservations", usecols=list(range(6)), ttl=5)
+    existing_data = existing_data.dropna(how="all")
 
     # List of Business Types and Products
     PRODUCTS = [
@@ -132,12 +145,84 @@ elif pagina_selecionada == "Reservation & Discount":
 
         submit_button = st.form_submit_button(label="Submit Details")
 
+        # If the submit button is pressed
         if submit_button:
             # Check if all mandatory fields are filled
             if not name:
                 st.warning("Ensure all mandatory fields are filled.")
+                st.stop()
             elif existing_data["Name"].astype(str).str.contains(name).any():
                 st.warning("This name already exists.")
+                st.stop()
+            else:
+                # Create a new row of vendor data
+                vendor_data = pd.DataFrame(
+                    [
+                        {
+                            "Name": name,
+                            "Email": email,
+                            "Whatsapp": whatsapp,
+                            "Products": ", ".join(products),
+                            "Size": size,
+                            "AdditionalInfo": additional_info,
+                        }
+                    ]
+                )
+
+                # Add the new vendor data to the existing data
+                updated_df = pd.concat([existing_data, vendor_data], ignore_index=True)
+
+                # Update Google Sheets with the new vendor data
+                conn.update(worksheet="Reservations", data=updated_df)
+
+                st.success("Details successfully submitted!")
+
+                # Clear the form fields after submission
+                name = ""
+                email = ""
+                whatsapp = ""
+                products = []
+                size = 34
+                additional_info = ""
+    pass
+elif pagina_selecionada == "Reservation & Discount":
+    # Página Reservas
+    st.title("Reservation system")
+    st.markdown("Type your data to be advised about new arrivals")
+
+    conn = st.experimental_connection("gsheets", type=GSheetsConnection)
+
+    existing_data = conn.read(worksheet="Reservations", usecols=list(range(6)), ttl=5)
+    existing_data = existing_data.dropna(how="all")
+
+    # List of Business Types and Products
+    PRODUCTS = [
+        "Light Palha",
+        "Chuteirinha Vegana Preta",
+    ]
+
+    with st.form(key="vendor_form"):
+        name = st.text_input(label="Name*")
+        email = st.text_input("e-mail")
+        whatsapp = st.text_input("whatsapp with international code")
+        products = st.multiselect("Wished shoes", options=PRODUCTS)
+        size = st.slider("Numeração", 34, 45, 34)
+        additional_info = st.text_area(label="Additional Notes")
+
+        # Mark mandatory fields
+        st.markdown("**required*")
+
+        submit_button = st.form_submit_button(label="Submit Details")
+
+        # If the submit button is pressed
+        if submit_button:
+            # Check if all mandatory fields are filled
+            if not name:
+                st.warning("Ensure all mandatory fields are filled.")
+                st.stop()
+            elif existing_data["Name"].astype(str).str.contains(name).any():
+                st.warning("This name already exists.")
+                st.stop()
             else:
                 # Create a new row of vendor data
                 vendor_data = pd.DataFrame(
