@@ -101,18 +101,17 @@ if pagina_selecionada == "Stock":
         st.markdown(f"**Preço:** {int(row['Preço'])}€")  # Displaying price in € and make bold
         st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
 
-        # Quantity input for adding or reducing stock
-        quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=f"quantity_{index}")
-
-        # Update the inventory if quantity is provided
-        if quantity != 0:
-            updated_stock = row['Estoque'] + quantity
-            existing_data.at[index, 'Estoque'] = updated_stock
+        
 
         # Botão para abrir janela abaixo de cada sapato
         button_key = f"details_button_{index}"
-        if st.button(f"Ver detalhes do {row['Modelo']}", key=button_key):
-            st.write("Movimentar Stock")
+        if st.button(f"Movimentar stock do {row['Modelo']}", key=button_key):
+            quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=f"quantity_{index}")
+
+            # Update the inventory if quantity is provided
+            if quantity != 0:
+                updated_stock = row['Estoque'] + quantity
+                existing_data.at[index, 'Estoque'] = updated_stock
 
     # Update Google Sheets with the updated inventory
     if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
