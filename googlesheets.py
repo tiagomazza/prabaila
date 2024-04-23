@@ -3,7 +3,7 @@ from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 from datetime import datetime
 
-conn = st.experimental_connection("gsheets", type=GSheetsConnection)
+conn = st.connection("gsheets", type=GSheetsConnection)
 
 # Função para proteger a página com senha
 def protected_page():
@@ -18,7 +18,6 @@ def protected_page():
 
 # Função para carregar os dados existentes
 def load_existing_data(worksheet_name):
-    conn = st.experimental_connection("gsheets", type=GSheetsConnection)
     existing_data = conn.read(worksheet=worksheet_name, usecols=list(range(6)), ttl=5)
     return existing_data.dropna(how="all")
 
@@ -64,14 +63,10 @@ elif pagina_selecionada == "Registro":
     # Página Registro
     st.title("Registro")
 
-    conn = st.experimental_connection("gsheets", type=GSheetsConnection)
-
-    existing_data_reservations = conn.read(worksheet="Reservations", usecols=list(range(6)), ttl=5)
-    existing_data_reservations = existing_data_reservations.dropna(how="all")
+    existing_data_reservations = load_existing_data("Reservations")
 
     # Carregar os dados existentes de Shoes para obter a coluna "Modelo"
-    existing_data_shoes = conn.read(worksheet="Shoes", usecols=list(range(6)), ttl=5)
-    existing_data_shoes = existing_data_shoes.dropna(how="all")
+    existing_data_shoes = load_existing_data("Shoes")
 
     # Lista de modelos existentes
     modelos_existentes = existing_data_shoes["Modelo"].unique()
@@ -85,9 +80,10 @@ elif pagina_selecionada == "Registro":
         whatsapp = st.text_input("WhatsApp with international code")
         products = st.multiselect("Wished shoes", options=modelos_existentes)
         size = st.slider("Numeração", 34, 45, 34)
-        method_of_payment = st.selectbox("Method of Payment", ["Dinheiro", "Mbway","Transferencia","Wise","Revolut","Paypal"])
-        value = st.slider("Valor (€)", 5, 100, 5, step=5)
-        movimentacao = st.selectbox("Movimentação", movimentacao_options)
+        method_of_payment = st.selectbox("Method of Payment", ["Credit Card", "Cash", "Bank Transfer"])
+        value = st.slider("Valor (€)", 5, 10, 5, step=5)
+        movimentacao = st.slider("Movimentação de Stock", -10, 10, 0)
+        movimentacao_type = st.selectbox("Tipo de Movimentação", movimentacao_options)
         additional_info = st.text_area(label="Additional Notes")
 
         # Marcar campos obrigatórios
@@ -97,53 +93,47 @@ elif pagina_selecionada == "Registro":
 
         # Se o botão de envio for pressionado
         if submit_button:
-            # Verificar se todos os campos obrigatórios foram preenchidos
-            if not name:
-                st.warning("Ensure all mandatory fields are filled.")
-                st.stop()
-            elif existing_data_reservations["Name"].astype(str).str.contains(name).any():
-                st.warning("This name already exists.")
-                st.stop()
-            else:
-                # Obter a data/hora atual
-                submission_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            # Obter a data/hora atual
+            submission_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-                # Criar uma nova linha de dados do fornecedor
-                vendor_data = pd.DataFrame(
-                    [
-                        {
-                            "Name": name,
-                            "Email": email,
-                            "Whatsapp": whatsapp,
-                            "Products": ", ".join(products),
-                            "Size": size,
-                            "Method of Payment": method_of_payment,
-                            "Value": value,
-                            "Movimentacao": movimentacao,
-                            "AdditionalInfo": additional_info,
-                            "SubmissionDateTime": submission_datetime,  # Adicionar a data/hora da submissão
-                        }
-                    ]
-                )
+            # Criar uma nova linha de dados do fornecedor
+            vendor_data = pd.DataFrame(
+                [
+                    {
+                        "Name": name,
+                        "Email": email,
+                        "Whatsapp": whatsapp,
+                        "Products": ", ".join(products),
+                        "Size": size,
+                        "Method of Payment": method_of_payment,
+                        "Value": value,
+                        "Movimentação de Stock": movimentacao,
+                        "Tipo de Movimentação": movimentacao_type,
+                        "AdditionalInfo": additional_info,
+                        "SubmissionDateTime": submission_datetime,  # Adicionar a data/hora da submissão
+                    }
+                ]
+            )
 
-                # Adicionar os novos dados do fornecedor aos dados existentes
-                updated_df = pd.concat([existing_data_reservations, vendor_data], ignore_index=True)
+            # Adicionar os novos dados do fornecedor aos dados existentes
+            updated_df = pd.concat([existing_data_reservations, vendor_data], ignore_index=True)
 
-                # Atualizar o Google Sheets com os novos dados do fornecedor
-                conn.update(worksheet="Reservations", data=updated_df)
+            # Atualizar o Google Sheets com os novos dados do fornecedor
+            conn.update(worksheet="Reservations", data=updated_df)
 
-                st.success("Details successfully submitted!")
+            st.success("Details successfully submitted!")
 
-                # Limpar os campos do formulário após o envio
-                name = ""
-                email = ""
-                whatsapp = ""
-                products = []
-                size = 34
-                method_of_payment = ""
-                value = 5
-                movimentacao = ""
-                additional_info = ""
+            # Limpar os campos do formulário após o envio
+            name = ""
+            email = ""
+            whatsapp = ""
+            products = []
+            size = 34
+            method_of_payment = ""
+            value = 5
+            movimentacao = 0
+            movimentacao_type = ""
+            additional_info = ""
 
 elif pagina_selecionada == "Reservation & Discount":
     # Código para a página de reservas e descontos
