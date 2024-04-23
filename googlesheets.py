@@ -54,6 +54,22 @@ st.markdown("Sistema de controle de modelos.")
 # Configuração da aplicação
 pagina_selecionada = st.sidebar.radio("Página", ["Stock", "Registro", "Reservation & Discount", "Active Reservations"])
 
+# Inicialização da variável de estado
+if "form_data" not in st.session_state:
+    st.session_state.form_data = {
+        "name": "",
+        "email": "",
+        "whatsapp": "",
+        "products": [],
+        "size": 34,
+        "method_of_payment": "",
+        "value": 5,
+        "movimentacao": 0,
+        "movimentacao_type": "",
+        "additional_info": "",
+        "submission_datetime": "",
+    }
+
 # Determinar qual página exibir com base na seleção do usuário
 if pagina_selecionada == "Stock":
     # Código para a página de estoque
@@ -75,16 +91,16 @@ elif pagina_selecionada == "Registro":
     movimentacao_options = ["Venda", "Oferta", "Reserva", "Devolução", "Chegada de Material"]
 
     with st.form(key="vendor_form"):
-        name = st.text_input(label="Name*")
-        email = st.text_input("E-mail")
-        whatsapp = st.text_input("WhatsApp with international code")
-        products = st.multiselect("Wished shoes", options=modelos_existentes)
-        size = st.slider("Numeração", 34, 45, 34)
-        method_of_payment = st.selectbox("Method of Payment", ["Credit Card", "Cash", "Bank Transfer"])
-        value = st.slider("Valor (€)", 5, 10, 5, step=5)
-        movimentacao = st.slider("Movimentação de Stock", -10, 10, 0)
-        movimentacao_type = st.selectbox("Tipo de Movimentação", movimentacao_options)
-        additional_info = st.text_area(label="Additional Notes")
+        st.session_state.form_data["name"] = st.text_input(label="Name*", value=st.session_state.form_data["name"])
+        st.session_state.form_data["email"] = st.text_input("E-mail", value=st.session_state.form_data["email"])
+        st.session_state.form_data["whatsapp"] = st.text_input("WhatsApp with international code", value=st.session_state.form_data["whatsapp"])
+        st.session_state.form_data["products"] = st.multiselect("Wished shoes", options=modelos_existentes, default=st.session_state.form_data["products"])
+        st.session_state.form_data["size"] = st.slider("Numeração", 34, 45, 34, value=st.session_state.form_data["size"])
+        st.session_state.form_data["method_of_payment"] = st.selectbox("Method of Payment", ["", "Credit Card", "Cash", "Bank Transfer"], index=["", "Credit Card", "Cash", "Bank Transfer"].index(st.session_state.form_data["method_of_payment"]))
+        st.session_state.form_data["value"] = st.slider("Valor (€)", 5, 10, 5, step=5, value=st.session_state.form_data["value"])
+        st.session_state.form_data["movimentacao"] = st.slider("Movimentação de Stock", -10, 10, 0, value=st.session_state.form_data["movimentacao"])
+        st.session_state.form_data["movimentacao_type"] = st.selectbox("Tipo de Movimentação", [""] + movimentacao_options, index=[""] + movimentacao_options.index(st.session_state.form_data["movimentacao_type"]))
+        st.session_state.form_data["additional_info"] = st.text_area(label="Additional Notes", value=st.session_state.form_data["additional_info"])
 
         # Marcar campos obrigatórios
         st.markdown("**required*")
@@ -96,21 +112,24 @@ elif pagina_selecionada == "Registro":
             # Obter a data/hora atual
             submission_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+            # Adicionar a data/hora da submissão aos dados do formulário
+            st.session_state.form_data["submission_datetime"] = submission_datetime
+
             # Criar uma nova linha de dados do fornecedor
             vendor_data = pd.DataFrame(
                 [
                     {
-                        "Name": name,
-                        "Email": email,
-                        "Whatsapp": whatsapp,
-                        "Products": ", ".join(products),
-                        "Size": size,
-                        "Method of Payment": method_of_payment,
-                        "Value": value,
-                        "Movimentação de Stock": movimentacao,
-                        "Tipo de Movimentação": movimentacao_type,
-                        "AdditionalInfo": additional_info,
-                        "SubmissionDateTime": submission_datetime,  # Adicionar a data/hora da submissão
+                        "Name": st.session_state.form_data["name"],
+                        "Email": st.session_state.form_data["email"],
+                        "Whatsapp": st.session_state.form_data["whatsapp"],
+                        "Products": ", ".join(st.session_state.form_data["products"]),
+                        "Size": st.session_state.form_data["size"],
+                        "Method of Payment": st.session_state.form_data["method_of_payment"],
+                        "Value": st.session_state.form_data["value"],
+                        "Movimentação de Stock": st.session_state.form_data["movimentacao"],
+                        "Tipo de Movimentação": st.session_state.form_data["movimentacao_type"],
+                        "AdditionalInfo": st.session_state.form_data["additional_info"],
+                        "SubmissionDateTime": st.session_state.form_data["submission_datetime"],
                     }
                 ]
             )
@@ -124,16 +143,19 @@ elif pagina_selecionada == "Registro":
             st.success("Details successfully submitted!")
 
             # Limpar os campos do formulário após o envio
-            name = ""
-            email = ""
-            whatsapp = ""
-            products = []
-            size = 34
-            method_of_payment = ""
-            value = 5
-            movimentacao = 0
-            movimentacao_type = ""
-            additional_info = ""
+            st.session_state.form_data = {
+                "name": "",
+                "email": "",
+                "whatsapp": "",
+                "products": [],
+                "size": 34,
+                "method_of_payment": "",
+                "value": 5,
+                "movimentacao": 0,
+                "movimentacao_type": "",
+                "additional_info": "",
+                "submission_datetime": "",
+            }
 
 elif pagina_selecionada == "Reservation & Discount":
     # Código para a página de reservas e descontos
