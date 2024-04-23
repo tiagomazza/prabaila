@@ -58,12 +58,8 @@ pagina_selecionada = st.sidebar.radio("Página", ["Stock", "Registro", "Reservat
 # Determinar qual página exibir com base na seleção do usuário
 if pagina_selecionada == "Stock":
     # Fetch existing shoes data
-    existing_data = conn.read(worksheet="Shoes", usecols=list(range(6)), ttl=5)
+    existing_data = conn.read(worksheet="Shoes", usecols=["Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque"], ttl=5)
     existing_data = existing_data.dropna(how="all")
-
-    # Convert "Modelo" and "Descrição" columns to string
-    existing_data["Modelo"] = existing_data["Modelo"].astype(str)
-    existing_data["Descrição"] = existing_data["Descrição"].astype(str)
 
     # Sidebar filters
     st.sidebar.header("Filtros")
@@ -117,7 +113,7 @@ if pagina_selecionada == "Stock":
         st.success("Estoque atualizado com sucesso!")
         # Reload the page after updating the inventory
         st.experimental_rerun()
-    pass
+
 
 # Página Registro
 elif pagina_selecionada == "Registro":
