@@ -95,7 +95,7 @@ elif pagina_selecionada == "Registro":
         st.session_state.form_data["email"] = st.text_input("E-mail", value=st.session_state.form_data["email"])
         st.session_state.form_data["whatsapp"] = st.text_input("WhatsApp with international code", value=st.session_state.form_data["whatsapp"])
         st.session_state.form_data["products"] = st.multiselect("Wished shoes", options=modelos_existentes, default=st.session_state.form_data["products"])
-        st.session_state.form_data["size"] = st.slider("Numeração", 34, 45, 34, value=st.session_state.form_data["size"])
+        st.session_state.form_data["size"] = st.slider("Numeração", 34, 45, value=st.session_state.form_data["size"])
         st.session_state.form_data["method_of_payment"] = st.selectbox("Method of Payment", ["", "Credit Card", "Cash", "Bank Transfer"], index=["", "Credit Card", "Cash", "Bank Transfer"].index(st.session_state.form_data["method_of_payment"]))
         st.session_state.form_data["value"] = st.slider("Valor (€)", 5, 10, 5, step=5, value=st.session_state.form_data["value"])
         st.session_state.form_data["movimentacao"] = st.slider("Movimentação de Stock", -10, 10, 0, value=st.session_state.form_data["movimentacao"])
