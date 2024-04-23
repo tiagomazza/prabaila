@@ -156,13 +156,13 @@ elif pagina_selecionada == "Análise":
     st.write(f"Número total de artigos vendidos: {total_articles_sold}")
 
     # Total vendido de cada modelo
-    total_sold_by_model = filtered_data["Products"].str.split(", ", expand=True).stack().value_counts()
+    total_sold_by_model = filtered_data["Products"].str.split(", ", expand=True).stack().value_counts().to_string()
     st.write("Total vendido por modelo:")
     st.write(total_sold_by_model)
 
     # Total de cada tipo de movimentação de stock
     st.write("Total de cada tipo de movimentação de stock:")
-    total_stock_movements = filtered_data["Tipo de Movimentação"].value_counts()
+    total_stock_movements = filtered_data["Tipo de Movimentação"].value_counts().to_string()
     st.write(total_stock_movements)
 
     # Total de valores recebidos
@@ -171,6 +171,6 @@ elif pagina_selecionada == "Análise":
 
     # Movimentação por forma de pagamento
     st.write("Movimentação por forma de pagamento:")
-    total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum()
+    total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum().to_string()
     st.write(total_by_payment_method)
 
