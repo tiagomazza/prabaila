@@ -75,7 +75,7 @@ elif pagina_selecionada == "Registro":
         products = st.multiselect("Wished shoes", options=modelos_existentes)
         size = st.slider("Numeração", 34, 45, 34)
         method_of_payment = st.selectbox("Method of Payment", ["Credit Card", "Cash", "Bank Transfer"])
-        value = st.slider("Valor (€)", 5, 10, 5, step=5)
+        value = st.slider("Valor (€)", 5, 150, 5, step=5)
         movimentacao = st.slider("Movimentação de Stock", -10, 10, 0)
         movimentacao_type = st.selectbox("Tipo de Movimentação", movimentacao_options)
         additional_info = st.text_area(label="Additional Notes")
