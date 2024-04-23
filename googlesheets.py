@@ -121,6 +121,14 @@ if pagina_selecionada == "Stock":
                     st.write(f"Valor Pago: {valor_pago}")
                     st.write(f"Método de Pagamento: {metodo_pagamento}")
 
+                if st.button(f"Movimentar stock do {row['Modelo']}", key=button_key):
+                quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=f"quantity_{index}")
+
+            # Update the inventory if quantity is provided
+                if quantity != 0:
+                    updated_stock = row['Estoque'] + quantity
+                    existing_data.at[index, 'Estoque'] = updated_stock
+
 
     # Update Google Sheets with the updated inventory
     if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
