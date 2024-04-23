@@ -76,14 +76,18 @@ elif pagina_selecionada == "Registro":
     # Lista de modelos existentes
     modelos_existentes = existing_data_shoes["Modelo"].unique()
 
+    # Opções de movimentação
+    movimentacao_options = ["Venda", "Oferta", "Reserva", "Devolução", "Chegada de Material"]
+
     with st.form(key="vendor_form"):
         name = st.text_input(label="Name*")
         email = st.text_input("E-mail")
         whatsapp = st.text_input("WhatsApp with international code")
         products = st.multiselect("Wished shoes", options=modelos_existentes)
         size = st.slider("Numeração", 34, 45, 34)
-        method_of_payment = st.selectbox("Method of Payment", ["Credit Card", "Cash", "Bank Transfer"])
-        value = st.slider("Valor (€)", 5, 10, 5, step=5)
+        method_of_payment = st.selectbox("Method of Payment", ["Dinheiro", "Mbway","Transferencia","Wise","Revolut","Paypal"])
+        value = st.slider("Valor (€)", 5, 100, 5, step=5)
+        movimentacao = st.selectbox("Movimentação", movimentacao_options)
         additional_info = st.text_area(label="Additional Notes")
 
         # Marcar campos obrigatórios
@@ -115,6 +119,7 @@ elif pagina_selecionada == "Registro":
                             "Size": size,
                             "Method of Payment": method_of_payment,
                             "Value": value,
+                            "Movimentacao": movimentacao,
                             "AdditionalInfo": additional_info,
                             "SubmissionDateTime": submission_datetime,  # Adicionar a data/hora da submissão
                         }
@@ -137,6 +142,7 @@ elif pagina_selecionada == "Registro":
                 size = 34
                 method_of_payment = ""
                 value = 5
+                movimentacao = ""
                 additional_info = ""
 
 elif pagina_selecionada == "Reservation & Discount":
