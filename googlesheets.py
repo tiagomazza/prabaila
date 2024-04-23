@@ -61,17 +61,10 @@ if pagina_selecionada == "Stock":
 
 elif pagina_selecionada == "Registro":
     # Página Registro
-    st.title("Registro")
-
+    
     existing_data_reservations = load_existing_data("Reservations")
-
-    # Carregar os dados existentes de Shoes para obter a coluna "Modelo"
     existing_data_shoes = load_existing_data("Shoes")
-
-    # Lista de modelos existentes
     modelos_existentes = existing_data_shoes["Modelo"].unique()
-
-    # Opções de movimentação
     movimentacao_options = ["Venda", "Oferta", "Reserva", "Devolução", "Chegada de Material"]
 
     with st.form(key="vendor_form"):
@@ -86,44 +79,31 @@ elif pagina_selecionada == "Registro":
         movimentacao_type = st.selectbox("Tipo de Movimentação", movimentacao_options)
         additional_info = st.text_area(label="Additional Notes")
 
-        # Marcar campos obrigatórios
         st.markdown("**required*")
 
         submit_button = st.form_submit_button(label="Submit Details")
 
-        # Se o botão de envio for pressionado
         if submit_button:
-            # Obter a data/hora atual
             submission_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            new_row = {
+                "Name": name,
+                "Email": email,
+                "Whatsapp": whatsapp,
+                "Products": ", ".join(products),
+                "Size": size,
+                "Method of Payment": method_of_payment,
+                "Value": value,
+                "Movimentação de Stock": movimentacao,
+                "Tipo de Movimentação": movimentacao_type,
+                "AdditionalInfo": additional_info,
+                "SubmissionDateTime": submission_datetime,
+            }
+            existing_data_reservations = existing_data_reservations.append(new_row, ignore_index=True)
 
-            # Criar uma nova linha de dados do fornecedor
-            vendor_data = pd.DataFrame(
-                [
-                    {
-                        "Name": name,
-                        "Email": email,
-                        "Whatsapp": whatsapp,
-                        "Products": ", ".join(products),
-                        "Size": size,
-                        "Method of Payment": method_of_payment,
-                        "Value": value,
-                        "Movimentação de Stock": movimentacao,
-                        "Tipo de Movimentação": movimentacao_type,
-                        "AdditionalInfo": additional_info,
-                        "SubmissionDateTime": submission_datetime,  # Adicionar a data/hora da submissão
-                    }
-                ]
-            )
-
-            # Adicionar os novos dados do fornecedor aos dados existentes
-            updated_df = pd.concat([existing_data_reservations, vendor_data], ignore_index=True)
-
-            # Atualizar o Google Sheets com os novos dados do fornecedor
-            conn.update(worksheet="Reservations", data=updated_df)
+            conn.update(worksheet="Reservations", data=existing_data_reservations)
 
             st.success("Details successfully submitted!")
 
-            # Limpar os campos do formulário após o envio
             name = ""
             email = ""
             whatsapp = ""
@@ -134,6 +114,7 @@ elif pagina_selecionada == "Registro":
             movimentacao = 0
             movimentacao_type = ""
             additional_info = ""
+
 
 elif pagina_selecionada == "Reservation & Discount":
     # Código para a página de reservas e descontos
