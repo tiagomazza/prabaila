@@ -136,26 +136,41 @@ elif pagina_selecionada == "Análise":
     # Carregar os dados existentes
     existing_data = load_existing_data("Reservations")
 
+    # Sidebar filters
+    st.sidebar.header("Filtros")
+    modelo_filtro = st.sidebar.selectbox("Filtrar por Modelo", ["Todos"] + existing_data["Products"].str.split(", ", expand=True).stack().unique())
+    movimentacao_filtro = st.sidebar.selectbox("Filtrar por Tipo de Movimentação", ["Todos"] + existing_data["Tipo de Movimentação"].unique())
+    pagamento_filtro = st.sidebar.selectbox("Filtrar por Método de Pagamento", ["Todos"] + existing_data["Method of Payment"].unique())
+
+    # Aplicar filtros
+    filtered_data = existing_data
+    if modelo_filtro != "Todos":
+        filtered_data = filtered_data[filtered_data["Products"].str.contains(modelo_filtro)]
+    if movimentacao_filtro != "Todos":
+        filtered_data = filtered_data[filtered_data["Tipo de Movimentação"] == movimentacao_filtro]
+    if pagamento_filtro != "Todos":
+        filtered_data = filtered_data[filtered_data["Method of Payment"] == pagamento_filtro]
+
     # Número total de artigos vendidos
-    total_articles_sold = existing_data.shape[0]
+    total_articles_sold = filtered_data.shape[0]
     st.write(f"Número total de artigos vendidos: {total_articles_sold}")
 
     # Total vendido de cada modelo
-    total_sold_by_model = existing_data["Products"].str.split(", ", expand=True).stack().value_counts()
+    total_sold_by_model = filtered_data["Products"].str.split(", ", expand=True).stack().value_counts()
     st.write("Total vendido por modelo:")
     st.write(total_sold_by_model)
 
     # Total de cada tipo de movimentação de stock
     st.write("Total de cada tipo de movimentação de stock:")
-    total_stock_movements = existing_data["Tipo de Movimentação"].value_counts()
+    total_stock_movements = filtered_data["Tipo de Movimentação"].value_counts()
     st.write(total_stock_movements)
 
     # Total de valores recebidos
-    total_values_received = existing_data["Value"].sum()
+    total_values_received = filtered_data["Value"].sum()
     st.write(f"Total de valores recebidos: {total_values_received}")
 
     # Movimentação por forma de pagamento
     st.write("Movimentação por forma de pagamento:")
-    total_by_payment_method = existing_data.groupby("Method of Payment")["Value"].sum()
+    total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum()
     st.write(total_by_payment_method)
 
