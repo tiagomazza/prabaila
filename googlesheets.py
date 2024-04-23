@@ -65,11 +65,15 @@ elif pagina_selecionada == "Registro":
 
     conn = st.experimental_connection("gsheets", type=GSheetsConnection)
 
-    existing_data = conn.read(worksheet="Reservations", usecols=list(range(6)), ttl=5)
-    existing_data = existing_data.dropna(how="all")
+    existing_data_reservations = conn.read(worksheet="Reservations", usecols=list(range(6)), ttl=5)
+    existing_data_reservations = existing_data_reservations.dropna(how="all")
+
+    # Carregar os dados existentes de Shoes para obter a coluna "Modelo"
+    existing_data_shoes = conn.read(worksheet="Shoes", usecols=list(range(6)), ttl=5)
+    existing_data_shoes = existing_data_shoes.dropna(how="all")
 
     # Lista de modelos existentes
-    modelos_existentes = existing_data["Modelo"].unique()
+    modelos_existentes = existing_data_shoes["Modelo"].unique()
 
     with st.form(key="vendor_form"):
         name = st.text_input(label="Name*")
@@ -92,7 +96,7 @@ elif pagina_selecionada == "Registro":
             if not name:
                 st.warning("Ensure all mandatory fields are filled.")
                 st.stop()
-            elif existing_data["Name"].astype(str).str.contains(name).any():
+            elif existing_data_reservations["Name"].astype(str).str.contains(name).any():
                 st.warning("This name already exists.")
                 st.stop()
             else:
@@ -113,7 +117,7 @@ elif pagina_selecionada == "Registro":
                 )
 
                 # Adicionar os novos dados do fornecedor aos dados existentes
-                updated_df = pd.concat([existing_data, vendor_data], ignore_index=True)
+                updated_df = pd.concat([existing_data_reservations, vendor_data], ignore_index=True)
 
                 # Atualizar o Google Sheets com os novos dados do fornecedor
                 conn.update(worksheet="Reservations", data=updated_df)
