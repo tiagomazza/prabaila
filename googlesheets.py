@@ -18,7 +18,7 @@ def protected_page():
 
 # Função para carregar os dados existentes
 def load_existing_data(worksheet_name):
-    existing_data = conn.read(worksheet=worksheet_name, usecols=list(range(6)), ttl=5)
+    existing_data = conn.read(worksheet=worksheet_name, usecols=list(range(11)), ttl=5)
     return existing_data.dropna(how="all")
 
 # Função para exibir os dados existentes
