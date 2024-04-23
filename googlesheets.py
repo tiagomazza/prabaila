@@ -128,8 +128,8 @@ elif pagina_selecionada == "Registro":
                         "Value": st.session_state.form_data["value"],
                         "Movimentação de Stock": st.session_state.form_data["movimentacao"],
                         "Tipo de Movimentação": st.session_state.form_data["movimentacao_type"],
-                        "AdditionalInfo": st.session_state.form_data["additional_info"],
                         "SubmissionDateTime": st.session_state.form_data["submission_datetime"],
+                        "AdditionalInfo": st.session_state.form_data["additional_info"],
                     }
                 ]
             )
@@ -140,9 +140,10 @@ elif pagina_selecionada == "Registro":
             # Atualizar o Google Sheets com os novos dados do fornecedor
             conn.update(worksheet="Reservations", data=updated_df)
 
+            # Mensagem de sucesso
             st.success("Details successfully submitted!")
 
-            # Limpar os campos do formulário após o envio
+            # Limpar os campos do formulário após a submissão
             st.session_state.form_data = {
                 "name": "",
                 "email": "",
@@ -158,7 +159,7 @@ elif pagina_selecionada == "Registro":
             }
 
 elif pagina_selecionada == "Reservation & Discount":
-    # Código para a página de reservas e descontos
+    # Página Reservas e Descontos
     pass
 
 elif pagina_selecionada == "Active Reservations":
