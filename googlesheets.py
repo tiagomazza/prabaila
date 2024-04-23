@@ -90,29 +90,29 @@ if pagina_selecionada == "Stock":
 
     # Display shoes information separately
     for index, row in filtered_data.iterrows():
-    st.subheader(f"{row['Modelo']}")
-    st.markdown(f"**Número:** {int(row['Número'])}")  # Remove .0 and make bold
-    # Display the image from the URL
-    if row['Imagem']:
-        st.image(row['Imagem'])
-    else:
-        st.text("Imagem não disponível")
-    st.markdown(f"**Descrição:** {row['Descrição']}")  # Make bold
-    st.markdown(f"**Preço:** {int(row['Preço'])}€")  # Displaying price in € and make bold
-    st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
+        st.subheader(f"{row['Modelo']}")
+        st.markdown(f"**Número:** {int(row['Número'])}")  # Remove .0 and make bold
+        # Display the image from the URL
+        if row['Imagem']:
+            st.image(row['Imagem'])
+        else:
+            st.text("Imagem não disponível")
+        st.markdown(f"**Descrição:** {row['Descrição']}")  # Make bold
+        st.markdown(f"**Preço:** {int(row['Preço'])}€")  # Displaying price in € and make bold
+        st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
 
-    # Quantity input for adding or reducing stock
-    quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=f"quantity_{index}")
+        # Quantity input for adding or reducing stock
+        quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=f"quantity_{index}")
 
-    # Update the inventory if quantity is provided
-    if quantity != 0:
-        updated_stock = row['Estoque'] + quantity
-        existing_data.at[index, 'Estoque'] = updated_stock
+        # Update the inventory if quantity is provided
+        if quantity != 0:
+            updated_stock = row['Estoque'] + quantity
+            existing_data.at[index, 'Estoque'] = updated_stock
 
-    # Botão para abrir janela abaixo de cada sapato
-    button_key = f"details_button_{index}"
-    if st.button(f"Ver detalhes do {row['Modelo']}", key=button_key):
-        st.write("Movimentar Stock")
+        # Botão para abrir janela abaixo de cada sapato
+        button_key = f"details_button_{index}"
+        if st.button(f"Ver detalhes do {row['Modelo']}", key=button_key):
+            st.write("Movimentar Stock")
 
     # Update Google Sheets with the updated inventory
     if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
