@@ -52,7 +52,7 @@ st.title("🌟Loja da Quinta🌵")
 st.markdown("Sistema de controle de modelos.")
 
 # Configuração da aplicação
-pagina_selecionada = st.sidebar.radio("Página", ["Stock", "Reservation & Discount", "Active Reservations"])
+pagina_selecionada = st.sidebar.radio("Página", ["Stock", "Reservation & Discount", "Active Reservations"], index=0, key="page_selection")
 
 # Determinar qual página exibir com base na seleção do usuário
 if pagina_selecionada == "Stock":
@@ -104,7 +104,8 @@ if pagina_selecionada == "Stock":
         # Botão para abrir janela abaixo de cada sapato
         button_key = f"details_button_{index}"
         if st.button(f"Movimentar stock do {row['Modelo']}", key=button_key):
-            st.experimental_rerun()
+            st.session_state.page_selection = "Reservation & Discount"
+
 elif pagina_selecionada == "Reservation & Discount":
     # Página Reservas
     st.title("Reservation system")
