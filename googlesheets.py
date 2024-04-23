@@ -2,6 +2,7 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 from datetime import datetime
+import plotly.express as px
 
 conn = st.connection("gsheets", type=GSheetsConnection)
 
@@ -135,41 +136,29 @@ elif pagina_selecionada == "Análise":
     # Carregar os dados existentes
     existing_data = load_existing_data("Reservations")
 
-    # Sidebar filters
-    st.sidebar.header("Filtros de Análise")
-    min_value = st.sidebar.number_input("Valor Mínimo (€)", value=0, step=5)
-    max_value = st.sidebar.number_input("Valor Máximo (€)", value=150, step=5)
-    selected_payment_method = st.sidebar.selectbox("Método de Pagamento", ["", "Dinheiro", "Mbway", "Transferência", "Wise", "Revolut", "Paypal"])
-    selected_movement_type = st.sidebar.selectbox("Tipo de Movimentação", ["", "Venda", "Oferta", "Reserva", "Devolução", "Chegada de Material"])
-
-    # Aplicar filtros
-    filtered_data = existing_data[
-        (existing_data["Value"] >= min_value) &
-        (existing_data["Value"] <= max_value)
-    ]
-
-    if selected_payment_method:
-        filtered_data = filtered_data[filtered_data["Method of Payment"] == selected_payment_method]
-
-    if selected_movement_type:
-        filtered_data = filtered_data[filtered_data["Tipo de Movimentação"] == selected_movement_type]
-
-    # Número total de artigos vendidos após a aplicação dos filtros
-    total_articles_sold = filtered_data.shape[0]
+    # Número total de artigos vendidos
+    total_articles_sold = existing_data.shape[0]
     st.write(f"Número total de artigos vendidos: {total_articles_sold}")
 
-    # Numeração mais popular após a aplicação dos filtros
-    popular_sizes = filtered_data["Size"].value_counts().idxmax()
+    # Numeração mais popular
+    popular_sizes = existing_data["Size"].value_counts().idxmax()
     st.write(f"Numeração mais popular: {popular_sizes}")
 
-    # Valor médio das reservas após a aplicação dos filtros
-    average_value = filtered_data["Value"].mean()
+    # Valor médio das reservas
+    average_value = existing_data["Value"].mean()
     st.write(f"Valor médio das reservas: €{average_value:.2f}")
 
-    # Tipos de pagamento mais comuns após a aplicação dos filtros
-    common_payment_methods = filtered_data["Method of Payment"].value_counts().idxmax()
+    # Tipos de pagamento mais comuns
+    common_payment_methods = existing_data["Method of Payment"].value_counts().idxmax()
     st.write(f"Tipo de pagamento mais comum: {common_payment_methods}")
 
-    # Tipos de movimentação mais frequentes após a aplicação dos filtros
-    common_movement_types = filtered_data["Tipo de Movimentação"].value_counts().idxmax()
+    # Tipos de movimentação mais frequentes
+    common_movement_types = existing_data["Tipo de Movimentação"].value_counts().idxmax()
     st.write(f"Tipo de movimentação mais frequente: {common_movement_types}")
+
+    # Gráfico de barras para mostrar o número de artigos vendidos por tamanho
+    size_counts = existing_data["Size"].value_counts()
+    size_counts_fig = px.bar(x=size_counts.index, y=size_counts.values, labels={"x": "Tamanho", "y": "Número de Artigos Vendidos"}, 
+                             title="Número de Artigos Vendidos por Tamanho")
+    st.plotly_chart(size_counts_fig)
+
