@@ -87,6 +87,7 @@ if pagina_selecionada == "Stock":
     st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
 
     # Display shoes information separately
+    # Display shoes information separately
     for index, row in filtered_data.iterrows():
         st.subheader(f"{row['Modelo']}")
         st.markdown(f"**Número:** {int(row['Número'])}")  # Remove .0 and make bold
@@ -100,12 +101,13 @@ if pagina_selecionada == "Stock":
         st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
 
         # Quantity input for adding or reducing stock
-        quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1)
+        quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=index)  # Unique key
 
         # Update the inventory if quantity is provided
         if quantity != 0:
             updated_stock = row['Estoque'] + quantity
             existing_data.at[index, 'Estoque'] = updated_stock
+
 
     # Update Google Sheets with the updated inventory
     if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
