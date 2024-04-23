@@ -145,17 +145,16 @@ elif pagina_selecionada == "Análise":
     st.write("Total vendido por modelo:")
     st.write(total_sold_by_model)
 
-    # Total de cada método de pagamento abaixo de cada tipo de movimentação
-    st.write("Total de cada método de pagamento abaixo de cada tipo de movimentação:")
-    for movimentacao_type in existing_data["Tipo de Movimentação"].unique():
-        st.write(f"Tipo de Movimentação: {movimentacao_type}")
-        movimentacao_data = existing_data[existing_data["Tipo de Movimentação"] == movimentacao_type]
-        payment_method_counts = movimentacao_data.groupby("Method of Payment").size()
-        st.write(payment_method_counts)
+    # Total de cada tipo de movimentação de stock
+    st.write("Total de cada tipo de movimentação de stock:")
+    total_stock_movements = existing_data["Tipo de Movimentação"].value_counts()
+    st.write(total_stock_movements)
 
-    # Total do valor pago por cada meio de pagamento
-    st.write("Total do valor pago por cada meio de pagamento:")
-    payment_method_totals = existing_data.groupby("Method of Payment")["Value"].sum()
-    st.write(payment_method_totals)
+    # Total de valores recebidos
+    total_values_received = existing_data["Value"].sum()
+    st.write(f"Total de valores recebidos: {total_values_received}")
 
-
+    # Tabela que mostra a soma de cada tipo de movimentação
+    st.write("Soma de cada tipo de movimentação:")
+    total_by_movement_type = existing_data.groupby("Tipo de Movimentação")["Value"].sum()
+    st.write(total_by_movement_type)
