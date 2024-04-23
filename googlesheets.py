@@ -151,7 +151,7 @@ elif pagina_selecionada == "Análise":
     # Aplicar filtros
     filtered_data = existing_data
     if modelo_filtro != "Todos":
-        filtered_data = filtered_data[filtered_data["Products"].str.contains(modelo_filtro)]
+        filtered_data = filtered_data[filtered_data["Products"].apply(lambda x: modelo_filtro in x)]
     if movimentacao_filtro != "Todos":
         filtered_data = filtered_data[filtered_data["Tipo de Movimentação"] == movimentacao_filtro]
     if pagamento_filtro != "Todos":
