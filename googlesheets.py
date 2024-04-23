@@ -2,6 +2,7 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
+# Conexão com a planilha
 conn = st.experimental_connection("gsheets", type=GSheetsConnection)
 
 # Função para proteger a página com senha
@@ -56,8 +57,7 @@ pagina_selecionada = st.sidebar.radio("Página", ["Stock", "Reservation & Discou
 # Determinar qual página exibir com base na seleção do usuário
 if pagina_selecionada == "Stock":
     # Fetch existing shoes data
-    existing_data = conn.read(worksheet="Shoes", usecols=list(range(6)), ttl=5)
-    existing_data = existing_data.dropna(how="all")
+    existing_data = load_existing_data("Shoes")
 
     # Convert "Modelo" and "Descrição" columns to string
     existing_data["Modelo"] = existing_data["Modelo"].astype(str)
@@ -88,68 +88,60 @@ if pagina_selecionada == "Stock":
     st.sidebar.header("Total do Estoque:")
     st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
 
- for index, row in filtered_data.iterrows():
-    st.subheader(f"{row['Modelo']}")
-    st.markdown(f"**Número:** {int(row['Número'])}")  # Remove .0 and make bold
-    # Display the image from the URL
-    if row['Imagem']:
-        st.image(row['Imagem'])
-    else:
-        st.text("Imagem não disponível")
-    st.markdown(f"**Descrição:** {row['Descrição']}")  # Make bold
-    st.markdown(f"**Preço:** {int(row['Preço'])}€")  # Displaying price in € and make bold
-    st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
+    # Display shoes information separately
+    for index, row in filtered_data.iterrows():
+        st.subheader(f"{row['Modelo']}")
+        st.markdown(f"**Número:** {int(row['Número'])}")  # Remove .0 and make bold
+        # Display the image from the URL
+        if row['Imagem']:
+            st.image(row['Imagem'])
+        else:
+            st.text("Imagem não disponível")
+        st.markdown(f"**Descrição:** {row['Descrição']}")  # Make bold
+        st.markdown(f"**Preço:** {int(row['Preço'])}€")  # Displaying price in € and make bold
+        st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
 
-    # Botão para abrir janela abaixo de cada sapato
-    button_key = f"details_button_{index}"
-    if st.button(f"Movimentar stock do {row['Modelo']}", key=button_key):
-        with st.form(key=f"form_{index}"):
-            st.subheader("Movimentação de Estoque")
-            # Adicionar campos para Nome, Valor Pago e Método de Pagamento
-            name = st.text_input("Nome")
-            valor_pago = st.number_input("Valor Pago", step=0.01)
-            metodo_pagamento = st.selectbox("Método de Pagamento", ["Dinheiro", "Cartão de Crédito", "Cartão de Débito"])
+        # Botão para abrir janela abaixo de cada sapato
+        button_key = f"details_button_{index}"
+        if st.button(f"Movimentar stock do {row['Modelo']}", key=button_key):
+            with st.form(key=f"form_{index}"):
+                st.subheader("Movimentação de Estoque")
+                # Adicionar campos para Nome, Valor Pago e Método de Pagamento
+                name = st.text_input("Nome")
+                valor_pago = st.number_input("Valor Pago", step=0.01)
+                metodo_pagamento = st.selectbox("Método de Pagamento", ["Dinheiro", "Cartão de Crédito", "Cartão de Débito"])
 
-            # Menu deslizante para o preço com incremento de 5€
-            preco_min = int(row['Preço'])  # Preço mínimo será o preço atual do sapato
-            preco_max = preco_min + 100  # Definindo um preço máximo de 50€ a mais
-            preco_step = 5  # Incremento de 5€
-            novo_preco = st.slider("Preço", min_value=preco_min, max_value=preco_max, step=preco_step, value=preco_min)
+                # Menu deslizante para o preço com incremento de 5€
+                preco_min = int(row['Preço'])  # Preço mínimo será o preço atual do sapato
+                preco_max = preco_min + 50  # Definindo um preço máximo de 50€ a mais
+                preco_step = 5  # Incremento de 5€
+                novo_preco = st.slider("Preço", min_value=preco_min, max_value=preco_max, step=preco_step, value=preco_min)
 
-            submit_button = st.form_submit_button("Registrar Movimentação")
+                submit_button = st.form_submit_button("Registrar Movimentação")
 
-            if submit_button:
-                # Criar uma nova entrada de movimentação de estoque
-                new_entry = pd.DataFrame({
-                    "Nome": [name],
-                    "Valor Pago": [valor_pago],
-                    "Método de Pagamento": [metodo_pagamento],
-                    "Preço": [novo_preco]  # Usar o novo preço selecionado
-                })
+                if submit_button:
+                    # Criar uma nova entrada de movimentação de estoque
+                    new_entry = pd.DataFrame({
+                        "Nome": [name],
+                        "Valor Pago": [valor_pago],
+                        "Método de Pagamento": [metodo_pagamento],
+                        "Preço": [novo_preco]  # Usar o novo preço selecionado
+                    })
 
-                # Adicionar a nova entrada ao DataFrame existing_data
-                existing_data = existing_data.append(new_entry, ignore_index=True)
+                    # Adicionar a nova entrada ao DataFrame existing_data
+                    existing_data = existing_data.append(new_entry, ignore_index=True)
 
-                # Atualizar a planilha com os novos dados
-                conn.update(worksheet="Registro", data=existing_data)
+                    # Atualizar a planilha com os novos dados
+                    conn.update(worksheet="Registro", data=existing_data)
 
-                st.success("Movimentação de estoque registrada com sucesso!")
-
-
-    # Update Google Sheets with the updated inventory
-    if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
-        conn.update(worksheet="Shoes", data=existing_data)
-        st.success("Estoque atualizado com sucesso!")
-        # Reload the page after updating the inventory
-        st.experimental_rerun()
+                    st.success("Movimentação de estoque registrada com sucesso!")
 
 elif pagina_selecionada == "Reservation & Discount":
     # Página Reservas
     st.title("Reservation system")
     st.markdown("Type your data to be advised about new arrivals")
 
-    existing_data = conn.read(worksheet="Reservations", usecols=list(range(6)), ttl=5)
-    existing_data = existing_data.dropna(how="all")
+    existing_data = load_existing_data("Reservations")
 
     # List of Business Types and Products
     PRODUCTS = [
@@ -170,7 +162,6 @@ elif pagina_selecionada == "Reservation & Discount":
 
         submit_button = st.form_submit_button(label="Submit Details")
 
-        # If the submit button is pressed
         if submit_button:
             # Check if all mandatory fields are filled
             if not name:
