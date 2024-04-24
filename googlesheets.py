@@ -97,7 +97,12 @@ if pagina_selecionada == "Stock":
         else:
             st.text("Imagem não disponível")
         st.markdown(f"**Descrição:** {row['Descrição']}")  # Make bold
-        st.markdown(f"**Preço:** {int(row['Preço'])}€")  # Displaying price in € and make bold
+        preco = row.get('Preço')
+            if preco is not None:
+                st.markdown(f"**Preço:** {preco}€")
+            else:
+                st.markdown("Preço não disponível")
+        #st.markdown(f"**Preço:** {int(row['Preço'])}€")  # Displaying price in € and make bold
         st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
 
         # Quantity input for adding or reducing stock
