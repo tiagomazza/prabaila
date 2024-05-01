@@ -50,7 +50,7 @@ st.sidebar.image(menu_lateral_imagem, use_column_width=True)
 
 # Display Title and Description
 st.title("🌟Loja da Quinta🌵")
-st.markdown("Sistema de controle de modelos.")
+st.markdown("Verificação de estoque")
 
 # Configuração da aplicação
 pagina_selecionada = st.sidebar.radio("Página", ["Stock", "Registro", "Reservation & Discount", "Active Reservations","Análise"])
@@ -63,11 +63,12 @@ if pagina_selecionada == "Stock":
 
     # Sidebar filters
     st.sidebar.header("Filtros")
-    modelos = existing_data["Modelo"].unique()
-    modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
-
+    
     numeros = existing_data["Número"].unique()
     numeros_filtro = st.sidebar.multiselect("Filtrar por Número", numeros.astype(int), default=numeros.astype(int))
+
+    modelos = existing_data["Modelo"].unique()
+    modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
 
     # Filter the data based on the selected filters
     filtered_data = existing_data[
@@ -90,7 +91,7 @@ if pagina_selecionada == "Stock":
     # Display shoes information separately
     for index, row in filtered_data.iterrows():
         st.subheader(f"{row['Modelo']}")
-        st.markdown(f"**Número:** {int(row['Número'])}")  # Remove .0 and make bold
+        st.markdown(f"**Número:**🇪🇺 {int(row['Número'])}")  # Remove .0 and make bold
         # Display the image from the URL
         if row['Imagem']:
             st.image(row['Imagem'])
