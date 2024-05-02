@@ -104,7 +104,7 @@ if pagina_selecionada == "Verificação de estoque":
         st.markdown(f"**Descrição:** {row['Descrição']}")  # Make bold
         preco = row.get('Preço')
         if preco is not None:
-            st.markdown(f"**Preço:** {int(row['preço'])}")
+            st.markdown(f"**Preço:** {int(row['Preço'])}")
         else:
             st.markdown("Preço não disponível")
         
