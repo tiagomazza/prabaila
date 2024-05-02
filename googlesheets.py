@@ -91,7 +91,7 @@ if pagina_selecionada == "Verificação de estoque":
     st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .
     
     
-    numeros_filtro_na pagina  = st.multiselect("Filtrar por Número", numeros.astype(int), default=[])
+    numeros_filtro_na_pagina  = st.multiselect("Filtrar por Número", numeros.astype(int), default=[])
 
     # Display shoes information separately
     for index, row in filtered_data.iterrows():
