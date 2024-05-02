@@ -49,7 +49,7 @@ menu_lateral_imagem = "https://acdn.mitiendanube.com/stores/003/310/899/themes/c
 st.sidebar.image(menu_lateral_imagem, use_column_width=True)
 
 # Display Title and Description
-st.title(🌵"Quinta Shop"🛒)
+st.title("Quinta Shop🛒")
 st.markdown("Verificação de estoque em tempo real")
 
 # Configuração da aplicação
