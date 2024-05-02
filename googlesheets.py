@@ -70,8 +70,7 @@ if pagina_selecionada == "Verificação de estoque":
     modelos = existing_data["Modelo"].unique()
     modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
     
-    numero_europeu = st.sidebar.number_input("Qual número europeu deseja consultar?", min_value=0, max_value=100, value=0, step=1)
-
+    
     # Filter the data based on the selected filters
     filtered_data = existing_data[
         (existing_data["Modelo"].isin(modelos_filtro)) & 
@@ -89,7 +88,10 @@ if pagina_selecionada == "Verificação de estoque":
     # Display total stock count in the sidebar
     total_stock = filtered_data["Estoque"].sum()
     st.sidebar.header("Total do Estoque:")
-    st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
+    st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .
+    
+    
+    numeros_filtro_na pagina  = st.multiselect("Filtrar por Número", numeros.astype(int), default=[])
 
     # Display shoes information separately
     for index, row in filtered_data.iterrows():
