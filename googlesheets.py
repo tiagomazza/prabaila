@@ -75,8 +75,8 @@ if pagina_selecionada == "Verificação de estoque":
     # Filter the data based on the selected filters
     filtered_data = existing_data[
         (existing_data["Modelo"].isin(modelos_filtro)) & 
-        (existing_data["Número"].isin(numeros_filtro)) 
-        
+        (existing_data["Número"].isin(numeros_filtro)) &
+        (existing_data["Número"] == numero_europeu_selecionados)
     ]
 
     # Add a toggle button to show/hide shoes with zero stock
