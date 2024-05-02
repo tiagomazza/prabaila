@@ -102,15 +102,15 @@ if pagina_selecionada == "Verificação de estoque":
             st.image(row['Imagem'])
         else:
             st.text("Imagem não disponível")
-        st.markdown(f"**Descrição:** {row['Descrição']}")  # Make bold
+        st.markdown(f"📝 **Descrição:** {row['Descrição']}")  # Make bold
         preco = row.get('Preço')
         if preco is not None:
-            st.markdown(f"**Preço:** {int(row['Preço'])}")
+            st.markdown(f"💰 **Preço:**  {int(row['Preço'])}")
         else:
             st.markdown("Preço não disponível")
         
         st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make 
-        st.markdown(f"**Numero Brasileiro:** {int(row['Numero Brasileiro'])}")  # Remove .0 and make 
+        st.markdown(f"🇧🇷 **Numero Brasileiro:** {int(row['Numero Brasileiro'])}")  # Remove .0 and make 
 
     # Adicionar botão com link para o WhatsApp
         modelo_formatado = row['Modelo'].replace(" ", "%20")
