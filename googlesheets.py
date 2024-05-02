@@ -114,12 +114,10 @@ if pagina_selecionada == "Verificação de estoque":
 
     # Adicionar botão com link para o WhatsApp
         whatsapp_link = f"https://wa.me/351914527565?text=Tenho%20interesse%20no%20{row['Modelo']}%20{int(row['Número'])}"
-        button_label = f"Enviar mensagem via WhatsApp para {row['Modelo']}"
-        st.button(button_label, on_click=lambda: st.experimental_set_query_params(whatsapp=whatsapp_link))
+        #button_label = f"Enviar mensagem via WhatsApp para {row['Modelo']}"
+        #st.button(button_label, on_click=lambda: st.experimental_set_query_params(whatsapp=whatsapp_link))
 
-        url = "https://www.streamlit.io"
-        st.write("check out this [link](%s)" % url)
-        st.markdown("check out this [link](%s)" % url)
+        st.write(f"Enviar mensagem via "[WhatsApp](%s)" % whatsapp_link)
         
         # Quantity input for adding or reducing stock
         quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=index)  # Unique key
