@@ -49,14 +49,17 @@ menu_lateral_imagem = "https://acdn.mitiendanube.com/stores/003/310/899/themes/c
 st.sidebar.image(menu_lateral_imagem, use_column_width=True)
 
 # Display Title and Description
-st.title("🌟Quinta Shop🌵")
+st.title(🌵"Quinta Shop"🛒)
 st.markdown("Verificação de estoque em tempo real")
 
 # Configuração da aplicação
-pagina_selecionada = st.sidebar.radio("Página", ["Stock", "Registro", "Reservation & Discount", "Active Reservations","Análise"])
+pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Stock", "Registro", "Reservation & Discount", "Active Reservations","Análise"])
+
+
+if pagina_selecionada == "Verificação de estoque":
 
 # Determinar qual página exibir com base na seleção do usuário
-if pagina_selecionada == "Stock":
+elif pagina_selecionada == "Stock":
     # Fetch existing shoes data
     existing_data = conn.read(worksheet="Shoes", usecols=["Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque"], ttl=5)
     existing_data = existing_data.dropna(how="all")
