@@ -110,6 +110,10 @@ if pagina_selecionada == "Verificação de estoque":
         
         st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make 
         st.markdown(f"**Numero Brasileiro:** {int(row['Numero Brasileiro'])}")  # Remove .0 and make 
+
+        whatsapp_link = f"https://wa.me/351914527565?text=Tenho%20interesse%20no%20{row['Modelo']}%20{int(row['Número'])}"
+        if st.button("Enviar mensagem via WhatsApp", key=index):
+            webbrowser.open_new_tab(whatsapp_link)
         
         # Quantity input for adding or reducing stock
         quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=index)  # Unique key
