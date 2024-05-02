@@ -58,7 +58,7 @@ pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","St
 
 if pagina_selecionada == "Verificação de estoque":
 # Fetch existing shoes data
-    existing_data = conn.read(worksheet="Shoes", usecols=["Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque"], ttl=5)
+    existing_data = conn.read(worksheet="Shoes", usecols=["Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque","Numero Brasileiro"], ttl=6)
     existing_data = existing_data.dropna(how="all")
 
     # Sidebar filters
@@ -91,7 +91,7 @@ if pagina_selecionada == "Verificação de estoque":
     # Display shoes information separately
     for index, row in filtered_data.iterrows():
         st.subheader(f"{row['Modelo']}")
-        st.markdown(f"**Número:**🇪🇺 {int(row['Número'])}")  # Remove .0 and make bold
+        st.markdown(f"**Número 🇪🇺:** {int(row['Número'])}")  # Remove .0 and make bold
         # Display the image from the URL
         if row['Imagem']:
             st.image(row['Imagem'])
@@ -103,8 +103,10 @@ if pagina_selecionada == "Verificação de estoque":
             st.markdown(f"**Preço:** {preco}€")
         else:
             st.markdown("Preço não disponível")
-        #st.markdown(f"**Preço:** {int(row['Preço'])}€")  # Displaying price in € and make bold
-        st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make bold
+        
+        st.markdown(f"**Estoque:** {int(row['Estoque'])}")  # Remove .0 and make 
+        st.markdown(f"**Numero Brasileiro:** {int(row['Numero Brasileiro'])}")  # Remove .0 and make 
+        
 
         # Quantity input for adding or reducing stock
         quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=index)  # Unique key
@@ -121,7 +123,7 @@ if pagina_selecionada == "Verificação de estoque":
         st.success("Estoque atualizado com sucesso!")
         # Reload the page after updating the inventory
         st.experimental_rerun()
-        
+
 # Determinar qual página exibir com base na seleção do usuário
 elif pagina_selecionada == "Stock":
     # Fetch existing shoes data
