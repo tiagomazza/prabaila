@@ -94,6 +94,7 @@ if pagina_selecionada == "Verificação de estoque":
 
     # Display shoes information separately
     for index, row in filtered_data.iterrows():
+        id_unico = f"{row['Modelo']}_{int(row['Número'])}"  # Criar um ID único combinando modelo e número
         st.subheader(f"{row['Modelo']}")
         st.markdown(f"**Número 🇪🇺:** {int(row['Número'])}")  # Remove .0 and make bold
         # Display the image from the URL
