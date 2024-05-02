@@ -65,7 +65,7 @@ if pagina_selecionada == "Verificação de estoque":
     st.sidebar.header("Filtros")
     
     numeros = existing_data["Número"].unique()
-    numeros_filtro = st.sidebar.multiselect("Filtrar por Número", numeros.astype(int), default=[])
+    numeros_filtro = st.sidebar.multiselect("Filtrar por Número", numeros.astype(int), default=numeros.astype(int))
 
     modelos = existing_data["Modelo"].unique()
     modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
