@@ -70,7 +70,6 @@ if pagina_selecionada == "Verificação de estoque":
     modelos = existing_data["Modelo"].unique()
     modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
     
-    numeros_disponiveis = existing_data["Número"].unique()
     numeros_europeus_selecionados = st.multiselect("Quais números europeus deseja consultar?", numeros_disponiveis, default=[])
 
     # Filter the data based on the selected filters
