@@ -48,7 +48,7 @@ menu_lateral_imagem = "https://acdn.mitiendanube.com/stores/003/310/899/themes/c
 st.sidebar.image(menu_lateral_imagem, use_column_width=True)
 
 # Display Title and Description
-st.title("🌟Loja da Quinta🌵")
+st.title("🌟Quinta Shop🌵")
 st.markdown("Sistema de controle de modelos.")
 
 # Configuração da aplicação
@@ -92,7 +92,7 @@ if pagina_selecionada == "Stock":
     # Display shoes information separately
     for index, row in filtered_data.iterrows():
         st.subheader(f"{row['Modelo']}")
-        st.markdown(f"**Número:** {int(row['Número'])}")  # Remove .0 and make bold
+        st.markdown(f"**Número 🇪🇺:** {int(row['Número'])}")  # Remove .0 and make bold
         # Display the image from the URL
         if row['Imagem']:
             st.image(row['Imagem'])
