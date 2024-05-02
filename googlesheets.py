@@ -50,7 +50,7 @@ st.sidebar.image(menu_lateral_imagem, use_column_width=True)
 
 # Display Title and Description
 st.title("Quinta Shop🛒")
-st.markdown("Verificação de estoque em tempo real")
+st.markdown("Busca de modelos disponíveis")
 
 # Configuração da aplicação
 pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Stock", "Registro", "Reservation & Discount", "Active Reservations","Análise"])
@@ -70,7 +70,7 @@ if pagina_selecionada == "Verificação de estoque":
     modelos = existing_data["Modelo"].unique()
     modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
     
-    numeros_europeus_selecionados = st.multiselect("Quais números europeus deseja consultar?", numeros.astype(int), default=[])
+    numeros_europeus_selecionados = st.multiselect("Qual seu numero de calçado europeus?", numeros.astype(int), default=[])
 
     # Filter the data based on the selected filters
     filtered_data = existing_data[
@@ -96,7 +96,7 @@ if pagina_selecionada == "Verificação de estoque":
     for index, row in filtered_data.iterrows():
         id_unico = f"{row['Modelo']}_{int(row['Número'])}"  # Criar um ID único combinando modelo e número
         st.subheader(f"{row['Modelo']}")
-        st.markdown(f"**Número 🇪🇺:** {int(row['Número'])}")  # Remove .0 and make bold
+        st.markdown(f"🇪🇺 **Número:** {int(row['Número'])}")  # Remove .0 and make bold
         # Display the image from the URL
         if row['Imagem']:
             st.image(row['Imagem'])
