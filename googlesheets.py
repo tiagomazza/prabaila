@@ -117,8 +117,8 @@ if pagina_selecionada == "Verificação de estoque":
         #button_label = f"Enviar mensagem via WhatsApp para {row['Modelo']}"
         #st.button(button_label, on_click=lambda: st.experimental_set_query_params(whatsapp=whatsapp_link))
 
-        st.write(f"Enviar mensagem via "[WhatsApp](%s)" % whatsapp_link)
-        
+        st.write(f"Enviar mensagem via [WhatsApp](%s)" % whatsapp_link)
+
         # Quantity input for adding or reducing stock
         quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=index)  # Unique key
 
