@@ -75,7 +75,8 @@ if pagina_selecionada == "Verificação de estoque":
     # Filter the data based on the selected filters
     filtered_data = existing_data[
         (existing_data["Modelo"].isin(modelos_filtro)) & 
-        (existing_data["Número"].isin(numeros_filtro))
+        (existing_data["Número"].isin(numeros_europeus_selecionados))
+        
         
     ]
 
