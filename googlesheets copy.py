@@ -92,7 +92,7 @@ if pagina_selecionada == "Stock":
     # Display shoes information separately
     for index, row in filtered_data.iterrows():
         st.subheader(f"{row['Modelo']}")
-        st.markdown(f"**Número 🇪🇺:** {int(row['Número'])}")  # Remove .0 and make bold
+        st.markdown(f"**Número:**  🇪🇺 {int(row['Número'])}")  # Remove .0 and make bold
         # Display the image from the URL
         if row['Imagem']:
             st.image(row['Imagem'])
