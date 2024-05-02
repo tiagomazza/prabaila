@@ -64,8 +64,8 @@ if pagina_selecionada == "Verificação de estoque":
     # Sidebar filters
     st.sidebar.header("Filtros")
     
-    numeros = existing_data["Número"].unique()
-    numeros_filtro = st.sidebar.multiselect("Filtrar por Número", numeros.astype(int), default=numeros.astype(int))
+    #numeros = existing_data["Número"].unique()
+    #numeros_filtro = st.sidebar.multiselect("Filtrar por Número", numeros.astype(int), default=numeros.astype(int))
 
     modelos = existing_data["Modelo"].unique()
     modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
@@ -75,8 +75,8 @@ if pagina_selecionada == "Verificação de estoque":
     # Filter the data based on the selected filters
     filtered_data = existing_data[
         (existing_data["Modelo"].isin(modelos_filtro)) & 
-        (existing_data["Número"].isin(numeros_filtro)) &
         (existing_data["Número"].isin(numeros_filtro))
+        
     ]
 
     # Add a toggle button to show/hide shoes with zero stock
