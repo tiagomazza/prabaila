@@ -116,8 +116,7 @@ if pagina_selecionada == "Verificação de estoque":
         modelo_formatado = row['Modelo'].replace(" ", "%20")
         whatsapp_link = f"https://wa.me/351914527565?text=Tenho%20interesse%20no%20{modelo_formatado}%20{int(row['Número'])}"
         
-        st.subheader(f"Gostou deste modelo?") 
-        st.subheader(f"Converse connosco pelo [WhatsApp](%s)" % whatsapp_link)
+        st.subheader(f"Gostou deste modelo? Converse connosco pelo [WhatsApp](%s)" % whatsapp_link)
 
         # Quantity input for adding or reducing stock
         quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=index)  # Unique key
