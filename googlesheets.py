@@ -113,7 +113,8 @@ if pagina_selecionada == "Verificação de estoque":
         st.markdown(f"**Numero Brasileiro:** {int(row['Numero Brasileiro'])}")  # Remove .0 and make 
 
     # Adicionar botão com link para o WhatsApp
-        whatsapp_link = f"https://wa.me/351914527565?text=Tenho%20interesse%20no%20{row['Modelo']}%20{int(row['Número'])}"
+        modelo_formatado = row['Modelo'].replace(" ", "%20")
+        whatsapp_link = f"https://wa.me/351914527565?text=Tenho%20interesse%20no%20{row['modelo_formatado']}%20{int(row['Número'])}"
         #button_label = f"Enviar mensagem via WhatsApp para {row['Modelo']}"
         #st.button(button_label, on_click=lambda: st.experimental_set_query_params(whatsapp=whatsapp_link))
 
