@@ -65,7 +65,7 @@ if pagina_selecionada == "Verificação de estoque":
     st.sidebar.header("Filtros")
     
     numeros = existing_data["Número"].unique()
-    numeros_filtro = st.sidebar.multiselect("Filtrar por Número", numeros.astype(int), default=numeros.astype(int))
+    numeros_filtro = st.sidebar.multiselect("Filtrar por Número", numeros.astype(int), default=[])
 
     modelos = existing_data["Modelo"].unique()
     modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
@@ -100,7 +100,7 @@ if pagina_selecionada == "Verificação de estoque":
         st.markdown(f"**Descrição:** {row['Descrição']}")  # Make bold
         preco = row.get('Preço')
         if preco is not None:
-            st.markdown(f"**Preço:** {preco}€")
+            st.markdown(f"**Preço:** {int(row['preço'])}")
         else:
             st.markdown("Preço não disponível")
         
