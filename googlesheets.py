@@ -78,6 +78,68 @@ def analysis_page():
         total_by_payment_method = existing_data.groupby("Method of Payment")["Value"].sum()
         st.write(total_by_payment_method)
 
+def analysis_page():
+    st.title("Registro")
+    # Proteger a página com uma senha
+    if protected_page():
+    
+        existing_data_reservations = load_existing_data("Reservations")
+        existing_data_shoes = load_existing_data("Shoes")
+        modelos_existentes = existing_data_shoes["Modelo"].unique()
+        movimentacao_options = ["Venda", "Oferta", "Reserva", "Devolução", "Chegada de Material"]
+
+        with st.form(key="vendor_form"):
+            name = st.text_input(label="Name*")
+            email = st.text_input("E-mail")
+            whatsapp = st.text_input("WhatsApp with international code")
+            products = st.multiselect("Wished shoes", options=modelos_existentes)
+            size = st.slider("Numeração", 34, 45, 34)
+            method_of_payment = st.selectbox("Method of Payment", ["Dinheiro", "Mbway", "Transferência","Wise","Revolut","Paypal"])
+            value = st.slider("Valor (€)", 5, 150, 5, step=5)
+            movimentacao = st.slider("Movimentação de Stock", -10, 10, 0)
+            movimentacao_type = st.selectbox("Tipo de Movimentação", movimentacao_options)
+            additional_info = st.text_area(label="Additional Notes")
+
+            st.markdown("**required*")
+
+            submit_button = st.form_submit_button(label="Submit Details")
+
+            if submit_button:
+                submission_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                new_row = {
+                    "Name": name,
+                    "Email": email,
+                    "Whatsapp": whatsapp,
+                    "Products": ", ".join(products),
+                    "Size": size,
+                    "Method of Payment": method_of_payment,
+                    "Value": value,
+                    "Movimentação de Stock": movimentacao,
+                    "Tipo de Movimentação": movimentacao_type,
+                    "AdditionalInfo": additional_info,
+                    "SubmissionDateTime": submission_datetime,
+                }
+
+                # Adiciona a nova linha à lista de dicionários
+                new_rows = existing_data_reservations.to_dict(orient="records")
+                new_rows.append(new_row)
+
+                # Atualiza a planilha com todas as informações
+                conn.update(worksheet="Reservations", data=new_rows)
+
+                st.success("Details successfully submitted!")
+
+                name = ""
+                email = ""
+                whatsapp = ""
+                products = []
+                size = 34
+                method_of_payment = ""
+                value = 5
+                movimentacao = 0
+                movimentacao_type = ""
+                additional_info = ""
+
 # Imagem para exibir no menu lateral
 menu_lateral_imagem = "https://acdn.mitiendanube.com/stores/003/310/899/themes/common/logo-1595099445-1706530812-af95f05363b68e950e5bd6a386042dd21706530812-320-0.webp"
 
@@ -86,14 +148,14 @@ st.sidebar.image(menu_lateral_imagem, use_column_width=True)
 
 # Display Title and Description
 st.title("Quinta Shop🛒")
-st.subheader("Busca de modelos disponíveis")
 
 # Configuração da aplicação
-pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Stock", "Registro","Active Reservations","Análise"])
+pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Registro","Active Reservations","Análise"])
 
 # Página Verificação de estoque
 if pagina_selecionada == "Verificação de estoque":
     # Fetch existing shoes data
+    st.subheader("Busca de modelos disponíveis")
     existing_data = conn.read(worksheet="Shoes", usecols=["Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], ttl=6)
     existing_data.dropna(subset=["Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], inplace=True)
 
@@ -175,70 +237,11 @@ if pagina_selecionada == "Verificação de estoque":
 
 # Página Registro
 elif pagina_selecionada == "Registro":
-    st.title("Registro")
-
-    existing_data_reservations = load_existing_data("Reservations")
-    existing_data_shoes = load_existing_data("Shoes")
-    modelos_existentes = existing_data_shoes["Modelo"].unique()
-    movimentacao_options = ["Venda", "Oferta", "Reserva", "Devolução", "Chegada de Material"]
-
-    with st.form(key="vendor_form"):
-        name = st.text_input(label="Name*")
-        email = st.text_input("E-mail")
-        whatsapp = st.text_input("WhatsApp with international code")
-        products = st.multiselect("Wished shoes", options=modelos_existentes)
-        size = st.slider("Numeração", 34, 45, 34)
-        method_of_payment = st.selectbox("Method of Payment", ["Dinheiro", "Mbway", "Transferência","Wise","Revolut","Paypal"])
-        value = st.slider("Valor (€)", 5, 150, 5, step=5)
-        movimentacao = st.slider("Movimentação de Stock", -10, 10, 0)
-        movimentacao_type = st.selectbox("Tipo de Movimentação", movimentacao_options)
-        additional_info = st.text_area(label="Additional Notes")
-
-        st.markdown("**required*")
-
-        submit_button = st.form_submit_button(label="Submit Details")
-
-        if submit_button:
-            submission_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            new_row = {
-                "Name": name,
-                "Email": email,
-                "Whatsapp": whatsapp,
-                "Products": ", ".join(products),
-                "Size": size,
-                "Method of Payment": method_of_payment,
-                "Value": value,
-                "Movimentação de Stock": movimentacao,
-                "Tipo de Movimentação": movimentacao_type,
-                "AdditionalInfo": additional_info,
-                "SubmissionDateTime": submission_datetime,
-            }
-
-            # Adiciona a nova linha à lista de dicionários
-            new_rows = existing_data_reservations.to_dict(orient="records")
-            new_rows.append(new_row)
-
-            # Atualiza a planilha com todas as informações
-            conn.update(worksheet="Reservations", data=new_rows)
-
-            st.success("Details successfully submitted!")
-
-            name = ""
-            email = ""
-            whatsapp = ""
-            products = []
-            size = 34
-            method_of_payment = ""
-            value = 5
-            movimentacao = 0
-            movimentacao_type = ""
-            additional_info = ""
-
+    register_page()
 
 elif pagina_selecionada == "Active Reservations":
     # Exibir a página de reservas ativas
     active_reservations_page()
 
 elif pagina_selecionada == "Análise":
-    st.title("Análise dos Dados de Reservations")
     analysis_page()
