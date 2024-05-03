@@ -42,6 +42,8 @@ def active_reservations_page():
         # Exibir os dados existentes
         display_existing_data(existing_data)
 
+import streamlit as st
+
 def analysis_page():
     st.title("Análise dos Dados de Reservations")
 
@@ -64,11 +66,6 @@ def analysis_page():
         st.write("Total vendido por numeração:")
         st.write(total_sold_by_size)
 
-        # Total de cada tipo de movimentação de stock
-        st.write("Total de cada tipo de movimentação de stock:")
-        total_stock_movements = existing_data["Tipo de Movimentação"].value_counts()
-        st.write(total_stock_movements)
-
         # Total de valores recebidos
         total_values_received = existing_data["Value"].sum()
         st.write(f"Total de valores recebidos: {total_values_received}")
@@ -77,6 +74,18 @@ def analysis_page():
         st.write("Movimentação por forma de pagamento:")
         total_by_payment_method = existing_data.groupby("Method of Payment")["Value"].sum()
         st.write(total_by_payment_method)
+
+        # Barra lateral para filtrar por tipo de movimentação
+        selected_movement_type = st.sidebar.selectbox("Filtrar por Tipo de Movimentação", 
+                                                      existing_data["Tipo de Movimentação"].unique())
+        
+        # Filtrar os dados pelo tipo de movimentação selecionado
+        filtered_data = existing_data[existing_data["Tipo de Movimentação"] == selected_movement_type]
+
+        # Total de cada tipo de movimentação de stock
+        st.write("Total de cada tipo de movimentação de stock:")
+        total_stock_movements = filtered_data["Tipo de Movimentação"].value_counts()
+        st.write(total_stock_movements)
 
 def register_page():
     st.title("Registro")
