@@ -55,6 +55,7 @@ st.subheader("Busca de modelos disponíveis")
 # Configuração da aplicação
 pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Stock", "Registro", "Reservation & Discount", "Active Reservations","Análise"])
 
+print(existing_data.columns)
 
 if pagina_selecionada == "Verificação de estoque":
     # Fetch existing shoes data
