@@ -101,6 +101,11 @@ if pagina_selecionada == "Verificação de estoque":
     st.sidebar.header("Total do Estoque:")
     st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
 
+    numeros_disponiveis = filtered_data["Número"].unique()
+
+    # Substituir o st.number_input pelo st.multiselect com base nos números disponíveis
+    numeros_europeus_selecionados = st.multiselect("Quais números europeus deseja consultar?", numeros_disponiveis, default=[])
+
     # Display shoes information separately
     for index, row in filtered_data.iterrows():
         id_unico = f"{row['Modelo']}_{int(row['Número'])}"  # Criar um ID único combinando modelo e número
