@@ -46,6 +46,8 @@ import streamlit as st
 
 import streamlit as st
 
+import streamlit as st
+
 def analysis_page():
     st.title("Análise dos Dados de Reservations")
 
@@ -88,6 +90,11 @@ def analysis_page():
         st.write("Total de cada tipo de movimentação de stock:")
         total_stock_movements = filtered_data["Tipo de Movimentação"].value_counts()
         st.write(total_stock_movements)
+
+        # Mostrar a tabela de dados filtrada
+        st.write("Dados filtrados:")
+        st.write(filtered_data)
+
 
 
 def register_page():
