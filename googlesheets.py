@@ -70,15 +70,23 @@ if pagina_selecionada == "Verificação de estoque":
     modelos = existing_data["Modelo"].unique()
     modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
     
-    numeros_europeus_selecionados = st.multiselect("Qual seu numero de calçado europeu?", numeros.astype(int), default=[])
+    deslize_opcoes = existing_data["Deslize"].unique()
+    deslize_filtro = st.sidebar.multiselect("Filtrar por Deslize", deslize_opcoes, default=deslize_opcoes)
 
-    # Filter the data based on the selected filters
+    amortecimento_opcoes = existing_data["Amortecimento"].unique()
+    amortecimento_filtro = st.sidebar.multiselect("Filtrar por Amortecimento", amortecimento_opcoes, default=amortecimento_opcoes)
+
+    cor_sola_opcoes = existing_data["Cor da sola"].unique()
+    cor_sola_filtro = st.sidebar.multiselect("Filtrar por Cor da sola", cor_sola_opcoes, default=cor_sola_opcoes)
+
     filtered_data = existing_data[
         (existing_data["Modelo"].isin(modelos_filtro)) & 
-        (existing_data["Número"].isin(numeros_europeus_selecionados))
-        
-        
+        (existing_data["Número"].isin(numeros_filtro)) &
+        (existing_data["Deslize"].isin(deslize_filtro)) &
+        (existing_data["Amortecimento"].isin(amortecimento_filtro)) &
+        (existing_data["Cor da sola"].isin(cor_sola_filtro))
     ]
+        
 
     # Add a toggle button to show/hide shoes with zero stock
     show_zero_stock = st.sidebar.checkbox("Mostrar sem stock")
@@ -109,7 +117,7 @@ if pagina_selecionada == "Verificação de estoque":
         else:
             st.markdown("Preço não disponível")
         
-        st.markdown(f"📦 **Estoque:** {int(row['Estoque'])}")  # Remove .0 and make 
+        st.markdown(f"📦 **Unidades em estoque:** {int(row['Estoque'])}")  # Remove .0 and make 
         st.markdown(f"🇧🇷 **Numero:** {int(row['Numero Brasileiro'])}")  # Remove .0 and make 
 
     # Adicionar botão com link para o WhatsApp
