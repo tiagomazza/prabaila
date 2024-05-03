@@ -153,7 +153,7 @@ if pagina_selecionada == "Verificação de estoque":
        # st.experimental_rerun()
 
 whatsapp_link2 =("https://wa.me/351914527565?text=Preciso%20de%20ajuda%20com%20os%20modelos")
-if numeros_europeus_selecionados =! ""
+if numeros_europeus_selecionados != "":
     st.subheader(f"Não encontrou um modelo que lhe agrada? Converse connosco pelo [WhatsApp](%s)" % whatsapp_link2)
 
 # Página Registro
