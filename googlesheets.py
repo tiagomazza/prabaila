@@ -308,22 +308,21 @@ def main():
         analysis_page()
 
    st.write(
-        """
-        <style>
-        #elemento-a-ocultar {
-            display: none;
-        }
-        .classe-a-ocultar {
-            display: none;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+   """
+   <style>
+   #elemento-a-ocultar {
+       display: none;
+   }
+   .classe-a-ocultar {
+       display: none;
+   }
+   </style>
+   """,
+   unsafe_allow_html=True)
 
-    # Elementos ocultos
-    st.markdown("<div id='elemento-a-ocultar'>Este elemento está oculto.</div>", unsafe_allow_html=True)
-    st.markdown("<div class='classe-a-ocultar'>Este elemento também está oculto.</div>", unsafe_allow_html=True)
+# Elementos ocultos
+st.markdown("<div id='elemento-a-ocultar'>Este elemento está oculto.</div>", unsafe_allow_html=True)
+st.markdown("<div class='classe-a-ocultar'>Este elemento também está oculto.</div>", unsafe_allow_html=True)                    
 
 if __name__ == "__main__":
     main()
