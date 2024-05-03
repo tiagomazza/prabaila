@@ -124,7 +124,7 @@ if pagina_selecionada == "Verificação de estoque":
         else:
             st.markdown("Preço não disponível")
 
-        st.markdown(f"📝 **Descrição:** {row['Descrição']}")  # Make bold
+        st.markdown(f"📝 **Observações:** {row['Descrição']}")  # Make bold
 
     # Adicionar botão com link para o WhatsApp
         modelo_formatado = row['Modelo'].replace(" ", "%20")
@@ -146,6 +146,7 @@ if pagina_selecionada == "Verificação de estoque":
         st.success("Estoque atualizado com sucesso!")
         # Reload the page after updating the inventory
         st.experimental_rerun()
+    st.markdown("---")
 
 
 # Página Registro
