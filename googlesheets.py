@@ -4,7 +4,6 @@ import pandas as pd
 from datetime import datetime
 import plotly.express as px
 
-# Initialize Streamlit connection
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 # Função para proteger a página com senha
@@ -54,15 +53,10 @@ st.title("Quinta Shop🛒")
 st.subheader("Busca de modelos disponíveis")
 
 # Configuração da aplicação
-pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque", "Active Reservations"])
+pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Registro","Active Reservations","Análise"])
 
-# Variável de controle para exibir ou não outras páginas
-mostrar_outras_paginas = False
 
 if pagina_selecionada == "Verificação de estoque":
-    # Proteger a página com senha
-    mostrar_outras_paginas = protected_page()
-
     # Fetch existing shoes data
     existing_data = conn.read(worksheet="Shoes", usecols=["Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], ttl=6)
     existing_data.dropna(subset=["Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], inplace=True)
@@ -143,102 +137,125 @@ if pagina_selecionada == "Verificação de estoque":
         st.subheader(f"Gostou deste modelo? Converse connosco pelo [WhatsApp](%s)" % whatsapp_link)
         st.markdown("---")
 
+        # Quantity input for adding or reducing stock
+      #  quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=index)  # Unique key
+
+        # Update the inventory if quantity is provided
+     #   if quantity != 0:
+     #       updated_stock = row['Estoque'] + quantity
+      #      existing_data.at[index, 'Estoque'] = updated_stock
+
+    # Update Google Sheets with the updated inventory
+   # if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
+    #    conn.update(worksheet="Shoes", data=existing_data)
+     #   st.success("Estoque atualizado com sucesso!")
+      #  # Reload the page after updating the inventory
+       # st.experimental_rerun()
+
+whatsapp_link2 = "https://wa.me/351914527565?text=Preciso%20de%20ajuda%20com%20os%20modelos"
+
+if numeros_europeus_selecionados:
+    st.subheader(f"Não encontrou um modelo que lhe agrada? Converse conosco pelo [WhatsApp]({whatsapp_link2})")
+
+# Página Registro
+elif pagina_selecionada == "Registro":
+    active_reservations_page()
+    st.title("Registro")
+
+    existing_data_reservations = load_existing_data("Reservations")
+    existing_data_shoes = load_existing_data("Shoes")
+    modelos_existentes = existing_data_shoes["Modelo"].unique()
+    movimentacao_options = ["Venda", "Oferta", "Reserva", "Devolução", "Chegada de Material"]
+
+    with st.form(key="vendor_form"):
+        name = st.text_input(label="Name*")
+        email = st.text_input("E-mail")
+        whatsapp = st.text_input("WhatsApp with international code")
+        products = st.multiselect("Wished shoes", options=modelos_existentes)
+        size = st.slider("Numeração", 34, 45, 34)
+        method_of_payment = st.selectbox("Method of Payment", ["Dinheiro", "Mbway", "Transferência","Wise","Revolut","Paypal"])
+        value = st.slider("Valor (€)", 5, 150, 5, step=5)
+        movimentacao = st.slider("Movimentação de Stock", -10, 10, 0)
+        movimentacao_type = st.selectbox("Tipo de Movimentação", movimentacao_options)
+        additional_info = st.text_area(label="Additional Notes")
+
+        st.markdown("**required*")
+
+        submit_button = st.form_submit_button(label="Submit Details")
+
+        if submit_button:
+            submission_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            new_row = {
+                "Name": name,
+                "Email": email,
+                "Whatsapp": whatsapp,
+                "Products": ", ".join(products),
+                "Size": size,
+                "Method of Payment": method_of_payment,
+                "Value": value,
+                "Movimentação de Stock": movimentacao,
+                "Tipo de Movimentação": movimentacao_type,
+                "AdditionalInfo": additional_info,
+                "SubmissionDateTime": submission_datetime,
+            }
+
+            # Adiciona a nova linha à lista de dicionários
+            new_rows = existing_data_reservations.to_dict(orient="records")
+            new_rows.append(new_row)
+
+            # Atualiza a planilha com todas as informações
+            conn.update(worksheet="Reservations", data=new_rows)
+
+            st.success("Details successfully submitted!")
+
+            name = ""
+            email = ""
+            whatsapp = ""
+            products = []
+            size = 34
+            method_of_payment = ""
+            value = 5
+            movimentacao = 0
+            movimentacao_type = ""
+            additional_info = ""
+
+
+
 elif pagina_selecionada == "Active Reservations":
     # Exibir a página de reservas ativas
     active_reservations_page()
 
-# Adicionar condição para exibir outras páginas
-if mostrar_outras_paginas:
-    if pagina_selecionada == "Registro":
-        st.title("Registro")
+elif pagina_selecionada == "Análise":
+    st.title("Análise dos Dados de Reservations")
+    active_reservations_page()
 
-        existing_data_reservations = load_existing_data("Reservations")
-        existing_data_shoes = load_existing_data("Shoes")
-        modelos_existentes = existing_data_shoes["Modelo"].unique()
-        movimentacao_options = ["Venda", "Oferta", "Reserva", "Devolução", "Chegada de Material"]
+    # Carregar os dados existentes
+    existing_data = load_existing_data("Reservations")
 
-        with st.form(key="vendor_form"):
-            name = st.text_input(label="Name*")
-            email = st.text_input("E-mail")
-            whatsapp = st.text_input("WhatsApp with international code")
-            products = st.multiselect("Wished shoes", options=modelos_existentes)
-            size = st.slider("Numeração", 34, 45, 34)
-            method_of_payment = st.selectbox("Method of Payment", ["Dinheiro", "Mbway", "Transferência","Wise","Revolut","Paypal"])
-            value = st.slider("Valor (€)", 5, 150, 5, step=5)
-            movimentacao = st.slider("Movimentação de Stock", -10, 10, 0)
-            movimentacao_type = st.selectbox("Tipo de Movimentação", movimentacao_options)
-            additional_info = st.text_area(label="Additional Notes")
+    # Número total de artigos vendidos
+    total_articles_sold = existing_data.shape[0]
+    st.write(f"Número total de artigos vendidos: {total_articles_sold}")
 
-            st.markdown("**required*")
+    # Total vendido de cada modelo
+    total_sold_by_model = existing_data["Products"].str.split(", ", expand=True).stack().value_counts()
+    st.write("Total vendido por modelo:")
+    st.write(total_sold_by_model)
 
-            submit_button = st.form_submit_button(label="Submit Details")
+    # Total vendido por numeração
+    total_sold_by_size = existing_data.groupby("Size").size()
+    st.write("Total vendido por numeração:")
+    st.write(total_sold_by_size)
 
-            if submit_button:
-                submission_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                new_row = {
-                    "Name": name,
-                    "Email": email,
-                    "Whatsapp": whatsapp,
-                    "Products": ", ".join(products),
-                    "Size": size,
-                    "Method of Payment": method_of_payment,
-                    "Value": value,
-                    "Movimentação de Stock": movimentacao,
-                    "Tipo de Movimentação": movimentacao_type,
-                    "AdditionalInfo": additional_info,
-                    "SubmissionDateTime": submission_datetime,
-                }
+    # Total de cada tipo de movimentação de stock
+    st.write("Total de cada tipo de movimentação de stock:")
+    total_stock_movements = existing_data["Tipo de Movimentação"].value_counts()
+    st.write(total_stock_movements)
 
-                # Adiciona a nova linha à lista de dicionários
-                new_rows = existing_data_reservations.to_dict(orient="records")
-                new_rows.append(new_row)
+    # Total de valores recebidos
+    total_values_received = existing_data["Value"].sum()
+    st.write(f"Total de valores recebidos: {total_values_received}")
 
-                # Atualiza a planilha com todas as informações
-                conn.update(worksheet="Reservations", data=new_rows)
-
-                st.success("Details successfully submitted!")
-
-                name = ""
-                email = ""
-                whatsapp = ""
-                products = []
-                size = 34
-                method_of_payment = ""
-                value = 5
-                movimentacao = 0
-                movimentacao_type = ""
-                additional_info = ""
-
-    elif pagina_selecionada == "Análise":
-        st.title("Análise dos Dados de Reservations")
-
-        # Carregar os dados existentes
-        existing_data = load_existing_data("Reservations")
-
-        # Número total de artigos vendidos
-        total_articles_sold = existing_data.shape[0]
-        st.write(f"Número total de artigos vendidos: {total_articles_sold}")
-
-        # Total vendido de cada modelo
-        total_sold_by_model = existing_data["Products"].str.split(", ", expand=True).stack().value_counts()
-        st.write("Total vendido por modelo:")
-        st.write(total_sold_by_model)
-
-        # Total vendido por numeração
-        total_sold_by_size = existing_data.groupby("Size").size()
-        st.write("Total vendido por numeração:")
-        st.write(total_sold_by_size)
-
-        # Total de cada tipo de movimentação de stock
-        st.write("Total de cada tipo de movimentação de stock:")
-        total_stock_movements = existing_data["Tipo de Movimentação"].value_counts()
-        st.write(total_stock_movements)
-
-        # Total de valores recebidos
-        total_values_received = existing_data["Value"].sum()
-        st.write(f"Total de valores recebidos: {total_values_received}")
-
-        # Movimentação por forma de pagamento
-        st.write("Movimentação por forma de pagamento:")
-        total_by_payment_method = existing_data.groupby("Method of Payment")["Value"].sum()
-        st.write(total_by_payment_method)
+    # Movimentação por forma de pagamento
+    st.write("Movimentação por forma de pagamento:")
+    total_by_payment_method = existing_data.groupby("Method of Payment")["Value"].sum()
+    st.write(total_by_payment_method)
