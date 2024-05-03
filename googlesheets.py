@@ -104,17 +104,17 @@ def register_page():
         existing_data_reservations = load_existing_data("Reservations")
         existing_data_shoes = load_existing_data("Shoes")
         modelos_existentes = existing_data_shoes["Modelo"].unique()
-        movimentacao_options = ["Venda", "Oferta", "Reserva", "Devolução", "Chegada de Material"]
+        movimentacao_options = ["Venda", "Oferta", "Reserva", "Devolução", "Entrada de Material"]
 
         with st.form(key="vendor_form"):
             name = st.text_input(label="Name*")
             email = st.text_input("E-mail")
             whatsapp = st.text_input("WhatsApp with international code")
-            products = st.multiselect("Wished shoes", options=modelos_existentes)
-            size = st.slider("Numeração", 34, 45, 34)
+            products = st.multiselect("Shoes", options=modelos_existentes)
+            size = st.slider("Numeração", 36, 45, 34)
             method_of_payment = st.selectbox("Method of Payment", ["Dinheiro", "Mbway", "Transferência","Wise","Revolut","Paypal"])
-            value = st.slider("Valor (€)", 5, 150, 5, step=5)
-            movimentacao = st.slider("Movimentação de Stock", -10, 10, 0)
+            value = st.slider("Valor (€)", 0, 150, 5, step=5)
+            movimentacao = st.slider("Movimentação de Stock", 0, 10, 0)
             movimentacao_type = st.selectbox("Tipo de Movimentação", movimentacao_options)
             additional_info = st.text_area(label="Additional Notes")
 
@@ -175,21 +175,21 @@ st.sidebar.image(menu_lateral_imagem, use_column_width=True)
 st.title("Quinta Shop🛒")
 
 # Configuração da aplicação
-pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Registro","Active Reservations","Análise"])
+pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Registro","Análise"])
 
 def get_sales_quantity(id_):
     existing_data_reservations = load_existing_data("Reservations")
     
     # Filtrar dados com base no ID e tipo de movimentação
     filtered_data = existing_data_reservations[(existing_data_reservations["ID"] == id_) &
-                                               (existing_data_reservations["Tipo de Movimentação"].isin(["Venda", "Oferta"]))]
+                                               (existing_data_reservations["Tipo de Movimentação"].isin(["Venda", "Oferta","Devolução"]))]
 
     # Somar as quantidades de venda e oferta
     sales_quantity = filtered_data["Movimentação de Stock"].sum()
 
     # Filtrar dados com base no ID e tipo de movimentação para subtração
     subtraction_data = existing_data_reservations[(existing_data_reservations["ID"] == id_) &
-                                                  (existing_data_reservations["Tipo de Movimentação"] == "Entrada de Material")]
+                                                  (existing_data_reservations["Tipo de Movimentação"] == "Entrada de Material", "Reserva")]
 
     # Subtrair as quantidades de entrada de material
     subtraction_quantity = subtraction_data["Movimentação de Stock"].sum()
