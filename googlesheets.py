@@ -42,6 +42,42 @@ def active_reservations_page():
         # Exibir os dados existentes
         display_existing_data(existing_data)
 
+def analysis_page():
+    st.title("Análise dos Dados de Reservations")
+
+    # Proteger a página com uma senha
+    if protected_page():
+        # Carregar os dados existentes
+        existing_data = load_existing_data("Reservations")
+
+        # Número total de artigos vendidos
+        total_articles_sold = existing_data.shape[0]
+        st.write(f"Número total de artigos vendidos: {total_articles_sold}")
+
+        # Total vendido de cada modelo
+        total_sold_by_model = existing_data["Products"].str.split(", ", expand=True).stack().value_counts()
+        st.write("Total vendido por modelo:")
+        st.write(total_sold_by_model)
+
+        # Total vendido por numeração
+        total_sold_by_size = existing_data.groupby("Size").size()
+        st.write("Total vendido por numeração:")
+        st.write(total_sold_by_size)
+
+        # Total de cada tipo de movimentação de stock
+        st.write("Total de cada tipo de movimentação de stock:")
+        total_stock_movements = existing_data["Tipo de Movimentação"].value_counts()
+        st.write(total_stock_movements)
+
+        # Total de valores recebidos
+        total_values_received = existing_data["Value"].sum()
+        st.write(f"Total de valores recebidos: {total_values_received}")
+
+        # Movimentação por forma de pagamento
+        st.write("Movimentação por forma de pagamento:")
+        total_by_payment_method = existing_data.groupby("Method of Payment")["Value"].sum()
+        st.write(total_by_payment_method)
+
 # Imagem para exibir no menu lateral
 menu_lateral_imagem = "https://acdn.mitiendanube.com/stores/003/310/899/themes/common/logo-1595099445-1706530812-af95f05363b68e950e5bd6a386042dd21706530812-320-0.webp"
 
@@ -53,7 +89,7 @@ st.title("Quinta Shop🛒")
 st.subheader("Busca de modelos disponíveis")
 
 # Configuração da aplicação
-pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Stock", "Registro", "Reservation & Discount", "Active Reservations","Análise"])
+pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Stock", "Registro","Active Reservations","Análise"])
 
 # Página Verificação de estoque
 if pagina_selecionada == "Verificação de estoque":
@@ -198,9 +234,6 @@ elif pagina_selecionada == "Registro":
             movimentacao_type = ""
             additional_info = ""
 
-elif pagina_selecionada == "Reservation & Discount":
-    # Código para a página de reservas e descontos
-    pass
 
 elif pagina_selecionada == "Active Reservations":
     # Exibir a página de reservas ativas
@@ -208,6 +241,7 @@ elif pagina_selecionada == "Active Reservations":
 
 elif pagina_selecionada == "Análise":
     st.title("Análise dos Dados de Reservations")
+    analysis_page()
 
     # Carregar os dados existentes
     existing_data = load_existing_data("Reservations")
