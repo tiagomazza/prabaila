@@ -48,6 +48,8 @@ import streamlit as st
 
 import streamlit as st
 
+import streamlit as st
+
 def analysis_page():
     st.title("Análise dos Dados de Reservations")
 
@@ -56,29 +58,6 @@ def analysis_page():
         # Carregar os dados existentes
         existing_data = load_existing_data("Reservations")
 
-        # Número total de artigos vendidos
-        total_articles_sold = existing_data.shape[0]
-        st.write(f"Número total de artigos vendidos: {total_articles_sold}")
-
-        # Total vendido de cada modelo
-        total_sold_by_model = existing_data["Products"].str.split(", ", expand=True).stack().value_counts()
-        st.write("Total vendido por modelo:")
-        st.write(total_sold_by_model)
-
-        # Total vendido por numeração
-        total_sold_by_size = existing_data.groupby("Size").size()
-        st.write("Total vendido por numeração:")
-        st.write(total_sold_by_size)
-
-        # Total de valores recebidos
-        total_values_received = existing_data["Value"].sum()
-        st.write(f"Total de valores recebidos: {total_values_received}")
-
-        # Movimentação por forma de pagamento
-        st.write("Movimentação por forma de pagamento:")
-        total_by_payment_method = existing_data.groupby("Method of Payment")["Value"].sum()
-        st.write(total_by_payment_method)
-
         # Barra lateral para filtrar por tipo de movimentação
         selected_movement_type = st.sidebar.selectbox("Filtrar por Tipo de Movimentação", 
                                                       existing_data["Tipo de Movimentação"].unique())
@@ -86,14 +65,33 @@ def analysis_page():
         # Filtrar os dados pelo tipo de movimentação selecionado
         filtered_data = existing_data[existing_data["Tipo de Movimentação"] == selected_movement_type]
 
-        # Mostrar apenas os dados filtrados
-        st.write("Total de cada tipo de movimentação de stock:")
-        total_stock_movements = filtered_data["Tipo de Movimentação"].value_counts()
-        st.write(total_stock_movements)
+        # Número total de artigos vendidos (filtrado)
+        total_articles_sold = filtered_data.shape[0]
+        st.write(f"Número total de artigos vendidos: {total_articles_sold}")
+
+        # Total vendido de cada modelo (filtrado)
+        total_sold_by_model = filtered_data["Products"].str.split(", ", expand=True).stack().value_counts()
+        st.write("Total vendido por modelo (filtrado):")
+        st.write(total_sold_by_model)
+
+        # Total vendido por numeração (filtrado)
+        total_sold_by_size = filtered_data.groupby("Size").size()
+        st.write("Total vendido por numeração (filtrado):")
+        st.write(total_sold_by_size)
+
+        # Total de valores recebidos (filtrado)
+        total_values_received = filtered_data["Value"].sum()
+        st.write(f"Total de valores recebidos (filtrado): {total_values_received}")
+
+        # Movimentação por forma de pagamento (filtrado)
+        st.write("Movimentação por forma de pagamento (filtrado):")
+        total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum()
+        st.write(total_by_payment_method)
 
         # Mostrar a tabela de dados filtrada
         st.write("Dados filtrados:")
         st.write(filtered_data)
+
 
 
 
