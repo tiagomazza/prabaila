@@ -180,24 +180,34 @@ pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Re
 def get_sales_quantity(id_):
     existing_data_reservations = load_existing_data("Reservations")
     
+    # Verificar se os dados existem e se o ID está presente
+    if existing_data_reservations is None or id_ not in existing_data_reservations["ID"].values:
+        return 0
+    
     # Filtrar dados com base no ID e tipo de movimentação
     filtered_data = existing_data_reservations[(existing_data_reservations["ID"] == id_) &
-                                               (existing_data_reservations["Tipo de Movimentação"].isin(["Venda", "Oferta","Devolução"]))]
+                                               (existing_data_reservations["Tipo de Movimentação"].isin(["Venda", "Oferta"]))]
 
     # Somar as quantidades de venda e oferta
     sales_quantity = filtered_data["Movimentação de Stock"].sum()
 
     # Filtrar dados com base no ID e tipo de movimentação para subtração
     subtraction_data = existing_data_reservations[(existing_data_reservations["ID"] == id_) &
-                                                  (existing_data_reservations["Tipo de Movimentação"] == "Entrada de Material", "Reserva")]
+                                                  (existing_data_reservations["Tipo de Movimentação"] == "Entrada de Material")]
 
-    # Subtrair as quantidades de entrada de material
-    subtraction_quantity = subtraction_data["Movimentação de Stock"].sum()
+    # Verificar se existem dados de subtração
+    if not subtraction_data.empty:
+        # Subtrair as quantidades de entrada de material
+        subtraction_quantity = subtraction_data["Movimentação de Stock"].sum()
 
-    # Calcular o total líquido
-    net_quantity = sales_quantity - subtraction_quantity
+        # Calcular o total líquido
+        net_quantity = sales_quantity - subtraction_quantity
+    else:
+        # Se não houver dados de subtração, a quantidade líquida é igual à quantidade de vendas e ofertas
+        net_quantity = sales_quantity
 
     return int(net_quantity)  # Convertendo para inteiro para remover o .0
+
 
 # Atualização da página de verificação de estoque para subtrair a quantidade de venda da quantidade disponível
 if pagina_selecionada == "Verificação de estoque":
