@@ -177,12 +177,17 @@ st.title("Quinta Shop🛒")
 # Configuração da aplicação
 pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Registro","Active Reservations","Análise"])
 
-# Página Verificação de estoque
+def get_sales_quantity(id_):
+    existing_data_reservations = load_existing_data("Reservations")
+    sales_quantity = existing_data_reservations[existing_data_reservations["ID"] == id_]["Movimentação de Stock"].sum()
+    return sales_quantity
+
+# Atualização da página de verificação de estoque para subtrair a quantidade de venda da quantidade disponível
 if pagina_selecionada == "Verificação de estoque":
     # Fetch existing shoes data
     st.subheader("Busca de modelos disponíveis")
-    existing_data = conn.read(worksheet="Shoes", usecols=["Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], ttl=6)
-    existing_data.dropna(subset=["Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], inplace=True)
+    existing_data = conn.read(worksheet="Shoes", usecols=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], ttl=6)
+    existing_data.dropna(subset=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], inplace=True)
 
     # Sidebar filters
     st.sidebar.header("Filtros")
@@ -253,11 +258,12 @@ if pagina_selecionada == "Verificação de estoque":
 
         st.markdown(f"📝 **Observações:** {row['Descrição']}")  # Make bold
 
-    # Adicionar botão com link para o WhatsApp
-        modelo_formatado = row['Modelo'].replace(" ", "%20")
-        whatsapp_link = f"https://wa.me/351914527565?text=Tenho%20interesse%20no%20{modelo_formatado}%20{int(row['Número'])}"
+        # Subtrair a quantidade de venda da quantidade disponível
+        id_ = row["ID"]
+        sales_quantity = get_sales_quantity(id_)
+        stock_after_sales = int(row["Estoque"]) - sales_quantity
+        st.markdown(f"Quantidade disponível após vendas: {stock_after_sales}")
         
-        st.subheader(f"Gostou deste modelo? Converse connosco pelo [WhatsApp](%s)" % whatsapp_link)
         st.markdown("---")
 
 # Página Registro
