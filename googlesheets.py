@@ -159,7 +159,6 @@ if numeros_europeus_selecionados:
 
 # Página Registro
 elif pagina_selecionada == "Registro":
-    active_reservations_page()
     st.title("Registro")
 
     existing_data_reservations = load_existing_data("Reservations")
@@ -227,7 +226,6 @@ elif pagina_selecionada == "Active Reservations":
 
 elif pagina_selecionada == "Análise":
     st.title("Análise dos Dados de Reservations")
-    active_reservations_page()
 
     # Carregar os dados existentes
     existing_data = load_existing_data("Reservations")
