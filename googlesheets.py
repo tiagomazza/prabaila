@@ -53,9 +53,9 @@ st.title("Quinta Shop🛒")
 st.subheader("Busca de modelos disponíveis")
 
 # Configuração da aplicação
-pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Registro","Active Reservations","Análise"])
+pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Stock", "Registro", "Reservation & Discount", "Active Reservations","Análise"])
 
-
+# Página Verificação de estoque
 if pagina_selecionada == "Verificação de estoque":
     # Fetch existing shoes data
     existing_data = conn.read(worksheet="Shoes", usecols=["Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], ttl=6)
@@ -137,26 +137,6 @@ if pagina_selecionada == "Verificação de estoque":
         st.subheader(f"Gostou deste modelo? Converse connosco pelo [WhatsApp](%s)" % whatsapp_link)
         st.markdown("---")
 
-        # Quantity input for adding or reducing stock
-      #  quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=index)  # Unique key
-
-        # Update the inventory if quantity is provided
-     #   if quantity != 0:
-     #       updated_stock = row['Estoque'] + quantity
-      #      existing_data.at[index, 'Estoque'] = updated_stock
-
-    # Update Google Sheets with the updated inventory
-   # if st.sidebar.button("Atualizar Estoque"):  # Moved button to sidebar
-    #    conn.update(worksheet="Shoes", data=existing_data)
-     #   st.success("Estoque atualizado com sucesso!")
-      #  # Reload the page after updating the inventory
-       # st.experimental_rerun()
-
-whatsapp_link2 = "https://wa.me/351914527565?text=Preciso%20de%20ajuda%20com%20os%20modelos"
-
-if numeros_europeus_selecionados:
-    st.subheader(f"Não encontrou um modelo que lhe agrada? Converse conosco pelo [WhatsApp]({whatsapp_link2})")
-
 # Página Registro
 elif pagina_selecionada == "Registro":
     st.title("Registro")
@@ -218,7 +198,9 @@ elif pagina_selecionada == "Registro":
             movimentacao_type = ""
             additional_info = ""
 
-
+elif pagina_selecionada == "Reservation & Discount":
+    # Código para a página de reservas e descontos
+    pass
 
 elif pagina_selecionada == "Active Reservations":
     # Exibir a página de reservas ativas
