@@ -242,34 +242,3 @@ elif pagina_selecionada == "Active Reservations":
 elif pagina_selecionada == "Análise":
     st.title("Análise dos Dados de Reservations")
     analysis_page()
-
-    # Carregar os dados existentes
-    existing_data = load_existing_data("Reservations")
-
-    # Número total de artigos vendidos
-    total_articles_sold = existing_data.shape[0]
-    st.write(f"Número total de artigos vendidos: {total_articles_sold}")
-
-    # Total vendido de cada modelo
-    total_sold_by_model = existing_data["Products"].str.split(", ", expand=True).stack().value_counts()
-    st.write("Total vendido por modelo:")
-    st.write(total_sold_by_model)
-
-    # Total vendido por numeração
-    total_sold_by_size = existing_data.groupby("Size").size()
-    st.write("Total vendido por numeração:")
-    st.write(total_sold_by_size)
-
-    # Total de cada tipo de movimentação de stock
-    st.write("Total de cada tipo de movimentação de stock:")
-    total_stock_movements = existing_data["Tipo de Movimentação"].value_counts()
-    st.write(total_stock_movements)
-
-    # Total de valores recebidos
-    total_values_received = existing_data["Value"].sum()
-    st.write(f"Total de valores recebidos: {total_values_received}")
-
-    # Movimentação por forma de pagamento
-    st.write("Movimentação por forma de pagamento:")
-    total_by_payment_method = existing_data.groupby("Method of Payment")["Value"].sum()
-    st.write(total_by_payment_method)
