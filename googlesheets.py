@@ -44,6 +44,8 @@ def active_reservations_page():
 
 import streamlit as st
 
+import streamlit as st
+
 def analysis_page():
     st.title("Análise dos Dados de Reservations")
 
@@ -82,10 +84,11 @@ def analysis_page():
         # Filtrar os dados pelo tipo de movimentação selecionado
         filtered_data = existing_data[existing_data["Tipo de Movimentação"] == selected_movement_type]
 
-        # Total de cada tipo de movimentação de stock
+        # Mostrar apenas os dados filtrados
         st.write("Total de cada tipo de movimentação de stock:")
         total_stock_movements = filtered_data["Tipo de Movimentação"].value_counts()
         st.write(total_stock_movements)
+
 
 def register_page():
     st.title("Registro")
