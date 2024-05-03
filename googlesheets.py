@@ -244,11 +244,15 @@ if pagina_selecionada == "Verificação de estoque":
         else:
             st.text("Imagem não disponível")
         
+                # Subtrair a quantidade de venda da quantidade disponível
+        id_ = row["ID"]
+        sales_quantity = get_sales_quantity(id_)
+        stock_after_sales = int(row["Estoque"]) - sales_quantity
 
         st.markdown(f"🏂🏽 **Deslize:** {(row['Deslize'])}")  # Remove .0 and make 
         st.markdown(f"🦘 **Amortecimento:** {(row['Amortecimento'])}")  # Remove .0 and make 
         st.markdown(f"👟 **Cor da sola:** {(row['Cor da sola'])}")  # Remove .0 and make 
-        st.markdown(f"📦 **Unidades em estoque:** {int(row['Estoque'])}")  # Remove .0 and make 
+        st.markdown(f"📦 **Unidades em estoque:** {stock_after_sales}")  # Remove .0 and make 
         st.markdown(f"🇧🇷 **Numero:** {int(row['Numero Brasileiro'])}")  # Remove .0 and make 
         preco = row.get('Preço')
         if preco is not None:
@@ -258,13 +262,10 @@ if pagina_selecionada == "Verificação de estoque":
 
         st.markdown(f"📝 **Observações:** {row['Descrição']}")  # Make bold
 
-        # Subtrair a quantidade de venda da quantidade disponível
-        id_ = row["ID"]
-        sales_quantity = get_sales_quantity(id_)
-        stock_after_sales = int(row["Estoque"]) - sales_quantity
-        st.markdown(f"Quantidade disponível após vendas: {stock_after_sales}")
+
+
         
-        st.markdown("---")
+        st.markdown("***---***")
 
 # Página Registro
 elif pagina_selecionada == "Registro":
