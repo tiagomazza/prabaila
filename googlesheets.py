@@ -64,12 +64,9 @@ if pagina_selecionada == "Verificação de estoque":
     # Sidebar filters
     st.sidebar.header("Filtros")
     
-    numeros = existing_data["Número"].unique()
-    #numeros_filtro = st.sidebar.multiselect("Filtrar por Número", numeros.astype(int), default=numeros.astype(int))
-
     modelos = existing_data["Modelo"].unique()
     modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
-    
+
     deslize_opcoes = existing_data["Deslize"].unique()
     deslize_filtro = st.sidebar.multiselect("Filtrar por Deslize", deslize_opcoes, default=deslize_opcoes)
 
@@ -79,14 +76,21 @@ if pagina_selecionada == "Verificação de estoque":
     cor_sola_opcoes = existing_data["Cor da sola"].unique()
     cor_sola_filtro = st.sidebar.multiselect("Filtrar por Cor da sola", cor_sola_opcoes, default=cor_sola_opcoes)
 
+    # Números disponíveis com base nos filtros aplicados
+    numeros_disponiveis = existing_data[existing_data["Modelo"].isin(modelos_filtro)]["Número"].unique()
+    numeros_europeus_selecionados = st.multiselect("Quais números europeus deseja consultar?", numeros_disponiveis.astype(int), default=[])
+
+    # Aplicar os filtros selecionados aos dados existentes
     filtered_data = existing_data[
         (existing_data["Modelo"].isin(modelos_filtro)) & 
-        (existing_data["Número"].isin(numeros)) &
-        #(existing_data["Número"].isin(numeros_filtros)) &
+        (existing_data["Número"].isin(numeros_europeus_selecionados)) &
         (existing_data["Deslize"].isin(deslize_filtro)) &
         (existing_data["Amortecimento"].isin(amortecimento_filtro)) &
         (existing_data["Cor da sola"].isin(cor_sola_filtro))
     ]
+
+    # Remover o ".0" dos dados consultados
+    filtered_data["Número"] = filtered_data["Número"].astype(int)
         
 
     # Add a toggle button to show/hide shoes with zero stock
@@ -100,11 +104,6 @@ if pagina_selecionada == "Verificação de estoque":
     total_stock = filtered_data["Estoque"].sum()
     st.sidebar.header("Total do Estoque:")
     st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
-
-    numeros_disponiveis = filtered_data["Número"].unique()
-
-    # Substituir o st.number_input pelo st.multiselect com base nos números disponíveis
-    numeros_europeus_selecionados = st.multiselect("Quais números europeus deseja consultar?", numeros_disponiveis, default=[])
 
     # Display shoes information separately
     for index, row in filtered_data.iterrows():
