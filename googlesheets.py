@@ -81,7 +81,8 @@ if pagina_selecionada == "Verificação de estoque":
 
     filtered_data = existing_data[
         (existing_data["Modelo"].isin(modelos_filtro)) & 
-        (existing_data["Número"].isin(numeros_filtro)) &
+        (existing_data["Número"].isin(numeros)) &
+        #(existing_data["Número"].isin(numeros_filtros)) &
         (existing_data["Deslize"].isin(deslize_filtro)) &
         (existing_data["Amortecimento"].isin(amortecimento_filtro)) &
         (existing_data["Cor da sola"].isin(cor_sola_filtro))
