@@ -87,12 +87,20 @@ def analysis_page():
 
 
 
+# Função para obter o ID correspondente com base no modelo e número
+def get_id_from_shoes(modelo, numero):
+    existing_data_shoes = load_existing_data("Shoes")
+    id_ = existing_data_shoes[(existing_data_shoes["Modelo"] == modelo) & (existing_data_shoes["Número"] == numero)]["ID"]
+    if not id_.empty:
+        return id_.iloc[0]
+    else:
+        return None
 
+# Atualização da função register_page() para incluir o ID correspondente no novo registro
 def register_page():
     st.title("Registro")
     # Proteger a página com uma senha
     if protected_page():
-    
         existing_data_reservations = load_existing_data("Reservations")
         existing_data_shoes = load_existing_data("Shoes")
         modelos_existentes = existing_data_shoes["Modelo"].unique()
@@ -116,7 +124,13 @@ def register_page():
 
             if submit_button:
                 submission_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                
+                # Obter o ID correspondente com base no modelo e número selecionados
+                selected_model = products[0]  # Assumindo apenas um produto é selecionado
+                selected_id = get_id_from_shoes(selected_model, size)
+                
                 new_row = {
+                    "ID": selected_id,
                     "Name": name,
                     "Email": email,
                     "Whatsapp": whatsapp,
@@ -137,22 +151,8 @@ def register_page():
                 # Atualiza a planilha com todas as informações
                 conn.update(worksheet="Reservations", data=new_rows)
 
-                if movimentacao_type == "Chegada de Material":
-                    for product in products:
-                        # Busca o produto correspondente na planilha "Shoes"
-                        product_row = existing_data_shoes[(existing_data_shoes["Modelo"] == product) & (existing_data_shoes["Número"] == size)]
-                        if not product_row.empty:
-                            # Aumenta o estoque de acordo com a movimentação de estoque especificada
-                            existing_data_shoes.loc[product_row.index, "Estoque"] += movimentacao
-                        else:
-                            st.warning(f"Produto {product} com numeração {size} não encontrado em estoque.")
-
-                    # Atualiza a planilha "Shoes" com o novo estoque
-                    conn.update(worksheet="Shoes", data=existing_data_shoes.to_dict(orient="records"))
-
                 st.success("Details successfully submitted!")
 
-                # Limpa os campos do formulário após o envio
                 name = ""
                 email = ""
                 whatsapp = ""
