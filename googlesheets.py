@@ -179,10 +179,25 @@ pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Re
 
 def get_sales_quantity(id_):
     existing_data_reservations = load_existing_data("Reservations")
-    filtered_data = existing_data_reservations[(existing_data_reservations["ID"] == id_) & 
+    
+    # Filtrar dados com base no ID e tipo de movimentação
+    filtered_data = existing_data_reservations[(existing_data_reservations["ID"] == id_) &
                                                (existing_data_reservations["Tipo de Movimentação"].isin(["Venda", "Oferta"]))]
+
+    # Somar as quantidades de venda e oferta
     sales_quantity = filtered_data["Movimentação de Stock"].sum()
-    return sales_quantity
+
+    # Filtrar dados com base no ID e tipo de movimentação para subtração
+    subtraction_data = existing_data_reservations[(existing_data_reservations["ID"] == id_) &
+                                                  (existing_data_reservations["Tipo de Movimentação"] == "Entrada de Material")]
+
+    # Subtrair as quantidades de entrada de material
+    subtraction_quantity = subtraction_data["Movimentação de Stock"].sum()
+
+    # Calcular o total líquido
+    net_quantity = sales_quantity - subtraction_quantity
+
+    return int(net_quantity)  # Convertendo para inteiro para remover o .0
 
 # Atualização da página de verificação de estoque para subtrair a quantidade de venda da quantidade disponível
 if pagina_selecionada == "Verificação de estoque":
@@ -258,7 +273,7 @@ if pagina_selecionada == "Verificação de estoque":
         st.markdown(f"🇧🇷 **Numero:** {int(row['Numero Brasileiro'])}")  # Remove .0 and make 
         preco = row.get('Preço')
         if preco is not None:
-            st.markdown(f"🏷 **Preço:**  {int(row['Preço'])}")
+            st.markdown(f"🏷 **Preço:**  {int(row['Preço'])}€")
         else:
             st.markdown("Preço não disponível")
 
