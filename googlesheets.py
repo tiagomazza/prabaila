@@ -138,7 +138,7 @@ if pagina_selecionada == "Verificação de estoque":
         st.markdown("---")
 
         # Quantity input for adding or reducing stock
-        quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=index)  # Unique key
+      #  quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=index)  # Unique key
 
         # Update the inventory if quantity is provided
      #   if quantity != 0:
