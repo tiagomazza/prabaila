@@ -53,7 +53,7 @@ st.title("Quinta Shop🛒")
 st.subheader("Busca de modelos disponíveis")
 
 # Configuração da aplicação
-pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Stock", "Registro", "Reservation & Discount", "Active Reservations","Análise"])
+existing_data = conn.read(worksheet="Shoes", usecols=["Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], ttl=6)
 
 
 if pagina_selecionada == "Verificação de estoque":
@@ -70,8 +70,8 @@ if pagina_selecionada == "Verificação de estoque":
     modelos = existing_data["Modelo"].unique()
     modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
     
-    #deslize_opcoes = existing_data["Deslize"].unique()
-    #deslize_filtro = st.sidebar.multiselect("Filtrar por Deslize", deslize_opcoes, default=deslize_opcoes)
+    deslize_opcoes = existing_data["Deslize"].unique()
+    deslize_filtro = st.sidebar.multiselect("Filtrar por Deslize", deslize_opcoes, default=deslize_opcoes)
 
     amortecimento_opcoes = existing_data["Amortecimento"].unique()
     amortecimento_filtro = st.sidebar.multiselect("Filtrar por Amortecimento", amortecimento_opcoes, default=amortecimento_opcoes)
