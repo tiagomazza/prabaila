@@ -4,7 +4,19 @@ import pandas as pd
 from datetime import datetime
 import plotly.express as px
 
-
+st.write(
+    """
+    <style>
+    #elemento-a-ocultar {
+        display: none;
+    }
+    .classe-a-ocultar {
+        display: none;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 # Função para proteger a página com senha
