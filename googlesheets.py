@@ -78,7 +78,7 @@ def analysis_page():
         total_by_payment_method = existing_data.groupby("Method of Payment")["Value"].sum()
         st.write(total_by_payment_method)
 
-def analysis_page():
+def register_page():
     st.title("Registro")
     # Proteger a página com uma senha
     if protected_page():
