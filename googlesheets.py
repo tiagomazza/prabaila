@@ -131,6 +131,7 @@ if pagina_selecionada == "Verificação de estoque":
         whatsapp_link = f"https://wa.me/351914527565?text=Tenho%20interesse%20no%20{modelo_formatado}%20{int(row['Número'])}"
         
         st.subheader(f"Gostou deste modelo? Converse connosco pelo [WhatsApp](%s)" % whatsapp_link)
+        st.markdown("---")
 
         # Quantity input for adding or reducing stock
         quantity = st.number_input(f"Ajuste de stock do {row['Modelo']}", value=0, step=1, key=index)  # Unique key
@@ -146,7 +147,7 @@ if pagina_selecionada == "Verificação de estoque":
         st.success("Estoque atualizado com sucesso!")
         # Reload the page after updating the inventory
         st.experimental_rerun()
-    st.markdown("---")
+
 
 
 # Página Registro
