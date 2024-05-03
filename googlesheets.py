@@ -179,7 +179,9 @@ pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Re
 
 def get_sales_quantity(id_):
     existing_data_reservations = load_existing_data("Reservations")
-    sales_quantity = existing_data_reservations[existing_data_reservations["ID"] == id_]["Movimentação de Stock"].sum()
+    filtered_data = existing_data_reservations[(existing_data_reservations["ID"] == id_) & 
+                                               (existing_data_reservations["Tipo de Movimentação"].isin(["Venda", "Oferta"]))]
+    sales_quantity = filtered_data["Movimentação de Stock"].sum()
     return sales_quantity
 
 # Atualização da página de verificação de estoque para subtrair a quantidade de venda da quantidade disponível
@@ -265,7 +267,7 @@ if pagina_selecionada == "Verificação de estoque":
 
 
         
-        st.markdown("***---***")
+        st.markdown("---")
 
 # Página Registro
 elif pagina_selecionada == "Registro":
