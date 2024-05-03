@@ -42,13 +42,6 @@ def active_reservations_page():
         # Exibir os dados existentes
         display_existing_data(existing_data)
 
-import streamlit as st
-
-import streamlit as st
-
-import streamlit as st
-
-import streamlit as st
 
 def analysis_page():
     st.title("Análise dos Dados de Reservations")
@@ -144,8 +137,22 @@ def register_page():
                 # Atualiza a planilha com todas as informações
                 conn.update(worksheet="Reservations", data=new_rows)
 
+                if movimentacao_type == "Chegada de Material":
+                    for product in products:
+                        # Busca o produto correspondente na planilha "Shoes"
+                        product_row = existing_data_shoes[(existing_data_shoes["Modelo"] == product) & (existing_data_shoes["Número"] == size)]
+                        if not product_row.empty:
+                            # Aumenta o estoque de acordo com a movimentação de estoque especificada
+                            existing_data_shoes.loc[product_row.index, "Estoque"] += movimentacao
+                        else:
+                            st.warning(f"Produto {product} com numeração {size} não encontrado em estoque.")
+
+                    # Atualiza a planilha "Shoes" com o novo estoque
+                    conn.update(worksheet="Shoes", data=existing_data_shoes.to_dict(orient="records"))
+
                 st.success("Details successfully submitted!")
 
+                # Limpa os campos do formulário após o envio
                 name = ""
                 email = ""
                 whatsapp = ""
@@ -156,6 +163,7 @@ def register_page():
                 movimentacao = 0
                 movimentacao_type = ""
                 additional_info = ""
+
 
 # Imagem para exibir no menu lateral
 menu_lateral_imagem = "https://acdn.mitiendanube.com/stores/003/310/899/themes/common/logo-1595099445-1706530812-af95f05363b68e950e5bd6a386042dd21706530812-320-0.webp"
