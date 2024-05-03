@@ -53,12 +53,12 @@ st.title("Quinta Shop🛒")
 st.subheader("Busca de modelos disponíveis")
 
 # Configuração da aplicação
-existing_data = conn.read(worksheet="Shoes", usecols=["Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], ttl=6)
+pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Stock", "Registro", "Reservation & Discount", "Active Reservations","Análise"])
 
 
 if pagina_selecionada == "Verificação de estoque":
     # Fetch existing shoes data
-    existing_data = conn.read(worksheet="Shoes", usecols=["Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque","Numero Brasileiro"], ttl=11)
+    existing_data = conn.read(worksheet="Shoes", usecols=["Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], ttl=6)
     existing_data = existing_data.dropna(how="all")
 
     # Sidebar filters
