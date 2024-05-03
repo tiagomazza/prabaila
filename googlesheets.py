@@ -117,9 +117,9 @@ if pagina_selecionada == "Verificação de estoque":
             st.markdown(f"🏷 **Preço:**  {int(row['Preço'])}")
         else:
             st.markdown("Preço não disponível")
-        st.markdown(f"🏂🏽 **Deslize:** {int(row['Deslize'])}")  # Remove .0 and make 
-        st.markdown(f"🎿🦘 **Amortecimento:** {int(row['Amortecimento'])}")  # Remove .0 and make 
-        st.markdown(f"👟 **Cor da sola:** {int(row['Cor da Sola'])}")  # Remove .0 and make 
+        st.markdown(f"🏂🏽 **Deslize:** {(row['Deslize'])}")  # Remove .0 and make 
+        st.markdown(f"🎿🦘 **Amortecimento:** {(row['Amortecimento'])}")  # Remove .0 and make 
+        st.markdown(f"👟 **Cor da sola:** {(row['Cor da Sola'])}")  # Remove .0 and make 
         st.markdown(f"📦 **Unidades em estoque:** {int(row['Estoque'])}")  # Remove .0 and make 
         st.markdown(f"🇧🇷 **Numero:** {int(row['Numero Brasileiro'])}")  # Remove .0 and make 
         st.markdown(f"📝 **Descrição:** {row['Descrição']}")  # Make bold
