@@ -42,6 +42,8 @@ def active_reservations_page():
        # Exibir os dados existentes
        display_existing_data(existing_data)
 
+import streamlit as st
+
 def analysis_page():
     st.title("Análise dos Dados de Reservations")
 
@@ -56,6 +58,9 @@ def analysis_page():
        
         # Filtrar os dados pelo tipo de movimentação selecionado
         filtered_data = existing_data[existing_data["Tipo de Movimentação"] == selected_movement_type]
+
+        # Adicionando a soma da coluna "Movimentação de Stock" na respectiva linha
+        filtered_data['Soma Movimentação de Stock'] = filtered_data['Movimentação de Stock'].sum(axis=1)
 
         # Número total de artigos vendidos (filtrado)
         total_articles_sold = filtered_data.shape[0]
@@ -80,14 +85,9 @@ def analysis_page():
         total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum()
         st.write(total_by_payment_method)
 
-        # Soma das respectivas linhas da coluna "Movimentação de Stock"
-        total_stock_movement = filtered_data["Movimentação de Stock"].sum()
-        st.write(f"Soma das respectivas linhas da coluna 'Movimentação de Stock': {total_stock_movement}")
-
         # Mostrar a tabela de dados filtrada
         st.write("Dados filtrados:")
         st.write(filtered_data)
-
 
 # Função para obter o ID correspondente com base no modelo e número
 def get_id_from_shoes(modelo, numero):
