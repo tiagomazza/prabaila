@@ -50,17 +50,6 @@ def analysis_page():
        # Carregar os dados existentes
        existing_data = load_existing_data("Reservations")
 
-       # Remover linhas com valores não numéricos nas colunas relevantes
-       existing_data = existing_data[pd.to_numeric(existing_data["Products"], errors='coerce').notnull()]
-       existing_data = existing_data[pd.to_numeric(existing_data["Movimentação de Stock"], errors='coerce').notnull()]
-
-       # Convertendo os valores das colunas relevantes para numérico
-       existing_data["Products"] = existing_data["Products"].astype(float)
-       existing_data["Movimentação de Stock"] = existing_data["Movimentação de Stock"].astype(float)
-
-       # Multiplicar o valor dos produtos pelo valor na coluna "Movimentação de Stock"
-       existing_data["Products"] = existing_data["Products"] * existing_data["Movimentação de Stock"]
-
        # Barra lateral para filtrar por tipo de movimentação
        selected_movement_type = st.sidebar.selectbox("Filtrar por Tipo de Movimentação", 
                                                      existing_data["Tipo de Movimentação"].unique())
@@ -94,7 +83,6 @@ def analysis_page():
        # Mostrar a tabela de dados filtrada
        st.write("Dados filtrados:")
        st.write(filtered_data)
-
 
 # Função para obter o ID correspondente com base no modelo e número
 def get_id_from_shoes(modelo, numero):
