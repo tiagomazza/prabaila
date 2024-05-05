@@ -41,7 +41,6 @@ def active_reservations_page():
        # Exibir os dados existentes
        display_existing_data(existing_data)
 
-
 def analysis_page():
     st.title("Análise dos Dados de Reservations")
 
@@ -58,10 +57,10 @@ def analysis_page():
         filtered_data = existing_data[existing_data["Tipo de Movimentação"] == selected_movement_type]
 
         # Multiplicar a quantidade de cada artigo pela coluna "Movimentação de Stock"
-        filtered_data["Quantidade_Adjusted"] = filtered_data["Quantidade"] * filtered_data["Movimentação de Stock"]
+        filtered_data["Quantity"] *= filtered_data["Movimentação de Stock"]
 
         # Número total de artigos vendidos (filtrado)
-        total_articles_sold = filtered_data["Quantidade_Adjusted"].sum()
+        total_articles_sold = filtered_data["Quantity"].sum()
         st.write(f"Número total de artigos vendidos: {total_articles_sold}")
 
         # Total vendido de cada modelo (filtrado)
@@ -70,7 +69,7 @@ def analysis_page():
         st.write(total_sold_by_model)
 
         # Total vendido por numeração (filtrado)
-        total_sold_by_size = filtered_data.groupby("Size")["Quantidade_Adjusted"].sum()
+        total_sold_by_size = filtered_data.groupby("Size")["Quantity"].sum()
         st.write("Total vendido por numeração (filtrado):")
         st.write(total_sold_by_size)
 
@@ -80,6 +79,13 @@ def analysis_page():
 
         # Movimentação por forma de pagamento (filtrado)
         st.write("Movimentação por forma de pagamento (filtrado):")
+        total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum()
+        st.write(total_by_payment_method)
+
+        # Mostrar a tabela de dados filtrada
+        st.write("Dados filtrados:")
+        st.write(filtered_data)
+
 
 
 # Função para obter o ID correspondente com base no modelo e número
