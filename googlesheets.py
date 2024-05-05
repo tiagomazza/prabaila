@@ -43,54 +43,8 @@ def display_existing_data(existing_data):
        display_existing_data(existing_data)
 
 
-    st.title("Análise dos Dados de Reservations")
-
-    # Proteger a página com uma senha
-    if protected_page():
-        # Carregar os dados existentes
-        existing_data = load_existing_data("Reservations")
-
-        # Barra lateral para filtrar por tipo de movimentação
-        selected_movement_type = st.sidebar.selectbox("Filtrar por Tipo de Movimentação", 
-                                                      existing_data["Tipo de Movimentação"].unique())
-       
-        # Filtrar os dados pelo tipo de movimentação selecionado
-        filtered_data = existing_data[existing_data["Tipo de Movimentação"] == selected_movement_type]
-
-        # Adicionando a soma da coluna "Movimentação de Stock" na respectiva linha
-        filtered_data['Soma Movimentação de Stock'] = filtered_data['Movimentação de Stock'].sum(axis=1)
-
-        # Número total de artigos vendidos (filtrado)
-        total_articles_sold = filtered_data.shape[0]
-        st.write(f"Número total de artigos vendidos: {total_articles_sold}")
-
-        # Total vendido de cada modelo (filtrado)
-        total_sold_by_model = filtered_data["Products"].str.split(", ", expand=True).stack().value_counts()
-        st.write("Total vendido por modelo (filtrado):")
-        st.write(total_sold_by_model)
-
-        # Total vendido por numeração (filtrado)
-        total_sold_by_size = filtered_data.groupby("Size").size()
-        st.write("Total vendido por numeração (filtrado):")
-        st.write(total_sold_by_size)
-
-        # Total de valores recebidos (filtrado)
-        total_values_received = filtered_data["Value"].sum()
-        st.write(f"Total de valores recebidos (filtrado): {total_values_received}")
-
-        # Movimentação por forma de pagamento (filtrado)
-        st.write("Movimentação por forma de pagamento (filtrado):")
-        total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum()
-        st.write(total_by_payment_method)
-
-        # Mostrar a tabela de dados filtrada
-        st.write("Dados filtrados:")
-        st.write(filtered_data)
-
-import streamlit as st
-
 def analysis_page():
-    #st.title("Análise dos Dados de Reservations")
+    st.title("Análise dos Dados de Reservations")
 
     # Proteger a página com uma senha
     if protected_page():
