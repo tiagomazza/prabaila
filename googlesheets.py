@@ -90,7 +90,7 @@ def display_existing_data(existing_data):
 import streamlit as st
 
 def analysis_page():
-    st.title("Análise dos Dados de Reservations")
+    #st.title("Análise dos Dados de Reservations")
 
     # Proteger a página com uma senha
     if protected_page():
