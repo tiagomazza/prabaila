@@ -50,6 +50,10 @@ def analysis_page():
        # Carregar os dados existentes
        existing_data = load_existing_data("Reservations")
 
+       # Convertendo os valores das colunas relevantes para numérico
+       existing_data["Products"] = existing_data["Products"].astype(float)
+       existing_data["Movimentação de Stock"] = existing_data["Movimentação de Stock"].astype(float)
+
        # Multiplicar o valor dos produtos pelo valor na coluna "Movimentação de Stock"
        existing_data["Products"] = existing_data["Products"] * existing_data["Movimentação de Stock"]
 
@@ -86,7 +90,6 @@ def analysis_page():
        # Mostrar a tabela de dados filtrada
        st.write("Dados filtrados:")
        st.write(filtered_data)
-
 
 
 # Função para obter o ID correspondente com base no modelo e número
