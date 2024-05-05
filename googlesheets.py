@@ -59,7 +59,7 @@ def analysis_page():
        filtered_data = existing_data[existing_data["Tipo de Movimentação"] == selected_movement_type]
 
        # Número total de artigos vendidos (filtrado)
-       total_articles_sold = filtered_data.("Movimentação de Stock").sum()
+       total_articles_sold = filtered_data.values("Movimentação de Stock").sum()
        st.write(f"Número total de artigos vendidos: {total_articles_sold}")
 
        # Total vendido de cada modelo (filtrado)
