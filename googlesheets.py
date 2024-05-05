@@ -61,10 +61,10 @@ def analysis_page():
        # Número total de artigos vendidos (filtrado)
        total_articles_sold = int(filtered_data["Movimentação de Stock"].sum())
        st.write(f"Número total de artigos vendidos: {total_articles_sold}")
-       st.write(total_articles_sold)
 
        # Total vendido de cada modelo (filtrado)
        total_sold_by_model = filtered_data.groupby("Products")["Movimentação de Stock"].sum()
+       st.write(total_articles_sold)
     
        
 
