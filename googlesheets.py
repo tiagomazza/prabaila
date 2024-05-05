@@ -65,6 +65,10 @@ def analysis_page():
        # Total vendido por numeração (filtrado)
        total_sold_by_size = filtered_data.groupby("Size")["Movimentação de Stock"].sum()
        st.write(total_sold_by_size)
+       
+       # Total vendido por numeração (filtrado)
+       total_sold_by_size = filtered_data.groupby("Size")["Movimentação de Stock"].sum()
+       st.write(total_sold_by_size)
 
        # Total de valores recebidos (filtrado)
        total_values_received = filtered_data["Value"].sum()
