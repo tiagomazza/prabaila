@@ -50,6 +50,10 @@ def analysis_page():
        # Carregar os dados existentes
        existing_data = load_existing_data("Reservations")
 
+       # Remover linhas com valores não numéricos nas colunas relevantes
+       existing_data = existing_data[pd.to_numeric(existing_data["Products"], errors='coerce').notnull()]
+       existing_data = existing_data[pd.to_numeric(existing_data["Movimentação de Stock"], errors='coerce').notnull()]
+
        # Convertendo os valores das colunas relevantes para numérico
        existing_data["Products"] = existing_data["Products"].astype(float)
        existing_data["Movimentação de Stock"] = existing_data["Movimentação de Stock"].astype(float)
