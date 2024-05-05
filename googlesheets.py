@@ -43,6 +43,8 @@ def display_existing_data(existing_data):
        display_existing_data(existing_data)
 
 
+import streamlit as st
+
 def analysis_page():
     st.title("Análise dos Dados de Reservations")
 
@@ -60,6 +62,9 @@ def analysis_page():
 
         # Adicionando a soma da coluna "Movimentação de Stock" na respectiva linha
         filtered_data['Soma Movimentação de Stock'] = filtered_data['Movimentação de Stock'].sum()
+
+        # Adicionando uma nova coluna "teste" com o valor 1 em todas as linhas
+        filtered_data['teste'] = 1
 
         # Número total de artigos vendidos (filtrado)
         total_articles_sold = filtered_data.shape[0]
@@ -87,6 +92,7 @@ def analysis_page():
         # Mostrar a tabela de dados filtrada
         st.write("Dados filtrados:")
         st.write(filtered_data)
+
 
 
 # Função para obter o ID correspondente com base no modelo e número
