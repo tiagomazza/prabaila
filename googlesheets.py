@@ -50,15 +50,15 @@ def analysis_page():
        # Carregar os dados existentes
        existing_data = load_existing_data("Reservations")
 
+       # Multiplicar o valor dos produtos pelo valor na coluna "Movimentação de Stock"
+       existing_data["Products"] = existing_data["Products"] * existing_data["Movimentação de Stock"]
+
        # Barra lateral para filtrar por tipo de movimentação
        selected_movement_type = st.sidebar.selectbox("Filtrar por Tipo de Movimentação", 
                                                      existing_data["Tipo de Movimentação"].unique())
        
        # Filtrar os dados pelo tipo de movimentação selecionado
        filtered_data = existing_data[existing_data["Tipo de Movimentação"] == selected_movement_type]
-
-       # Multiplicar a quantidade de produtos pelo valor da movimentação de stock
-       filtered_data["Quantidade"] = filtered_data.apply(lambda row: row["Quantidade"] * row["Movimentação de Stock"], axis=1)
 
        # Número total de artigos vendidos (filtrado)
        total_articles_sold = filtered_data.shape[0]
