@@ -58,7 +58,7 @@ def analysis_page():
         filtered_data = existing_data[existing_data["Tipo de Movimentação"] == selected_movement_type]
 
         # Multiplicar a quantidade de cada artigo pela coluna "Movimentação de Stock"
-        filtered_data["Quantidade_Adjusted"] = filtered_data["Quantidade"] * filtered_data["Movimentação de Stock"]
+        filtered_data["Quantidade_Adjusted"] = filtered_data["Tipo de Movimentação"] * filtered_data["Movimentação de Stock"]
 
         # Número total de artigos vendidos (filtrado)
         total_articles_sold = filtered_data["Quantidade_Adjusted"].sum()
