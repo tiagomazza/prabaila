@@ -63,15 +63,12 @@ def analysis_page():
         # Adicionando a soma da coluna "Movimentação de Stock" na respectiva linha
         filtered_data['Soma Movimentação de Stock'] = filtered_data['Movimentação de Stock'].sum()
 
-        # Adicionando uma nova coluna "teste" com o valor 1 em todas as linhas
-        filtered_data['teste'] = 1
-
         # Número total de artigos vendidos (filtrado)
         total_articles_sold = filtered_data.shape[0]
         st.write(f"Número total de artigos vendidos: {total_articles_sold}")
 
         # Total vendido de cada modelo (filtrado)
-        total_sold_by_model = filtered_data.groupy("Products") ["Movimentação de Stock"].sum()
+        total_sold_by_model = filtered_data.groupy("Products")["Movimentação de Stock"].sum()
         st.write("Total vendido por modelo (filtrado):")
         st.write(total_sold_by_model)
 
