@@ -134,6 +134,7 @@ def analysis_page():
         st.write("Dados filtrados:")
         st.write(filtered_data)
 
+
 # Função para obter o ID correspondente com base no modelo e número
 def get_id_from_shoes(modelo, numero):
    existing_data_shoes = load_existing_data("Shoes")
