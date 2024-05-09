@@ -72,7 +72,7 @@ def analysis_page():
        if start_date and end_date:
            start_date = pd.to_datetime(start_date)
            end_date = pd.to_datetime(end_date)
-           filtered_data = filtered_data[(filtered_data["SubmissionDateTime"].dt.date >= start_date.date()) & (filtered_data["SubmissionDateTime"].dt.date <= end_date.date())]
+           filtered_data = filtered_data[(filtered_data["SubmissionDateTime"].dt.date >= start_date.dt.date) & (filtered_data["SubmissionDateTime"].dt.date <= end_date.dt.date)]
 
        # Filtro por nome dos artigos
        article_names = st.sidebar.multiselect("Nome dos Artigos", existing_data["Products"].unique())
@@ -110,7 +110,6 @@ def analysis_page():
        # Mostrar a tabela de dados filtrada
        st.write("Dados filtrados:")
        st.write(filtered_data)
-
 
 
 
