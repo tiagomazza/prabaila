@@ -63,20 +63,20 @@ def analysis_page():
        end_date = st.sidebar.date_input("Data de Fim")
 
        if start_date and end_date:
-           filtered_data = filtered_data[(filtered_data["Date"] >= start_date) & (filtered_data["Date"] <= end_date)]
+           filtered_data = filtered_data[(filtered_data["SubmissionDateTime"] >= start_date) & (filtered_data["SubmissionDateTime"] <= end_date)]
 
        # Filtro por nome dos artigos
        article_name = st.sidebar.text_input("Nome dos Artigos (separados por vírgula)")
 
        if article_name:
            article_names = [name.strip() for name in article_name.split(',')]
-           filtered_data = filtered_data[filtered_data["Article Name"].isin(article_names)]
+           filtered_data = filtered_data[filtered_data["Products"].isin(article_names)]
 
        # Filtro por numeração
-       selected_numbers = st.sidebar.multiselect("Filtrar por Numeração", existing_data["Número"].unique())
+       selected_numbers = st.sidebar.multiselect("Filtrar por Numeração", existing_data["Size"].unique())
 
        if selected_numbers:
-           filtered_data = filtered_data[filtered_data["Número"].isin(selected_numbers)]
+           filtered_data = filtered_data[filtered_data["Size"].isin(selected_numbers)]
 
        # Número total de artigos vendidos (filtrado)
        total_articles_sold = int(filtered_data["Movimentação de Stock"].sum())
@@ -102,6 +102,7 @@ def analysis_page():
        # Mostrar a tabela de dados filtrada
        st.write("Dados filtrados:")
        st.write(filtered_data)
+
 
 
 
