@@ -55,8 +55,21 @@ def analysis_page():
        selected_movement_type = st.sidebar.selectbox("Filtrar por Tipo de Movimentação", 
                                                      existing_data["Tipo de Movimentação"].unique())
        
-       # Filtrar os dados pelo tipo de movimentação selecionado
+       # Filtros adicionais
+       st.sidebar.subheader("Filtros Adicionais:")
+       start_date = st.sidebar.date_input("Data de Início")
+       end_date = st.sidebar.date_input("Data de Término")
+       article_name = st.sidebar.text_input("Nome do Artigo")
+       article_number = st.sidebar.number_input("Numeração", min_value=0)
+
+       # Filtrar os dados pelo tipo de movimentação selecionado e pelos filtros adicionais
        filtered_data = existing_data[existing_data["Tipo de Movimentação"] == selected_movement_type]
+       if start_date and end_date:
+           filtered_data = filtered_data[(filtered_data["Data"] >= start_date) & (filtered_data["Data"] <= end_date)]
+       if article_name:
+           filtered_data = filtered_data[filtered_data["Nome do Artigo"].str.contains(article_name)]
+       if article_number:
+           filtered_data = filtered_data[filtered_data["Numeração"] == article_number]
 
        # Número total de artigos vendidos (filtrado)
        total_articles_sold = int(filtered_data["Movimentação de Stock"].sum())
