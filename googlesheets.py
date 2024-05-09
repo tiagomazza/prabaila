@@ -45,6 +45,8 @@ def display_existing_data(existing_data):
 
 from datetime import datetime
 
+from datetime import datetime
+
 def analysis_page():
    st.title("Análise dos Dados de Reservations")
 
@@ -68,7 +70,9 @@ def analysis_page():
        end_date = st.sidebar.date_input("Data de Fim")
 
        if start_date and end_date:
-           filtered_data = filtered_data[(filtered_data["SubmissionDateTime"] >= start_date) & (filtered_data["SubmissionDateTime"] <= end_date)]
+           start_date = pd.to_datetime(start_date)
+           end_date = pd.to_datetime(end_date)
+           filtered_data = filtered_data[(filtered_data["SubmissionDateTime"].dt.date >= start_date.date()) & (filtered_data["SubmissionDateTime"].dt.date <= end_date.date())]
 
        # Filtro por nome dos artigos
        article_name = st.sidebar.text_input("Nome dos Artigos (separados por vírgula)")
@@ -107,6 +111,7 @@ def analysis_page():
        # Mostrar a tabela de dados filtrada
        st.write("Dados filtrados:")
        st.write(filtered_data)
+
 
 
 
