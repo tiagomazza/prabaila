@@ -55,21 +55,28 @@ def analysis_page():
        selected_movement_type = st.sidebar.selectbox("Filtrar por Tipo de Movimentação", 
                                                      existing_data["Tipo de Movimentação"].unique())
        
-       # Filtros adicionais
-       st.sidebar.subheader("Filtros Adicionais:")
-       start_date = st.sidebar.date_input("Data de Início")
-       end_date = st.sidebar.date_input("Data de Término")
-       article_name = st.sidebar.text_input("Nome do Artigo")
-       article_number = st.sidebar.number_input("Numeração", min_value=0)
-
-       # Filtrar os dados pelo tipo de movimentação selecionado e pelos filtros adicionais
+       # Filtrar os dados pelo tipo de movimentação selecionado
        filtered_data = existing_data[existing_data["Tipo de Movimentação"] == selected_movement_type]
+
+       # Filtro por intervalo de datas
+       start_date = st.sidebar.date_input("Data de Início")
+       end_date = st.sidebar.date_input("Data de Fim")
+
        if start_date and end_date:
-           filtered_data = filtered_data[(filtered_data["Data"] >= start_date) & (filtered_data["Data"] <= end_date)]
+           filtered_data = filtered_data[(filtered_data["Date"] >= start_date) & (filtered_data["Date"] <= end_date)]
+
+       # Filtro por nome dos artigos
+       article_name = st.sidebar.text_input("Nome dos Artigos (separados por vírgula)")
+
        if article_name:
-           filtered_data = filtered_data[filtered_data["Nome do Artigo"].str.contains(article_name)]
-       if article_number:
-           filtered_data = filtered_data[filtered_data["Numeração"] == article_number]
+           article_names = [name.strip() for name in article_name.split(',')]
+           filtered_data = filtered_data[filtered_data["Article Name"].isin(article_names)]
+
+       # Filtro por numeração
+       selected_numbers = st.sidebar.multiselect("Filtrar por Numeração", existing_data["Número"].unique())
+
+       if selected_numbers:
+           filtered_data = filtered_data[filtered_data["Número"].isin(selected_numbers)]
 
        # Número total de artigos vendidos (filtrado)
        total_articles_sold = int(filtered_data["Movimentação de Stock"].sum())
@@ -95,6 +102,7 @@ def analysis_page():
        # Mostrar a tabela de dados filtrada
        st.write("Dados filtrados:")
        st.write(filtered_data)
+
 
 
 # Função para obter o ID correspondente com base no modelo e número
