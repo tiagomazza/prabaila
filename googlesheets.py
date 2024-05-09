@@ -43,6 +43,8 @@ def display_existing_data(existing_data):
        display_existing_data(existing_data)
 
 
+from datetime import datetime
+
 def analysis_page():
    st.title("Análise dos Dados de Reservations")
 
@@ -50,6 +52,9 @@ def analysis_page():
    if protected_page():
        # Carregar os dados existentes
        existing_data = load_existing_data("Reservations")
+
+       # Convertendo a coluna 'SubmissionDateTime' para datetime
+       existing_data['SubmissionDateTime'] = pd.to_datetime(existing_data['SubmissionDateTime'])
 
        # Barra lateral para filtrar por tipo de movimentação
        selected_movement_type = st.sidebar.selectbox("Filtrar por Tipo de Movimentação", 
@@ -102,7 +107,6 @@ def analysis_page():
        # Mostrar a tabela de dados filtrada
        st.write("Dados filtrados:")
        st.write(filtered_data)
-
 
 
 
