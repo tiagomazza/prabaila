@@ -43,7 +43,7 @@ def display_existing_data(existing_data):
        display_existing_data(existing_data)
 
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def analysis_page():
    st.title("Análise dos Dados de Reservations")
@@ -53,19 +53,25 @@ def analysis_page():
        # Carregar os dados existentes
        existing_data = load_existing_data("Reservations")
 
+       # Remover NaN do Tipo de Movimentação e Nome dos artigos
+       existing_data.dropna(subset=["Tipo de Movimentação", "Products"], inplace=True)
+
        # Convertendo a coluna 'SubmissionDateTime' para datetime
        existing_data['SubmissionDateTime'] = pd.to_datetime(existing_data['SubmissionDateTime'])
 
        # Barra lateral para filtrar por tipo de movimentação
-       selected_movement_type = st.sidebar.selectbox("Filtrar por Tipo de Movimentação", 
-                                                     existing_data["Tipo de Movimentação"].unique())
+       selected_movement_type = st.sidebar.multiselect("Filtrar por Tipo de Movimentação", 
+                                                     existing_data["Tipo de Movimentação"].unique(), default=["Venda"])
        
        # Filtrar os dados pelo tipo de movimentação selecionado
-       filtered_data = existing_data[existing_data["Tipo de Movimentação"] == selected_movement_type]
+       filtered_data = existing_data[existing_data["Tipo de Movimentação"].isin(selected_movement_type)]
 
        # Filtro por intervalo de datas
-       start_date = st.sidebar.date_input("Data de Início")
-       end_date = st.sidebar.date_input("Data de Fim")
+       end_date = datetime.now().date()
+       start_date = end_date - timedelta(days=30)
+
+       start_date = st.sidebar.date_input("Data de Início", value=start_date)
+       end_date = st.sidebar.date_input("Data de Fim", value=end_date)
 
        if start_date and end_date:
            start_date = pd.to_datetime(start_date)
@@ -73,13 +79,13 @@ def analysis_page():
            filtered_data = filtered_data[(filtered_data["SubmissionDateTime"] >= start_date) & (filtered_data["SubmissionDateTime"] <= end_date)]
 
        # Filtro por nome dos artigos
-       article_names = st.sidebar.multiselect("Nome dos Artigos", existing_data["Products"].unique())
+       article_names = st.sidebar.multiselect("Nome dos Artigos", existing_data["Products"].unique(), default=existing_data["Products"].unique())
 
        if article_names:
            filtered_data = filtered_data[filtered_data["Products"].isin(article_names)]
 
        # Filtro por numeração
-       selected_numbers = st.sidebar.multiselect("Filtrar por Numeração", existing_data["Size"].dropna().astype(int).unique())
+       selected_numbers = st.sidebar.multiselect("Filtrar por Numeração", existing_data["Size"].dropna().astype(int).unique(), default=existing_data["Size"].dropna().astype(int).unique())
 
        if selected_numbers:
            filtered_data = filtered_data[filtered_data["Size"].astype(float).isin(selected_numbers)]
@@ -108,6 +114,7 @@ def analysis_page():
        # Mostrar a tabela de dados filtrada
        st.write("Dados filtrados:")
        st.write(filtered_data)
+
 
 
 
