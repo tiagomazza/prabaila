@@ -198,7 +198,7 @@ def register_page():
 
 
 # Imagem para exibir no menu lateral
-menu_lateral_imagem = "https://acdn.mitiendanube.com/stores/003/310/899/themes/common/logo-1595099445-1706530812-af95f05363b68e950e5bd6a386042dd21706530812-320-0.webp"
+menu_lateral_imagem = "https://shop.quintaclandestina.pt/wp-content/uploads/2024/05/logopequeno.png"
 
 # Exibir imagem no menu lateral
 st.sidebar.image(menu_lateral_imagem, use_column_width=True)
