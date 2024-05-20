@@ -209,7 +209,7 @@ st.sidebar.image(menu_lateral_imagem, use_column_width=True)
 st.title("Quinta Shop🛒")
 
 # Configuração da aplicação
-pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Registro","Análise"])
+pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Registro","Análise","Teste"])
 
 def get_sales_quantity(id_):
    existing_data_reservations = load_existing_data("Reservations")
