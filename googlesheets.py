@@ -220,27 +220,25 @@ def get_sales_quantity(id_):
         return 0
 
     # Filtrar dados com base no ID e tipo de movimentação (Venda ou Oferta)
-    filtered_data = existing_data_reservations[
+    sales_data = existing_data_reservations[
         (existing_data_reservations["ID"] == id_) &
         (existing_data_reservations["Tipo de Movimentação"].isin(["Venda", "Oferta"]))
     ]
 
     # Somar as quantidades de venda e oferta
-    sales_quantity = filtered_data["Movimentação de Stock"].sum()
+    sales_quantity = sales_data["Movimentação de Stock"].sum()
 
     # Filtrar dados com base no ID e tipo de movimentação para subtração (Entrada de Material)
-    subtraction_data = existing_data_reservations[
+    addition_data = existing_data_reservations[
         (existing_data_reservations["ID"] == id_) &
         (existing_data_reservations["Tipo de Movimentação"] == "Entrada de Material")
     ]
 
+    # Somar as quantidades de entrada de material
+    addition_quantity = addition_data["Movimentação de Stock"].sum()
+
     # Calcular o total líquido
-    if not subtraction_data.empty:
-        # Subtrair as quantidades de entrada de material
-        subtraction_quantity = subtraction_data["Movimentação de Stock"].sum()
-        net_quantity = sales_quantity - subtraction_quantity
-    else:
-        net_quantity = sales_quantity
+    net_quantity = sales_quantity - addition_quantity
 
     return int(net_quantity)  # Convertendo para inteiro para remover o .0
 
