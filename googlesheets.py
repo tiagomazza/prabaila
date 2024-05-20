@@ -6,6 +6,7 @@ import plotly.express as px
 
 conn = st.experimental_connection("gsheets", type=GSheetsConnection)
 
+
 # Função para proteger a página com senha
 def protected_page():
    st.sidebar.title("Senha de Acesso")
@@ -193,7 +194,8 @@ def register_page():
                movimentacao = 0
                movimentacao_type = ""
                additional_info = ""
-    def test_page():
+
+    st.title("Gerenciamento de Estoque WooCommerce")
     st.title("Teste")
     wcapi = API(
     url="https://sua-loja.com",  # Substitua pelo URL da sua loja
@@ -201,9 +203,6 @@ def register_page():
     consumer_secret="cs_xxxxxxx",  # Substitua pelo seu Consumer Secret
     version="wc/v3"
     )
-
-    st.title("Gerenciamento de Estoque WooCommerce")
-
     # Formulário para entrada de dados
     product_id = st.text_input("ID do Produto")
     new_stock = st.number_input("Novo Estoque", min_value=0, step=1)
