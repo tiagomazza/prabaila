@@ -5,6 +5,12 @@ from datetime import datetime
 import plotly.express as px
 from woocommerce import API
 
+wcapi = API(
+            url="https://shop.quintaclandestina.pt",  # Substitua pelo URL da sua loja
+            consumer_key="ck_326fe2832e12ff0ee0f2dd4a32e87ee0ceada496",   # Substitua pela sua Consumer Key
+            consumer_secret="cs_44ad7b5fc9a38d6212240cbded4119636d003545",
+            version="wc/v3"
+        )
 conn = st.experimental_connection("gsheets", type=GSheetsConnection)
 
 
@@ -197,12 +203,6 @@ def register_page():
                additional_info = ""     
 
 # Configuração da API do WooCommerce
-        wcapi = API(
-            url="https://shop.quintaclandestina.pt",  # Substitua pelo URL da sua loja
-            consumer_key="ck_326fe2832e12ff0ee0f2dd4a32e87ee0ceada496",   # Substitua pela sua Consumer Key
-            consumer_secret="cs_44ad7b5fc9a38d6212240cbded4119636d003545",
-            version="wc/v3"
-        )
 
         st.title("Gerenciamento de Estoque WooCommerce")
 
