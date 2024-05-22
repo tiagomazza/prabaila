@@ -366,6 +366,8 @@ def teste_page():
                         st.error(f"Erro ao atualizar o estoque para o produto ID {id_produto} ou variação ID {id_variacao}: {e}")
             else:
                 st.write("Nenhum dado encontrado na aba 'Shoes'.")
+    if st.button("Sync"):
+        sync_stock()
 
 
 if pagina_selecionada == "Active Reservations":
