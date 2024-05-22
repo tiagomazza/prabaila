@@ -336,68 +336,38 @@ if pagina_selecionada == "Verificação de estoque":
        st.markdown("---")
 
 # Página Registro
-elif pagina_selecionada == "Registro":
-   register_page()
-
-elif pagina_selecionada == "Active Reservations":
-   # Exibir a página de reservas ativas
-   active_reservations_page()
-
-elif pagina_selecionada == "Análise":
-   analysis_page()
-
-elif pagina_selecionada == "Teste":
-       
+def teste_page():
+    st.title("Página de Teste")
     if protected_page():
-# Configuração da API do WooCommerce
-
-        st.title("Gerenciamento de Estoque WooCommerce")
-
-        # Formulário para entrada de dados
-        product_id = st.text_input("ID do Produto")
-        variation_id = st.text_input("ID da Variação (deixe em branco se não for uma variação)")
-
-        if product_id:
-            # Recupera o estoque atual
-            if variation_id:
-                endpoint = f"products/{product_id}/variations/{variation_id}"
+        st.write("Esta é a página de teste. Aqui você pode adicionar funcionalidades de teste e desenvolvimento.")
+        
+        def sync_stock():
+            existing_data_shoes = load_existing_data("Shoes")
+            if existing_data_shoes is not None:
+                for index, row in existing_data_shoes.iterrows():
+                    id_ = row["ID"]
+                    stock = int(row["Estoque"])
+                    sales_quantity = get_sales_quantity(id_)
+                    new_stock = stock - sales_quantity
+                    data = {
+                        'stock_quantity': new_stock
+                    }
+                    try:
+                        wcapi.put(f"products/{id_}", data).json()
+                        st.success(f"Estoque atualizado para o produto ID {id_}: {new_stock}")
+                    except Exception as e:
+                        st.error(f"Erro ao atualizar o estoque para o produto ID {id_}: {e}")
             else:
-                endpoint = f"products/{product_id}"
-            
-            response = wcapi.get(endpoint).json()
-            
-            if "stock_quantity" in response:
-                current_stock = response["stock_quantity"]
-                st.write(f"Estoque atual: {current_stock}")
-            else:
-                st.error(f"Erro ao obter estoque atual: {response.get('message', 'Erro desconhecido')}")
-                current_stock = None
-        else:
-            current_stock = None
+                st.write("Nenhum dado encontrado na aba 'Shoes'.")
 
-        new_stock = st.number_input("Novo Estoque", min_value=0, step=1)
+        if st.button("Sync"):
+            sync_stock()
 
-        if st.button("Atualizar Estoque"):
-            if product_id and new_stock is not None and current_stock is not None:
-                if variation_id:
-                    # Atualiza o estoque de uma variação de produto no WooCommerce
-                    endpoint = f"products/{product_id}/variations/{variation_id}"
-                else:
-                    # Atualiza o estoque de um produto simples no WooCommerce
-                    endpoint = f"products/{product_id}"
-                
-                # Dados para atualização do estoque
-                data = {
-                    "stock_quantity": new_stock
-                }
-                
-                # Envia a solicitação para atualizar o produto ou variação
-                response = wcapi.put(endpoint, data).json()
-                
-                if "id" in response:
-                    st.success(f"Estoque do produto {'variação ' + variation_id if variation_id else product_id} atualizado de {current_stock} para {new_stock}.")
-                else:
-                    st.error(f"Erro ao atualizar estoque: {response.get('message', 'Erro desconhecido')}")
-            else:
-                st.warning("Por favor, insira um ID de produto válido e quantidade de estoque.")
-
+if pagina_selecionada == "Active Reservations":
+    active_reservations_page()
+elif pagina_selecionada == "Registro":
+    register_page()
+elif pagina_selecionada == "Análise":
+    analysis_page()
+elif pagina_selecionada == "Teste":
+    teste_page()
