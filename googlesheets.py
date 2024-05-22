@@ -341,31 +341,31 @@ def teste_page():
     if protected_page():
         st.write("Esta é a página de teste. Aqui você pode adicionar funcionalidades de teste e desenvolvimento.")
         
-        def sync_stock():
-        existing_data_shoes = load_existing_data("Shoes")
-        if existing_data_shoes is not None:
-            for index, row in existing_data_shoes.iterrows():
-                id_produto = row["ID_Produto"]
-                id_variacao = row["ID_Variação"]
-                stock = int(row["Estoque"])
-                sales_quantity = get_sales_quantity(id_variacao)  # Assumindo que a quantidade vendida está relacionada à variação
-                new_stock = stock - sales_quantity
-                data = {
-                    'stock_quantity': new_stock
-                }
-                try:
-                    if pd.isna(id_variacao) or id_variacao == "":
-                        # Atualizar o estoque do produto
-                        wcapi.put(f"products/{id_produto}", data).json()
-                        st.success(f"Estoque atualizado para o produto ID {id_produto}: {new_stock}")
-                    else:
-                        # Atualizar o estoque da variação do produto
-                        wcapi.put(f"products/{id_produto}/variations/{id_variacao}", data).json()
-                        st.success(f"Estoque atualizado para a variação ID {id_variacao} do produto ID {id_produto}: {new_stock}")
-                except Exception as e:
-                    st.error(f"Erro ao atualizar o estoque para o produto ID {id_produto} ou variação ID {id_variacao}: {e}")
-        else:
-            st.write("Nenhum dado encontrado na aba 'Shoes'.")
+    def sync_stock():
+    existing_data_shoes = load_existing_data("Shoes")
+    if existing_data_shoes is not None:
+        for index, row in existing_data_shoes.iterrows():
+            id_produto = row["ID_Produto"]
+            id_variacao = row["ID_Variação"]
+            stock = int(row["Estoque"])
+            sales_quantity = get_sales_quantity(id_variacao)  # Assumindo que a quantidade vendida está relacionada à variação
+            new_stock = stock - sales_quantity
+            data = {
+                'stock_quantity': new_stock
+            }
+            try:
+                if pd.isna(id_variacao) or id_variacao == "":
+                    # Atualizar o estoque do produto
+                    wcapi.put(f"products/{id_produto}", data).json()
+                    st.success(f"Estoque atualizado para o produto ID {id_produto}: {new_stock}")
+                else:
+                    # Atualizar o estoque da variação do produto
+                    wcapi.put(f"products/{id_produto}/variations/{id_variacao}", data).json()
+                    st.success(f"Estoque atualizado para a variação ID {id_variacao} do produto ID {id_produto}: {new_stock}")
+            except Exception as e:
+                st.error(f"Erro ao atualizar o estoque para o produto ID {id_produto} ou variação ID {id_variacao}: {e}")
+    else:
+        st.write("Nenhum dado encontrado na aba 'Shoes'.")
 
 
 if pagina_selecionada == "Active Reservations":
