@@ -418,8 +418,8 @@ def woocomerce_page():
             else:
                 st.write("Nenhum dado encontrado na aba 'Shoes'.")
 
-    if st.button("Woocomerce Sync"):
-        sync_stock()
+        if st.button("Google sheets ▶ Woocomerce"):
+            sync_stock()
 
 
 if pagina_selecionada == "Active Reservations":
