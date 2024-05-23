@@ -301,6 +301,9 @@ if pagina_selecionada == "Verificação de estoque":
    cor_sola_opcoes = existing_data["Cor da sola"].unique()
    cor_sola_filtro = st.sidebar.multiselect("Filtrar por Cor da sola", cor_sola_opcoes, default=cor_sola_opcoes)
 
+   numero_brasileiro_opcoes = existing_data["Numero Brasileiro"].unique()
+   numero_brasileiro_filtro = st.sidebar.multiselect("Filtrar por numero brasileiro", numero_brasileiro_filtro, default=numero_brasileiro_opcoes)
+
    # Números disponíveis com base nos filtros aplicados
    numeros_disponiveis = existing_data[existing_data["Modelo"].isin(modelos_filtro)]["Número"].unique()
    numeros_europeus_selecionados = st.multiselect("Quais números europeus deseja consultar?", numeros_disponiveis.astype(int), default=[])
@@ -311,6 +314,7 @@ if pagina_selecionada == "Verificação de estoque":
        (existing_data["Número"].isin(numeros_europeus_selecionados)) &
        (existing_data["Deslize"].isin(deslize_filtro)) &
        (existing_data["Amortecimento"].isin(amortecimento_filtro)) &
+       (existing_data["Numero Brasileiro"].isin(numero_brasileiro_filtro)) &
        (existing_data["Cor da sola"].isin(cor_sola_filtro))
    ]
 
