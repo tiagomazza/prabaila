@@ -319,12 +319,12 @@ if pagina_selecionada == "Verificação de estoque":
     ]
 
 
-   # Remover o ".0" dos dados consultados
-   filtered_data["Número"] = filtered_data["Número"].astype(int)
-       
+    # Remover o ".0" dos dados consultados
+    filtered_data["Número"] = filtered_data["Número"].astype(int)
+        
 
-   # Add a toggle button to show/hide shoes with zero stock
-   show_zero_stock = st.sidebar.checkbox("Mostrar sem stock")
+    # Add a toggle button to show/hide shoes with zero stock
+    show_zero_stock = st.sidebar.checkbox("Mostrar sem stock")
 
    # Apply filter to show/hide shoes with zero stock
    if not show_zero_stock:
