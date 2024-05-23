@@ -286,9 +286,9 @@ if pagina_selecionada == "Verificação de estoque":
    existing_data = conn.read(worksheet="Shoes", usecols=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], ttl=6)
    existing_data.dropna(subset=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], inplace=True)
 
-   # Sidebar filters
+    # Sidebar filters
     st.sidebar.header("Filtros")
-    
+
     modelos = existing_data["Modelo"].unique()
     modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
 
@@ -310,12 +310,12 @@ if pagina_selecionada == "Verificação de estoque":
 
     # Aplicar os filtros selecionados aos dados existentes
     filtered_data = existing_data[
-        (existing_data["Modelo"].isin(modelos_filtro)) & 
-        (existing_data["Número"].isin(numeros_europeus_selecionados)) &
-        (existing_data["Deslize"].isin(deslize_filtro)) &
-        (existing_data["Amortecimento"].isin(amortecimento_filtro)) &
-        (existing_data["Numero Brasileiro"].isin(numero_brasileiro_filtro)) &
-        (existing_data["Cor da sola"].isin(cor_sola_filtro))
+    (existing_data["Modelo"].isin(modelos_filtro)) & 
+    (existing_data["Número"].isin(numeros_europeus_selecionados)) &
+    (existing_data["Deslize"].isin(deslize_filtro)) &
+    (existing_data["Amortecimento"].isin(amortecimento_filtro)) &
+    (existing_data["Numero Brasileiro"].isin(numero_brasileiro_filtro)) &
+    (existing_data["Cor da sola"].isin(cor_sola_filtro))
     ]
 
 
