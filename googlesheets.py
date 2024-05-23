@@ -281,10 +281,10 @@ def get_sales_quantity(id_):
 
 # Atualização da página de verificação de estoque para subtrair a quantidade de venda da quantidade disponível
 if pagina_selecionada == "Verificação de estoque":
-   # Fetch existing shoes data
-   st.subheader("Busca de modelos disponíveis")
-   existing_data = conn.read(worksheet="Shoes", usecols=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], ttl=6)
-   existing_data.dropna(subset=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], inplace=True)
+    # Fetch existing shoes data
+    st.subheader("Busca de modelos disponíveis")
+    existing_data = conn.read(worksheet="Shoes", usecols=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], ttl=6)
+    existing_data.dropna(subset=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], inplace=True)
 
     # Sidebar filters
     st.sidebar.header("Filtros")
