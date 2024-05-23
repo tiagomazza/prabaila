@@ -133,7 +133,7 @@ def get_id_from_shoes(modelo, numero):
        return id_.iloc[0]
    else:
        return None
-       
+
 def register_page():
     st.title("Registro")
     # Proteger a página com uma senha
@@ -201,8 +201,7 @@ def register_page():
                         id_produto = int(row_shoes["ID_Produto"])
                         id_variacao = int(row_shoes["ID_Variação"]) if not pd.isna(row_shoes["ID_Variação"]) and row_shoes["ID_Variação"] != "" else None
                         stock = int(row_shoes["Estoque"])
-                        sales_quantity = get_sales_quantity(selected_id)
-                        new_stock = stock - sales_quantity
+                        new_stock = stock + movimentacao  # Atualiza o estoque com base na movimentação
                         data = {
                             'stock_quantity': new_stock
                         }
