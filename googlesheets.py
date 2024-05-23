@@ -290,6 +290,9 @@ if pagina_selecionada == "Verificação de estoque":
     )
     existing_data.dropna(subset=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], inplace=True)
 
+    # Converter "Numero Brasileiro" para int
+    existing_data["Numero Brasileiro"] = existing_data["Numero Brasileiro"].astype(int)
+
     # Sidebar filters
     st.sidebar.header("Filtros")
 
