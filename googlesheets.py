@@ -192,7 +192,6 @@ def register_page():
                 conn.update(worksheet="Reservations", data=new_rows)
 
                 st.success("Details successfully submitted!")
-                time.sleep(1)
 
                 # Atualiza o estoque no WooCommerce após a atualização da planilha
                 try:
@@ -201,7 +200,7 @@ def register_page():
                         id_produto = int(row_shoes["ID_Produto"])
                         id_variacao = int(row_shoes["ID_Variação"]) if not pd.isna(row_shoes["ID_Variação"]) and row_shoes["ID_Variação"] != "" else None
                         stock = int(row_shoes["Estoque"])
-                        sales_quantity = get_sales_quantity(id_variacao if id_variacao else id_produto)
+                        sales_quantity = get_sales_quantity(selected_id)
                         new_stock = stock - sales_quantity
                         data = {
                             'stock_quantity': new_stock
@@ -232,6 +231,7 @@ def register_page():
                 movimentacao = 0
                 movimentacao_type = ""
                 additional_info = ""
+
 
 
 
