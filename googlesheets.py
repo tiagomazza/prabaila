@@ -283,7 +283,11 @@ def get_sales_quantity(id_):
 if pagina_selecionada == "Verificação de estoque":
     # Fetch existing shoes data
     st.subheader("Busca de modelos disponíveis")
-    existing_data = conn.read(worksheet="Shoes", usecols=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], ttl=6)
+    existing_data = conn.read(
+        worksheet="Shoes", 
+        usecols=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], 
+        ttl=6
+    )
     existing_data.dropna(subset=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], inplace=True)
 
     # Sidebar filters
@@ -310,64 +314,61 @@ if pagina_selecionada == "Verificação de estoque":
 
     # Aplicar os filtros selecionados aos dados existentes
     filtered_data = existing_data[
-    (existing_data["Modelo"].isin(modelos_filtro)) & 
-    (existing_data["Número"].isin(numeros_europeus_selecionados)) &
-    (existing_data["Deslize"].isin(deslize_filtro)) &
-    (existing_data["Amortecimento"].isin(amortecimento_filtro)) &
-    (existing_data["Numero Brasileiro"].isin(numero_brasileiro_filtro)) &
-    (existing_data["Cor da sola"].isin(cor_sola_filtro))
+        (existing_data["Modelo"].isin(modelos_filtro)) & 
+        (existing_data["Número"].isin(numeros_europeus_selecionados)) &
+        (existing_data["Deslize"].isin(deslize_filtro)) &
+        (existing_data["Amortecimento"].isin(amortecimento_filtro)) &
+        (existing_data["Numero Brasileiro"].isin(numero_brasileiro_filtro)) &
+        (existing_data["Cor da sola"].isin(cor_sola_filtro))
     ]
-
 
     # Remover o ".0" dos dados consultados
     filtered_data["Número"] = filtered_data["Número"].astype(int)
-        
-
+    
     # Add a toggle button to show/hide shoes with zero stock
     show_zero_stock = st.sidebar.checkbox("Mostrar sem stock")
 
-   # Apply filter to show/hide shoes with zero stock
-   if not show_zero_stock:
-       filtered_data = filtered_data[filtered_data["Estoque"] > 0]
+    # Apply filter to show/hide shoes with zero stock
+    if not show_zero_stock:
+        filtered_data = filtered_data[filtered_data["Estoque"] > 0]
 
-   # Display total stock count in the sidebar
-   total_stock = filtered_data["Estoque"].sum()
-   st.sidebar.header("Total do Estoque:")
-   st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
+    # Display total stock count in the sidebar
+    total_stock = filtered_data["Estoque"].sum()
+    st.sidebar.header("Total do Estoque:")
+    st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
 
-   # Display shoes information separately
-   for index, row in filtered_data.iterrows():
-       id_unico = f"{row['Modelo']}_{int(row['Número'])}"  # Criar um ID único combinando modelo e número
-       st.subheader(f"{row['Modelo']}")
-       st.markdown(f"🇪🇺 **Número:** {int(row['Número'])}")  # Remove .0 and make bold
-       # Display the image from the URL
-       if row['Imagem']:
-           st.image(row['Imagem'])
-       else:
-           st.text("Imagem não disponível")
-       
-               # Subtrair a quantidade de venda da quantidade disponível
-       id_ = row["ID"]
-       sales_quantity = get_sales_quantity(id_)
-       stock_after_sales = int(row["Estoque"]) - sales_quantity
+    # Display shoes information separately
+    for index, row in filtered_data.iterrows():
+        id_unico = f"{row['Modelo']}_{int(row['Número'])}"  # Criar um ID único combinando modelo e número
+        st.subheader(f"{row['Modelo']}")
+        st.markdown(f"🇪🇺 **Número:** {int(row['Número'])}")  # Remove .0 and make bold
+        
+        # Display the image from the URL
+        if row['Imagem']:
+            st.image(row['Imagem'])
+        else:
+            st.text("Imagem não disponível")
+        
+        # Subtrair a quantidade de venda da quantidade disponível
+        id_ = row["ID"]
+        sales_quantity = get_sales_quantity(id_)
+        stock_after_sales = int(row["Estoque"]) - sales_quantity
 
-       st.markdown(f"🏂🏽 **Deslize:** {(row['Deslize'])}")  # Remove .0 and make 
-       st.markdown(f"🦘 **Amortecimento:** {(row['Amortecimento'])}")  # Remove .0 and make 
-       st.markdown(f"👟 **Cor da sola:** {(row['Cor da sola'])}")  # Remove .0 and make 
-       st.markdown(f"📦 **Unidades em estoque:** {stock_after_sales}")  # Remove .0 and make 
-       st.markdown(f"🇧🇷 **Numero:** {int(row['Numero Brasileiro'])}")  # Remove .0 and make 
-       preco = row.get('Preço')
-       if preco is not None:
-           st.markdown(f"🏷 **Preço:**  {int(row['Preço'])}€")
-       else:
-           st.markdown("Preço não disponível")
+        st.markdown(f"🏂🏽 **Deslize:** {row['Deslize']}")
+        st.markdown(f"🦘 **Amortecimento:** {row['Amortecimento']}")
+        st.markdown(f"👟 **Cor da sola:** {row['Cor da sola']}")
+        st.markdown(f"📦 **Unidades em estoque:** {stock_after_sales}")
+        st.markdown(f"🇧🇷 **Numero:** {int(row['Numero Brasileiro'])}")
+        
+        preco = row.get('Preço')
+        if preco is not None:
+            st.markdown(f"🏷 **Preço:** {int(preco)}€")
+        else:
+            st.markdown("Preço não disponível")
 
-       st.markdown(f"📝 **Observações:** {row['Descrição']}")  # Make bold
+        st.markdown(f"📝 **Observações:** {row['Descrição']}")
+        st.markdown("---")
 
-
-
-       
-       st.markdown("---")
 
 # Página Registro
 def woocomerce_page():
