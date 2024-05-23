@@ -133,8 +133,6 @@ def get_id_from_shoes(modelo, numero):
        return id_.iloc[0]
    else:
        return None
-
-# Atualização da função register_page() para incluir o ID correspondente no novo registro
 def register_page():
     st.title("Registro")
     # Proteger a página com uma senha
@@ -193,9 +191,10 @@ def register_page():
                 # Atualiza a planilha com todas as informações
                 conn.update(worksheet="Reservations", data=new_rows)
 
-                # Atualiza o estoque no WooCommerce
+                st.success("Details successfully submitted!")
+
+                # Atualiza o estoque no WooCommerce após a atualização da planilha
                 try:
-                    existing_data_shoes = load_existing_data("Shoes")
                     if existing_data_shoes is not None:
                         row_shoes = existing_data_shoes[existing_data_shoes["ID"] == selected_id].iloc[0]
                         id_produto = int(row_shoes["ID_Produto"])
@@ -221,8 +220,7 @@ def register_page():
                 except Exception as e:
                     st.error(f"Erro ao atualizar o estoque no WooCommerce: {e}")
 
-                st.success("Details successfully submitted!")
-
+                # Reset form fields
                 name = ""
                 email = ""
                 whatsapp = ""
@@ -232,10 +230,8 @@ def register_page():
                 value = 5
                 movimentacao = 0
                 movimentacao_type = ""
-                additional_info = ""       
+                additional_info = ""
 
-        
-          
 
 
 # Imagem para exibir no menu lateral
