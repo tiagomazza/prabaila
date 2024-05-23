@@ -216,7 +216,7 @@ st.sidebar.image(menu_lateral_imagem, use_column_width=True)
 st.title("Quinta Shop🛒")
 
 # Configuração da aplicação
-pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Registro","Análise","Teste"])
+pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Registro","Análise","Woocomerce sync"])
 
 def get_sales_quantity(id_):
    existing_data_reservations = load_existing_data("Reservations")
@@ -336,10 +336,59 @@ if pagina_selecionada == "Verificação de estoque":
        st.markdown("---")
 
 # Página Registro
-def teste_page():
-    st.title("Página de Teste")
+def woocomerce_page():
+    st.title("Woocomerce sync")
     if protected_page():
-        st.write("Esta é a página de teste. Aqui você pode adicionar funcionalidades de teste e desenvolvimento.")
+        
+        st.title("Gerenciamento de Estoque WooCommerce")
+
+        # Formulário para entrada de dados
+        product_id = st.text_input("ID do Produto")
+        variation_id = st.text_input("ID da Variação (deixe em branco se não for uma variação)")
+
+        if product_id:
+            # Recupera o estoque atual
+            if variation_id:
+                endpoint = f"products/{product_id}/variations/{variation_id}"
+            else:
+                endpoint = f"products/{product_id}"
+            
+            response = wcapi.get(endpoint).json()
+            
+            if "stock_quantity" in response:
+                current_stock = response["stock_quantity"]
+                st.write(f"Estoque atual: {current_stock}")
+            else:
+                st.error(f"Erro ao obter estoque atual: {response.get('message', 'Erro desconhecido')}")
+                current_stock = None
+        else:
+            current_stock = None
+
+        new_stock = st.number_input("Novo Estoque", min_value=0, step=1)
+
+        if st.button("Atualizar Estoque"):
+            if product_id and new_stock is not None and current_stock is not None:
+                if variation_id:
+                    # Atualiza o estoque de uma variação de produto no WooCommerce
+                    endpoint = f"products/{product_id}/variations/{variation_id}"
+                else:
+                    # Atualiza o estoque de um produto simples no WooCommerce
+                    endpoint = f"products/{product_id}"
+                
+                # Dados para atualização do estoque
+                data = {
+                    "stock_quantity": new_stock
+                }
+                
+                # Envia a solicitação para atualizar o produto ou variação
+                response = wcapi.put(endpoint, data).json()
+                
+                if "id" in response:
+                    st.success(f"Estoque do produto {'variação ' + variation_id if variation_id else product_id} atualizado de {current_stock} para {new_stock}.")
+                else:
+                    st.error(f"Erro ao atualizar estoque: {response.get('message', 'Erro desconhecido')}")
+            else:
+                st.warning("Por favor, insira um ID de produto válido e quantidade de estoque.")
         
         def sync_stock():
             existing_data_shoes = load_existing_data("Shoes")
@@ -369,7 +418,7 @@ def teste_page():
             else:
                 st.write("Nenhum dado encontrado na aba 'Shoes'.")
 
-    if st.button("Sync"):
+    if st.button("Woocomerce Sync"):
         sync_stock()
 
 
@@ -379,5 +428,5 @@ elif pagina_selecionada == "Registro":
     register_page()
 elif pagina_selecionada == "Análise":
     analysis_page()
-elif pagina_selecionada == "Teste":
-    teste_page()
+elif pagina_selecionada == "Woocomerce sync":
+    woocomerce_page()
