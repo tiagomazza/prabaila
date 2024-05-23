@@ -192,6 +192,7 @@ def register_page():
                 conn.update(worksheet="Reservations", data=new_rows)
 
                 st.success("Details successfully submitted!")
+                time.sleep(1)
 
                 # Atualiza o estoque no WooCommerce após a atualização da planilha
                 try:
