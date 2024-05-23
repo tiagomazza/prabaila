@@ -136,71 +136,103 @@ def get_id_from_shoes(modelo, numero):
 
 # Atualização da função register_page() para incluir o ID correspondente no novo registro
 def register_page():
-   st.title("Registro")
-   # Proteger a página com uma senha
-   if protected_page():
-       existing_data_reservations = load_existing_data("Reservations")
-       existing_data_shoes = load_existing_data("Shoes")
-       modelos_existentes = existing_data_shoes["Modelo"].unique()
-       movimentacao_options = ["Venda", "Oferta", "Reserva", "Devolução", "Entrada de Material"]
+    st.title("Registro")
+    # Proteger a página com uma senha
+    if protected_page():
+        existing_data_reservations = load_existing_data("Reservations")
+        existing_data_shoes = load_existing_data("Shoes")
+        modelos_existentes = existing_data_shoes["Modelo"].unique()
+        movimentacao_options = ["Venda", "Oferta", "Reserva", "Devolução", "Entrada de Material"]
 
-       with st.form(key="vendor_form"):
-           name = st.text_input(label="Name*")
-           email = st.text_input("E-mail")
-           whatsapp = st.text_input("WhatsApp with international code")
-           products = st.multiselect("Shoes", options=modelos_existentes)
-           size = st.slider("Numeração", 36, 45, 34)
-           method_of_payment = st.selectbox("Method of Payment", ["Dinheiro", "Mbway", "Transferência","Wise","Revolut","Paypal"])
-           value = st.slider("Valor (€)", 0, 150, 5, step=5)
-           movimentacao = st.slider("Movimentação de Stock", 0, 10, 0)
-           movimentacao_type = st.selectbox("Tipo de Movimentação", movimentacao_options)
-           additional_info = st.text_area(label="Additional Notes")
+        with st.form(key="vendor_form"):
+            name = st.text_input(label="Name*")
+            email = st.text_input("E-mail")
+            whatsapp = st.text_input("WhatsApp with international code")
+            products = st.multiselect("Shoes", options=modelos_existentes)
+            size = st.slider("Numeração", 36, 45, 34)
+            method_of_payment = st.selectbox("Method of Payment", ["Dinheiro", "Mbway", "Transferência", "Wise", "Revolut", "Paypal"])
+            value = st.slider("Valor (€)", 0, 150, 5, step=5)
+            movimentacao = st.slider("Movimentação de Stock", 0, 10, 0)
+            movimentacao_type = st.selectbox("Tipo de Movimentação", movimentacao_options)
+            additional_info = st.text_area(label="Additional Notes")
 
-           st.markdown("**required*")
+            st.markdown("**required*")
 
-           submit_button = st.form_submit_button(label="Submit Details")
+            submit_button = st.form_submit_button(label="Submit Details")
 
-           if submit_button:
-               submission_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-               
-               # Obter o ID correspondente com base no modelo e número selecionados
-               selected_model = products[0]  # Assumindo apenas um produto é selecionado
-               selected_id = get_id_from_shoes(selected_model, size)
-               
-               new_row = {
-                   "ID": selected_id,
-                   "Name": name,
-                   "Email": email,
-                   "Whatsapp": whatsapp,
-                   "Products": ", ".join(products),
-                   "Size": size,
-                   "Method of Payment": method_of_payment,
-                   "Value": value,
-                   "Movimentação de Stock": movimentacao,
-                   "Tipo de Movimentação": movimentacao_type,
-                   "AdditionalInfo": additional_info,
-                   "SubmissionDateTime": submission_datetime,
-               }
+            if submit_button:
+                submission_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                
+                # Transformar os valores de "Venda", "Oferta" e "Reserva" em números negativos
+                if movimentacao_type in ["Venda", "Oferta", "Reserva"]:
+                    movimentacao = -abs(movimentacao)
 
-               # Adiciona a nova linha à lista de dicionários
-               new_rows = existing_data_reservations.to_dict(orient="records")
-               new_rows.append(new_row)
+                # Obter o ID correspondente com base no modelo e número selecionados
+                selected_model = products[0]  # Assumindo apenas um produto é selecionado
+                selected_id = get_id_from_shoes(selected_model, size)
+                
+                new_row = {
+                    "ID": selected_id,
+                    "Name": name,
+                    "Email": email,
+                    "Whatsapp": whatsapp,
+                    "Products": ", ".join(products),
+                    "Size": size,
+                    "Method of Payment": method_of_payment,
+                    "Value": value,
+                    "Movimentação de Stock": movimentacao,
+                    "Tipo de Movimentação": movimentacao_type,
+                    "AdditionalInfo": additional_info,
+                    "SubmissionDateTime": submission_datetime,
+                }
 
-               # Atualiza a planilha com todas as informações
-               conn.update(worksheet="Reservations", data=new_rows)
+                # Adiciona a nova linha à lista de dicionários
+                new_rows = existing_data_reservations.to_dict(orient="records")
+                new_rows.append(new_row)
 
-               st.success("Details successfully submitted!")
+                # Atualiza a planilha com todas as informações
+                conn.update(worksheet="Reservations", data=new_rows)
 
-               name = ""
-               email = ""
-               whatsapp = ""
-               products = []
-               size = 34
-               method_of_payment = ""
-               value = 5
-               movimentacao = 0
-               movimentacao_type = ""
-               additional_info = ""     
+                # Atualiza o estoque no WooCommerce
+                try:
+                    existing_data_shoes = load_existing_data("Shoes")
+                    if existing_data_shoes is not None:
+                        row_shoes = existing_data_shoes[existing_data_shoes["ID"] == selected_id].iloc[0]
+                        id_produto = int(row_shoes["ID_Produto"])
+                        id_variacao = int(row_shoes["ID_Variação"]) if not pd.isna(row_shoes["ID_Variação"]) and row_shoes["ID_Variação"] != "" else None
+                        stock = int(row_shoes["Estoque"])
+                        sales_quantity = get_sales_quantity(id_variacao if id_variacao else id_produto)
+                        new_stock = stock - sales_quantity
+                        data = {
+                            'stock_quantity': new_stock
+                        }
+                        if id_variacao is None:
+                            # Atualizar o estoque do produto
+                            response = wcapi.put(f"products/{id_produto}", data).json()
+                            st.success(f"Estoque atualizado para o produto ID {id_produto}: {new_stock}")
+                        else:
+                            # Atualizar o estoque da variação do produto
+                            response = wcapi.put(f"products/{id_produto}/variations/{id_variacao}", data).json()
+                            st.success(f"Estoque atualizado para a variação ID {id_variacao} do produto ID {id_produto}: {new_stock}")
+                    else:
+                        st.error("Erro ao carregar dados dos produtos para atualização do estoque.")
+                except ValueError as ve:
+                    st.error(f"Erro ao converter valores para int: {ve}")
+                except Exception as e:
+                    st.error(f"Erro ao atualizar o estoque no WooCommerce: {e}")
+
+                st.success("Details successfully submitted!")
+
+                name = ""
+                email = ""
+                whatsapp = ""
+                products = []
+                size = 34
+                method_of_payment = ""
+                value = 5
+                movimentacao = 0
+                movimentacao_type = ""
+                additional_info = ""       
 
         
           
