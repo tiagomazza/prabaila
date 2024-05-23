@@ -133,6 +133,7 @@ def get_id_from_shoes(modelo, numero):
        return id_.iloc[0]
    else:
        return None
+       
 def register_page():
     st.title("Registro")
     # Proteger a página com uma senha
