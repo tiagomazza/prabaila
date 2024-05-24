@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime
 import plotly.express as px
 from woocommerce import API
+from datetime import datetime, timedelta
 
 wcapi = API(
             url="https://shop.quintaclandestina.pt",  # Substitua pelo URL da sua loja
