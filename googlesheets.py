@@ -53,74 +53,77 @@ def display_existing_data(existing_data):
 from datetime import datetime, timedelta
 
 def analysis_page():
-   st.title("Análise dos Dados de Reservations")
+    st.title("Análise dos Dados de Reservations")
 
-   # Proteger a página com uma senha
-   if protected_page():
-       # Carregar os dados existentes
-       existing_data = load_existing_data("Reservations")
+    # Proteger a página com uma senha
+    if protected_page():
+        # Carregar os dados existentes
+        existing_data = load_existing_data("Reservations")
 
-       # Remover NaN do Tipo de Movimentação e Nome dos artigos
-       existing_data.dropna(subset=["Tipo de Movimentação", "Products"], inplace=True)
+        # Remover NaN do Tipo de Movimentação e Nome dos artigos
+        existing_data.dropna(subset=["Tipo de Movimentação", "Products"], inplace=True)
 
-       # Convertendo a coluna 'SubmissionDateTime' para datetime
-       existing_data['SubmissionDateTime'] = pd.to_datetime(existing_data['SubmissionDateTime'])
+        # Convertendo a coluna 'SubmissionDateTime' para datetime
+        existing_data['SubmissionDateTime'] = pd.to_datetime(existing_data['SubmissionDateTime'])
 
-       # Barra lateral para filtrar por tipo de movimentação
-       selected_movement_type = st.sidebar.multiselect("Filtrar por Tipo de Movimentação", 
-                                                     existing_data["Tipo de Movimentação"].unique(), default=["Venda"])
-       
-       # Filtrar os dados pelo tipo de movimentação selecionado
-       filtered_data = existing_data[existing_data["Tipo de Movimentação"].isin(selected_movement_type)]
+        # Transformar os valores negativos em positivos para análise
+        existing_data['Movimentação de Stock'] = existing_data['Movimentação de Stock'].abs()
 
-       # Filtro por intervalo de datas
-       end_date = datetime.now().date()
-       start_date = end_date - timedelta(days=30)
+        # Barra lateral para filtrar por tipo de movimentação
+        selected_movement_type = st.sidebar.multiselect("Filtrar por Tipo de Movimentação", 
+                                                        existing_data["Tipo de Movimentação"].unique(), default=["Venda"])
 
-       start_date = st.sidebar.date_input("Data de Início", value=start_date)
-       end_date = st.sidebar.date_input("Data de Fim", value=end_date)
+        # Filtrar os dados pelo tipo de movimentação selecionado
+        filtered_data = existing_data[existing_data["Tipo de Movimentação"].isin(selected_movement_type)]
 
-       if start_date and end_date:
-           start_date = pd.to_datetime(start_date)
-           end_date = pd.to_datetime(end_date)
-           filtered_data = filtered_data[(filtered_data["SubmissionDateTime"] >= start_date) & (filtered_data["SubmissionDateTime"] <= end_date)]
+        # Filtro por intervalo de datas
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=30)
 
-       # Filtro por nome dos artigos
-       article_names = st.sidebar.multiselect("Nome dos Artigos", existing_data["Products"].unique(), default=existing_data["Products"].unique())
+        start_date = st.sidebar.date_input("Data de Início", value=start_date)
+        end_date = st.sidebar.date_input("Data de Fim", value=end_date)
 
-       if article_names:
-           filtered_data = filtered_data[filtered_data["Products"].isin(article_names)]
+        if start_date and end_date:
+            start_date = pd.to_datetime(start_date)
+            end_date = pd.to_datetime(end_date)
+            filtered_data = filtered_data[(filtered_data["SubmissionDateTime"] >= start_date) & (filtered_data["SubmissionDateTime"] <= end_date)]
 
-       # Filtro por numeração
-       selected_numbers = st.sidebar.multiselect("Filtrar por Numeração", existing_data["Size"].dropna().astype(int).unique(), default=existing_data["Size"].dropna().astype(int).unique())
+        # Filtro por nome dos artigos
+        article_names = st.sidebar.multiselect("Nome dos Artigos", existing_data["Products"].unique(), default=existing_data["Products"].unique())
 
-       if selected_numbers:
-           filtered_data = filtered_data[filtered_data["Size"].astype(float).isin(selected_numbers)]
+        if article_names:
+            filtered_data = filtered_data[filtered_data["Products"].isin(article_names)]
 
-       # Número total de artigos vendidos (filtrado)
-       total_articles_sold = int(filtered_data["Movimentação de Stock"].sum())
-       st.write(f"Número total de artigos vendidos: {total_articles_sold}")
+        # Filtro por numeração
+        selected_numbers = st.sidebar.multiselect("Filtrar por Numeração", existing_data["Size"].dropna().astype(int).unique(), default=existing_data["Size"].dropna().astype(int).unique())
 
-       # Total vendido por numeração (filtrado)
-       total_sold_by_model = filtered_data.groupby("Products")["Movimentação de Stock"].sum()
-       st.write(total_sold_by_model)
+        if selected_numbers:
+            filtered_data = filtered_data[filtered_data["Size"].astype(float).isin(selected_numbers)]
 
-       # Total vendido por numeração (filtrado)
-       total_sold_by_size = filtered_data.groupby("Size")["Movimentação de Stock"].sum()
-       st.write(total_sold_by_size)
+        # Número total de artigos vendidos (filtrado)
+        total_articles_sold = int(filtered_data["Movimentação de Stock"].sum())
+        st.write(f"Número total de artigos vendidos: {total_articles_sold}")
 
-       # Total de valores recebidos (filtrado)
-       total_values_received = filtered_data["Value"].sum()
-       st.write(f"Total de valores recebidos (filtrado): {total_values_received}")
+        # Total vendido por modelo (filtrado)
+        total_sold_by_model = filtered_data.groupby("Products")["Movimentação de Stock"].sum()
+        st.write(total_sold_by_model)
 
-       # Movimentação por forma de pagamento (filtrado)
-       st.write("Movimentação por forma de pagamento (filtrado):")
-       total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum()
-       st.write(total_by_payment_method)
+        # Total vendido por numeração (filtrado)
+        total_sold_by_size = filtered_data.groupby("Size")["Movimentação de Stock"].sum()
+        st.write(total_sold_by_size)
 
-       # Mostrar a tabela de dados filtrada
-       st.write("Dados filtrados:")
-       st.write(filtered_data)
+        # Total de valores recebidos (filtrado)
+        total_values_received = filtered_data["Value"].sum()
+        st.write(f"Total de valores recebidos (filtrado): {total_values_received}")
+
+        # Movimentação por forma de pagamento (filtrado)
+        st.write("Movimentação por forma de pagamento (filtrado):")
+        total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum()
+        st.write(total_by_payment_method)
+
+        # Mostrar a tabela de dados filtrada
+        st.write("Dados filtrados:")
+        st.write(filtered_data)
 
     
 
