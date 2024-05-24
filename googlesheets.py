@@ -50,7 +50,6 @@ def display_existing_data(existing_data):
        # Exibir os dados existentes
        display_existing_data(existing_data)
 
-from datetime import datetime, timedelta
 
 def analysis_page():
     st.title("Análise dos Dados de Reservations")
@@ -109,7 +108,13 @@ def analysis_page():
         st.write(total_sold_by_model)
 
         # Total vendido por numeração (filtrado)
-        total_sold_by_size = filtered_data.groupby("Size")["Movimentação de Stock"].sum()
+        total_sold_by_size = filtered_data.groupby("Size")["Movimentação de Stock"].sum().reset_index()
+        
+        # Calcular a existência atual do estoque
+        existing_stock = load_existing_data("Shoes")[["Size", "Estoque"]].groupby("Size").sum().reset_index()
+        total_sold_by_size = total_sold_by_size.merge(existing_stock, on="Size", how="left")
+        total_sold_by_size["Existência Atual"] = total_sold_by_size["Estoque"] - total_sold_by_size["Movimentação de Stock"]
+        
         st.write(total_sold_by_size)
 
         # Total de valores recebidos (filtrado)
@@ -124,6 +129,7 @@ def analysis_page():
         # Mostrar a tabela de dados filtrada
         st.write("Dados filtrados:")
         st.write(filtered_data)
+
 
     
 
