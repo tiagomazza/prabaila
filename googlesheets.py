@@ -50,7 +50,6 @@ def display_existing_data(existing_data):
        # Exibir os dados existentes
        display_existing_data(existing_data)
 
-
 def analysis_page():
     st.title("Análise dos Dados de Reservations")
 
@@ -130,8 +129,10 @@ def analysis_page():
 
         # Mostrar a tabela de dados filtrada
         st.write("Dados filtrados:")
-        st.write(filtered_data)    
+        st.write(filtered_data)
 
+if __name__ == "__main__":
+    analysis_page()
 
 # Função para obter o ID correspondente com base no modelo e número
 def get_id_from_shoes(modelo, numero):
