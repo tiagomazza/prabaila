@@ -75,11 +75,11 @@ def analysis_page():
         filtered_data = existing_data[existing_data["Tipo de Movimentação"].isin(selected_movement_type)]
 
         # Filtro por intervalo de datas
-        today = datetime.now().date()
-        default_start_date = today - timedelta(days=30)
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=30)
 
-        start_date = st.sidebar.date_input("Data de Início", value=default_start_date)
-        end_date = st.sidebar.date_input("Data de Fim", value=today)
+        start_date = st.sidebar.date_input("Data de Início", value=start_date)
+        end_date = st.sidebar.date_input("Data de Fim", value=end_date)
 
         if start_date and end_date:
             start_date = pd.to_datetime(start_date)
@@ -107,15 +107,7 @@ def analysis_page():
         st.write(total_sold_by_model)
 
         # Total vendido por numeração (filtrado)
-        total_sold_by_size = filtered_data.groupby("Size")["Movimentação de Stock"].sum().reset_index()
-
-        # Carregar dados do estoque existente
-        existing_stock = load_existing_data("Shoes")[["Size", "Estoque"]].groupby("Size").sum().reset_index()
-
-        # Calcular a existência atual do estoque
-        total_sold_by_size = total_sold_by_size.merge(existing_stock, on="Size", how="left")
-        total_sold_by_size["Existência Atual"] = total_sold_by_size["Estoque"] - total_sold_by_size["Movimentação de Stock"]
-
+        total_sold_by_size = filtered_data.groupby("Size")["Movimentação de Stock"].sum()
         st.write(total_sold_by_size)
 
         # Total de valores recebidos (filtrado)
@@ -131,8 +123,16 @@ def analysis_page():
         st.write("Dados filtrados:")
         st.write(filtered_data)
 
-if __name__ == "__main__":
-    analysis_page()
+        # Carregar os dados de estoque atual das numerações
+        stock_data = load_existing_data("Shoes")
+        
+        # Calcular a existência atual das numerações
+        current_stock = stock_data.groupby("Size")["Estoque"].sum().reset_index()
+        current_stock.columns = ["Numeração", "Quantidade em Estoque"]
+
+        # Exibir a existência atual das numerações
+        st.write("Existência atual das numerações:")
+        st.write(current_stock)
 
 # Função para obter o ID correspondente com base no modelo e número
 def get_id_from_shoes(modelo, numero):
