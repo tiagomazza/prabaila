@@ -76,11 +76,11 @@ def analysis_page():
         filtered_data = existing_data[existing_data["Tipo de Movimentação"].isin(selected_movement_type)]
 
         # Filtro por intervalo de datas
-        end_date = datetime.now().date()
-        start_date = end_date - timedelta(days=30)
+        today = datetime.now().date()
+        default_start_date = today - timedelta(days=30)
 
-        start_date = st.sidebar.date_input("Data de Início", value=start_date)
-        end_date = st.sidebar.date_input("Data de Fim", value=end_date)
+        start_date = st.sidebar.date_input("Data de Início", value=default_start_date)
+        end_date = st.sidebar.date_input("Data de Fim", value=today)
 
         if start_date and end_date:
             start_date = pd.to_datetime(start_date)
@@ -109,12 +109,14 @@ def analysis_page():
 
         # Total vendido por numeração (filtrado)
         total_sold_by_size = filtered_data.groupby("Size")["Movimentação de Stock"].sum().reset_index()
-        
-        # Calcular a existência atual do estoque
+
+        # Carregar dados do estoque existente
         existing_stock = load_existing_data("Shoes")[["Size", "Estoque"]].groupby("Size").sum().reset_index()
+
+        # Calcular a existência atual do estoque
         total_sold_by_size = total_sold_by_size.merge(existing_stock, on="Size", how="left")
         total_sold_by_size["Existência Atual"] = total_sold_by_size["Estoque"] - total_sold_by_size["Movimentação de Stock"]
-        
+
         st.write(total_sold_by_size)
 
         # Total de valores recebidos (filtrado)
@@ -128,10 +130,7 @@ def analysis_page():
 
         # Mostrar a tabela de dados filtrada
         st.write("Dados filtrados:")
-        st.write(filtered_data)
-
-
-    
+        st.write(filtered_data)    
 
 
 # Função para obter o ID correspondente com base no modelo e número
