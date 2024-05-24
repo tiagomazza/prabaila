@@ -58,7 +58,10 @@ def analysis_page():
     if protected_page():
         # Carregar os dados existentes
         existing_data = load_existing_data("Reservations")
-        
+
+        # Verificar as colunas presentes no DataFrame carregado
+        st.write("Colunas em existing_data:", existing_data.columns)
+
         # Remover NaN do Tipo de Movimentação e Nome dos artigos
         existing_data.dropna(subset=["Tipo de Movimentação", "Products"], inplace=True)
 
@@ -122,18 +125,29 @@ def analysis_page():
 
         # Adicionar coluna com a existência atual do estoque
         stock_data = load_existing_data("Shoes")
-        stock_data = stock_data[["Products", "Size", "Estoque Atual"]]  # Certifique-se de que "Estoque Atual" está presente na aba "Shoes"
-        stock_data["Size"] = stock_data["Size"].astype(int)  # Converter a numeração para inteiro
 
-        # Mesclar os dados filtrados com os dados de estoque atual
-        merged_data = filtered_data.merge(stock_data, on=["Products", "Size"], how="left")
+        # Verificar as colunas presentes no DataFrame de estoque
+        st.write("Colunas em stock_data:", stock_data.columns)
 
-        # Calcular a existência atual do estoque
-        merged_data["Existência Atual"] = merged_data["Estoque Atual"] - merged_data["Movimentação de Stock"]
+        # Verificar se as colunas necessárias estão presentes
+        required_columns = ["Products", "Size", "Estoque Atual"]
+        missing_columns = [col for col in required_columns if col not in stock_data.columns]
+        
+        if missing_columns:
+            st.error(f"As seguintes colunas estão faltando em stock_data: {missing_columns}")
+        else:
+            stock_data = stock_data[required_columns]
+            stock_data["Size"] = stock_data["Size"].astype(int)  # Converter a numeração para inteiro
 
-        # Mostrar a tabela de dados filtrada com a existência atual do estoque
-        st.write("Dados filtrados com a existência atual do estoque:")
-        st.write(merged_data)
+            # Mesclar os dados filtrados com os dados de estoque atual
+            merged_data = filtered_data.merge(stock_data, on=["Products", "Size"], how="left")
+
+            # Calcular a existência atual do estoque
+            merged_data["Existência Atual"] = merged_data["Estoque Atual"] - merged_data["Movimentação de Stock"]
+
+            # Mostrar a tabela de dados filtrada com a existência atual do estoque
+            st.write("Dados filtrados com a existência atual do estoque:")
+            st.write(merged_data)
 
 
 # Função para obter o ID correspondente com base no modelo e número
