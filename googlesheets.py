@@ -94,10 +94,10 @@ def analysis_page():
             filtered_data = filtered_data[filtered_data["Products"].isin(article_names)]
 
         # Filtro por numeração
-        selected_numbers = st.sidebar.multiselect("Filtrar por Numeração", existing_data["Size"].dropna().astype(int).unique(), default=existing_data["Size"].dropna().astype(int).unique())
+        selected_numbers = st.sidebar.multiselect("Filtrar por Numeração", existing_data["Número"].dropna().astype(int).unique(), default=existing_data["Número"].dropna().astype(int).unique())
 
         if selected_numbers:
-            filtered_data = filtered_data[filtered_data["Size"].astype(float).isin(selected_numbers)]
+            filtered_data = filtered_data[filtered_data["Número"].astype(float).isin(selected_numbers)]
 
         # Número total de artigos vendidos (filtrado)
         total_articles_sold = int(filtered_data["Movimentação de Stock"].sum())
@@ -108,11 +108,11 @@ def analysis_page():
         st.write(total_sold_by_model)
 
         # Total vendido por numeração (filtrado)
-        total_sold_by_size = filtered_data.groupby("Size")["Movimentação de Stock"].sum().reset_index()
+        total_sold_by_size = filtered_data.groupby("Número")["Movimentação de Stock"].sum().reset_index()
         
         # Calcular a existência atual do estoque
-        existing_stock = load_existing_data("Shoes")[["Size", "Estoque"]].groupby("Size").sum().reset_index()
-        total_sold_by_size = total_sold_by_size.merge(existing_stock, on="Size", how="left")
+        existing_stock = load_existing_data("Shoes")[["Número", "Estoque"]].groupby("Número").sum().reset_index()
+        total_sold_by_size = total_sold_by_size.merge(existing_stock, on="Número", how="left")
         total_sold_by_size["Existência Atual"] = total_sold_by_size["Estoque"] - total_sold_by_size["Movimentação de Stock"]
         
         st.write(total_sold_by_size)
