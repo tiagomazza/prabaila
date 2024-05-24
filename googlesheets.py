@@ -58,7 +58,7 @@ def analysis_page():
     if protected_page():
         # Carregar os dados existentes
         existing_data = load_existing_data("Reservations")
-
+        
         # Remover NaN do Tipo de Movimentação e Nome dos artigos
         existing_data.dropna(subset=["Tipo de Movimentação", "Products"], inplace=True)
 
@@ -94,10 +94,10 @@ def analysis_page():
             filtered_data = filtered_data[filtered_data["Products"].isin(article_names)]
 
         # Filtro por numeração
-        selected_numbers = st.sidebar.multiselect("Filtrar por Numeração", existing_data["Número"].dropna().astype(int).unique(), default=existing_data["Número"].dropna().astype(int).unique())
+        selected_numbers = st.sidebar.multiselect("Filtrar por Numeração", existing_data["Size"].dropna().astype(int).unique(), default=existing_data["Size"].dropna().astype(int).unique())
 
         if selected_numbers:
-            filtered_data = filtered_data[filtered_data["Número"].astype(float).isin(selected_numbers)]
+            filtered_data = filtered_data[filtered_data["Size"].astype(float).isin(selected_numbers)]
 
         # Número total de artigos vendidos (filtrado)
         total_articles_sold = int(filtered_data["Movimentação de Stock"].sum())
@@ -108,13 +108,7 @@ def analysis_page():
         st.write(total_sold_by_model)
 
         # Total vendido por numeração (filtrado)
-        total_sold_by_size = filtered_data.groupby("Número")["Movimentação de Stock"].sum().reset_index()
-        
-        # Calcular a existência atual do estoque
-        existing_stock = load_existing_data("Shoes")[["Número", "Estoque"]].groupby("Número").sum().reset_index()
-        total_sold_by_size = total_sold_by_size.merge(existing_stock, on="Número", how="left")
-        total_sold_by_size["Existência Atual"] = total_sold_by_size["Estoque"] - total_sold_by_size["Movimentação de Stock"]
-        
+        total_sold_by_size = filtered_data.groupby("Size")["Movimentação de Stock"].sum()
         st.write(total_sold_by_size)
 
         # Total de valores recebidos (filtrado)
@@ -126,9 +120,21 @@ def analysis_page():
         total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum()
         st.write(total_by_payment_method)
 
-        # Mostrar a tabela de dados filtrada
-        st.write("Dados filtrados:")
-        st.write(filtered_data)
+        # Adicionar coluna com a existência atual do estoque
+        stock_data = load_existing_data("Shoes")
+        stock_data = stock_data[["Products", "Size", "Estoque Atual"]]  # Certifique-se de que "Estoque Atual" está presente na aba "Shoes"
+        stock_data["Size"] = stock_data["Size"].astype(int)  # Converter a numeração para inteiro
+
+        # Mesclar os dados filtrados com os dados de estoque atual
+        merged_data = filtered_data.merge(stock_data, on=["Products", "Size"], how="left")
+
+        # Calcular a existência atual do estoque
+        merged_data["Existência Atual"] = merged_data["Estoque Atual"] - merged_data["Movimentação de Stock"]
+
+        # Mostrar a tabela de dados filtrada com a existência atual do estoque
+        st.write("Dados filtrados com a existência atual do estoque:")
+        st.write(merged_data)
+
 
 # Função para obter o ID correspondente com base no modelo e número
 def get_id_from_shoes(modelo, numero):
