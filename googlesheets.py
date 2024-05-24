@@ -53,32 +53,14 @@ def display_existing_data(existing_data):
 
 def analysis_page():
     st.title("Análise dos Dados de Reservations")
-
-    # Proteger a página com uma senha
     if protected_page():
-        # Carregar os dados existentes
         existing_data = load_existing_data("Reservations")
-
-        # Verificar as colunas presentes no DataFrame carregado
-        st.write("Colunas em existing_data:", existing_data.columns)
-
-        # Remover NaN do Tipo de Movimentação e Nome dos artigos
         existing_data.dropna(subset=["Tipo de Movimentação", "Products"], inplace=True)
-
-        # Convertendo a coluna 'SubmissionDateTime' para datetime
         existing_data['SubmissionDateTime'] = pd.to_datetime(existing_data['SubmissionDateTime'])
 
-        # Transformar os valores negativos em positivos para análise
-        existing_data['Movimentação de Stock'] = existing_data['Movimentação de Stock'].abs()
-
-        # Barra lateral para filtrar por tipo de movimentação
-        selected_movement_type = st.sidebar.multiselect("Filtrar por Tipo de Movimentação", 
-                                                        existing_data["Tipo de Movimentação"].unique(), default=["Venda"])
-
-        # Filtrar os dados pelo tipo de movimentação selecionado
+        selected_movement_type = st.sidebar.multiselect("Filtrar por Tipo de Movimentação", existing_data["Tipo de Movimentação"].unique(), default=["Venda"])
         filtered_data = existing_data[existing_data["Tipo de Movimentação"].isin(selected_movement_type)]
 
-        # Filtro por intervalo de datas
         end_date = datetime.now().date()
         start_date = end_date - timedelta(days=30)
 
@@ -90,64 +72,32 @@ def analysis_page():
             end_date = pd.to_datetime(end_date)
             filtered_data = filtered_data[(filtered_data["SubmissionDateTime"] >= start_date) & (filtered_data["SubmissionDateTime"] <= end_date)]
 
-        # Filtro por nome dos artigos
         article_names = st.sidebar.multiselect("Nome dos Artigos", existing_data["Products"].unique(), default=existing_data["Products"].unique())
-
         if article_names:
             filtered_data = filtered_data[filtered_data["Products"].isin(article_names)]
 
-        # Filtro por numeração
         selected_numbers = st.sidebar.multiselect("Filtrar por Numeração", existing_data["Size"].dropna().astype(int).unique(), default=existing_data["Size"].dropna().astype(int).unique())
-
         if selected_numbers:
             filtered_data = filtered_data[filtered_data["Size"].astype(float).isin(selected_numbers)]
 
-        # Número total de artigos vendidos (filtrado)
         total_articles_sold = int(filtered_data["Movimentação de Stock"].sum())
         st.write(f"Número total de artigos vendidos: {total_articles_sold}")
 
-        # Total vendido por modelo (filtrado)
         total_sold_by_model = filtered_data.groupby("Products")["Movimentação de Stock"].sum()
         st.write(total_sold_by_model)
 
-        # Total vendido por numeração (filtrado)
         total_sold_by_size = filtered_data.groupby("Size")["Movimentação de Stock"].sum()
         st.write(total_sold_by_size)
 
-        # Total de valores recebidos (filtrado)
         total_values_received = filtered_data["Value"].sum()
         st.write(f"Total de valores recebidos (filtrado): {total_values_received}")
 
-        # Movimentação por forma de pagamento (filtrado)
         st.write("Movimentação por forma de pagamento (filtrado):")
         total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum()
         st.write(total_by_payment_method)
 
-        # Adicionar coluna com a existência atual do estoque
-        stock_data = load_existing_data("Shoes")
-
-        # Verificar as colunas presentes no DataFrame de estoque
-        st.write("Colunas em stock_data:", stock_data.columns)
-
-        # Verificar se as colunas necessárias estão presentes
-        required_columns = ["Products", "Size", "Estoque Atual"]
-        missing_columns = [col for col in required_columns if col not in stock_data.columns]
-        
-        if missing_columns:
-            st.error(f"As seguintes colunas estão faltando em stock_data: {missing_columns}")
-        else:
-            stock_data = stock_data[required_columns]
-            stock_data["Size"] = stock_data["Size"].astype(int)  # Converter a numeração para inteiro
-
-            # Mesclar os dados filtrados com os dados de estoque atual
-            merged_data = filtered_data.merge(stock_data, on=["Products", "Size"], how="left")
-
-            # Calcular a existência atual do estoque
-            merged_data["Existência Atual"] = merged_data["Estoque Atual"] - merged_data["Movimentação de Stock"]
-
-            # Mostrar a tabela de dados filtrada com a existência atual do estoque
-            st.write("Dados filtrados com a existência atual do estoque:")
-            st.write(merged_data)
+        st.write("Dados filtrados:")
+        st.write(filtered_data)
 
 
 # Função para obter o ID correspondente com base no modelo e número
