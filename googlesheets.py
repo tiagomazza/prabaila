@@ -349,6 +349,7 @@ if pagina_selecionada == "Verificação de estoque":
         st.markdown("---")
 
 
+
 def woocomerce_page():
     st.title("Woocomerce sync")
     if protected_page():
