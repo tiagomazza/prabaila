@@ -1,4 +1,14 @@
-import streamlit as st
+subheader("Existing Reservations")
+    if not existing_data.empty:
+        st.write(existing_data)
+    else:
+        st.write("No existing reservations.")
+
+# Página Active Reservations
+def active_reservations_page():
+    st.title("Active Reservations")
+
+    # Protegerimport streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
@@ -23,17 +33,7 @@ def load_existing_data(worksheet_name):
 
 # Função para exibir os dados existentes
 def display_existing_data(existing_data):
-    st.subheader("Existing Reservations")
-    if not existing_data.empty:
-        st.write(existing_data)
-    else:
-        st.write("No existing reservations.")
-
-# Página Active Reservations
-def active_reservations_page():
-    st.title("Active Reservations")
-
-    # Proteger a página com uma senha apenas se a página selecionada for "Active Reservations"
+    st. a página com uma senha apenas se a página selecionada for "Active Reservations"
     if protected_page():
         # Carregar os dados existentes
         existing_data = load_existing_data("Reservations")
