@@ -349,73 +349,61 @@ if pagina_selecionada == "Verificação de estoque":
         st.markdown("---")
 
 
-
+# Página Registro
 def woocomerce_page():
     st.title("Woocomerce sync")
     if protected_page():
+        
         st.title("Gerenciamento de Estoque WooCommerce")
 
-        # Carregar dados da planilha
-        existing_data_shoes = load_existing_data("Shoes")
-        
-        if existing_data_shoes is not None:
-            product_list = existing_data_shoes["Modelo"].tolist()
-            product_name = st.selectbox("Selecione o Produto", product_list)
-            
-            # Obter IDs do produto e variação a partir do nome do produto
-            product_data = existing_data_shoes[existing_data_shoes["Modelo"] == product_name].iloc[0]
-            product_id = int(product_data["ID_Produto"])
-            variation_id = str(product_data["ID_Variação"]) if not pd.isna(product_data["ID_Variação"]) else ""
+        # Formulário para entrada de dados
+        product_id = st.text_input("ID do Produto")
+        variation_id = st.text_input("ID da Variação (deixe em branco se não for uma variação)")
 
-            if product_id:
-                # Recupera o estoque atual
+        if product_id:
+            # Recupera o estoque atual
+            if variation_id:
+                endpoint = f"products/{product_id}/variations/{variation_id}"
+            else:
+                endpoint = f"products/{product_id}"
+            
+            response = wcapi.get(endpoint).json()
+            
+            if "stock_quantity" in response:
+                current_stock = response["stock_quantity"]
+                st.write(f"Estoque atual: {current_stock}")
+            else:
+                st.error(f"Erro ao obter estoque atual: {response.get('message', 'Erro desconhecido')}")
+                current_stock = None
+        else:
+            current_stock = None
+
+        new_stock = st.number_input("Novo Estoque", min_value=0, step=1)
+
+        if st.button("Atualizar Estoque"):
+            if product_id and new_stock is not None and current_stock is not None:
                 if variation_id:
+                    # Atualiza o estoque de uma variação de produto no WooCommerce
                     endpoint = f"products/{product_id}/variations/{variation_id}"
                 else:
+                    # Atualiza o estoque de um produto simples no WooCommerce
                     endpoint = f"products/{product_id}"
                 
-                response = wcapi.get(endpoint).json()
+                # Dados para atualização do estoque
+                data = {
+                    "stock_quantity": new_stock
+                }
                 
-                if "stock_quantity" in response:
-                    current_stock = response["stock_quantity"]
-                    st.write(f"Estoque atual: {current_stock}")
+                # Envia a solicitação para atualizar o produto ou variação
+                response = wcapi.put(endpoint, data).json()
+                
+                if "id" in response:
+                    st.success(f"Estoque do produto {'variação ' + variation_id if variation_id else product_id} atualizado de {current_stock} para {new_stock}.")
                 else:
-                    st.error(f"Erro ao obter estoque atual: {response.get('message', 'Erro desconhecido')}")
-                    current_stock = None
+                    st.error(f"Erro ao atualizar estoque: {response.get('message', 'Erro desconhecido')}")
             else:
-                current_stock = None
-
-            stock_change = st.number_input("Alterar Estoque (positivo para adicionar, negativo para subtrair)", step=1)
-
-            if st.button("Atualizar Estoque"):
-                if product_id and stock_change is not None and current_stock is not None:
-                    if variation_id:
-                        # Atualiza o estoque de uma variação de produto no WooCommerce
-                        endpoint = f"products/{product_id}/variations/{variation_id}"
-                    else:
-                        # Atualiza o estoque de um produto simples no WooCommerce
-                        endpoint = f"products/{product_id}"
-                    
-                    # Calcula o novo estoque
-                    new_stock = current_stock + stock_change
-                    
-                    # Dados para atualização do estoque
-                    data = {
-                        "stock_quantity": new_stock
-                    }
-                    
-                    # Envia a solicitação para atualizar o produto ou variação
-                    response = wcapi.put(endpoint, data).json()
-                    
-                    if "id" in response:
-                        st.success(f"Estoque do produto {'variação ' + variation_id if variation_id else product_id} atualizado de {current_stock} para {new_stock}.")
-                    else:
-                        st.error(f"Erro ao atualizar estoque: {response.get('message', 'Erro desconhecido')}")
-                else:
-                    st.warning("Por favor, selecione um produto e insira uma quantidade válida de alteração de estoque.")
-        else:
-            st.write("Nenhum dado encontrado na aba 'Shoes'.")
-
+                st.warning("Por favor, insira um ID de produto válido e quantidade de estoque.")
+        
     def sync_stock():
         existing_data_shoes = load_existing_data("Shoes")
         if existing_data_shoes is not None:
@@ -447,41 +435,8 @@ def woocomerce_page():
         else:
             st.write("Nenhum dado encontrado na aba 'Shoes'.")
 
-    if st.button("Google sheets ▶ Woocomerce"):
-        sync_stock()
-
-def load_existing_data(sheet_name):
-    # Esta função deve carregar os dados da planilha e retornar como um DataFrame
-    # Substitua este código pelo método de leitura da planilha que você está usando
-    # Aqui está um exemplo fictício usando pandas para ler um arquivo Excel
-    return pd.read_excel("path_to_your_file.xlsx", sheet_name=sheet_name)
-
-# Funções fictícias para simular a API do WooCommerce
-class wcapi:
-    @staticmethod
-    def get(endpoint):
-        # Simula a resposta da API do WooCommerce
-        # Substitua por chamadas reais à API
-        return {"stock_quantity": 100}
-
-    @staticmethod
-    def put(endpoint, data):
-        # Simula a resposta da API do WooCommerce após a atualização
-        # Substitua por chamadas reais à API
-        return {"id": 1, "stock_quantity": data["stock_quantity"]}
-
-# Função fictícia para verificar acesso à página
-def protected_page():
-    # Esta função deve verificar se o usuário tem acesso permitido à página
-    # Substitua por sua lógica de autenticação
-    return True
-
-# Função fictícia para obter a quantidade de vendas (exemplo)
-def get_sales_quantity(product_id):
-    # Esta função deve retornar a quantidade de vendas para o produto
-    # Substitua por sua lógica de obtenção de dados
-    return 10
- 
+if st.button("Google sheets ▶ Woocomerce"):
+        sync_stock()    
 
 
 
