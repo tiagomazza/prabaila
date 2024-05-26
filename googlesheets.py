@@ -1,45 +1,56 @@
+
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime
 import plotly.express as px
 from woocommerce import API
+from datetime import datetime, timedelta
 
 wcapi = API(
-    url="https://shop.quintaclandestina.pt",
-    consumer_key="ck_326fe2832e12ff0ee0f2dd4a32e87ee0ceada496",
-    consumer_secret="cs_44ad7b5fc9a38d6212240cbded4119636d003545",
-    version="wc/v3"
-)
+            url="https://shop.quintaclandestina.pt",  # Substitua pelo URL da sua loja
+            consumer_key="ck_326fe2832e12ff0ee0f2dd4a32e87ee0ceada496",   # Substitua pela sua Consumer Key
+            consumer_secret="cs_44ad7b5fc9a38d6212240cbded4119636d003545",
+            version="wc/v3"
+        )
 conn = st.experimental_connection("gsheets", type=GSheetsConnection)
 
+
+# Função para proteger a página com senha
 def protected_page():
-    st.sidebar.title("Senha de Acesso")
-    password_input = st.sidebar.text_input("Digite a senha:", type="password")
+   st.sidebar.title("Senha de Acesso")
+   password_input = st.sidebar.text_input("Digite a senha:", type="password")
 
-    if password_input == st.secrets["SENHA"]:
-        return True
-    else:
-        st.error("Digite a senha no sidebar.")
-        return False
+   if password_input == st.secrets["SENHA"]:
+       return True
+   else:
+       st.error("Digite a senha no sidebar.")
+       return False
 
+# Função para carregar os dados existentes
 def load_existing_data(worksheet_name):
-    existing_data = conn.read(worksheet=worksheet_name, usecols=list(range(13)), ttl=5)
-    return existing_data.dropna(how="all")
+   existing_data = conn.read(worksheet=worksheet_name, usecols=list(range(13)), ttl=5)
+   return existing_data.dropna(how="all")
 
+# Função para exibir os dados existentes
 def display_existing_data(existing_data):
-    st.subheader("Existing Reservations")
-    if not existing_data.empty:
-        st.write(existing_data)
-    else:
-        st.write("No existing reservations.")
+   st.subheader("Existing Reservations")
+   if not existing_data.empty:
+       st.write(existing_data)
+   else:
+       st.write("No existing reservations.")
 
-def active_reservations_page():
-    st.title("Active Reservations")
+# Página Active Reservations
 
-    if protected_page():
-        existing_data = load_existing_data("Reservations")
-        display_existing_data(existing_data)
+   st.title("Active Reservations")
+
+   # Proteger a página com uma senha apenas se a página selecionada for "Active Reservations"
+   if protected_page():
+       # Carregar os dados existentes
+       existing_data = load_existing_data("Reservations")
+
+       # Exibir os dados existentes
+       display_existing_data(existing_data)
 
 def analysis_page():
     st.title("Análise dos Dados de Reservations")
@@ -89,16 +100,19 @@ def analysis_page():
         st.write("Dados filtrados:")
         st.write(filtered_data)
 
+
+# Função para obter o ID correspondente com base no modelo e número
 def get_id_from_shoes(modelo, numero):
-    existing_data_shoes = load_existing_data("Shoes")
-    id_ = existing_data_shoes[(existing_data_shoes["Modelo"] == modelo) & (existing_data_shoes["Número"] == numero)]["ID"]
-    if not id_.empty:
-        return id_.iloc[0]
-    else:
-        return None
+   existing_data_shoes = load_existing_data("Shoes")
+   id_ = existing_data_shoes[(existing_data_shoes["Modelo"] == modelo) & (existing_data_shoes["Número"] == numero)]["ID"]
+   if not id_.empty:
+       return id_.iloc[0]
+   else:
+       return None
 
 def register_page():
     st.title("Registro")
+    # Proteger a página com uma senha
     if protected_page():
         existing_data_reservations = load_existing_data("Reservations")
         existing_data_shoes = load_existing_data("Shoes")
@@ -123,13 +137,15 @@ def register_page():
 
             if submit_button:
                 submission_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
+                
+                # Transformar os valores de "Venda", "Oferta" e "Reserva" em números negativos
                 if movimentacao_type in ["Venda", "Oferta", "Reserva"]:
                     movimentacao = -abs(movimentacao)
 
-                selected_model = products[0]
+                # Obter o ID correspondente com base no modelo e número selecionados
+                selected_model = products[0]  # Assumindo apenas um produto é selecionado
                 selected_id = get_id_from_shoes(selected_model, size)
-
+                
                 new_row = {
                     "ID": selected_id,
                     "Name": name,
@@ -145,27 +161,32 @@ def register_page():
                     "SubmissionDateTime": submission_datetime,
                 }
 
+                # Adiciona a nova linha à lista de dicionários
                 new_rows = existing_data_reservations.to_dict(orient="records")
                 new_rows.append(new_row)
 
+                # Atualiza a planilha com todas as informações
                 conn.update(worksheet="Reservations", data=new_rows)
 
                 st.success("Details successfully submitted!")
 
+                # Atualiza o estoque no WooCommerce após a atualização da planilha
                 try:
                     if existing_data_shoes is not None:
                         row_shoes = existing_data_shoes[existing_data_shoes["ID"] == selected_id].iloc[0]
                         id_produto = int(row_shoes["ID_Produto"])
                         id_variacao = int(row_shoes["ID_Variação"]) if not pd.isna(row_shoes["ID_Variação"]) and row_shoes["ID_Variação"] != "" else None
                         stock = int(row_shoes["Estoque"])
-                        new_stock = stock + movimentacao
+                        new_stock = stock + movimentacao  # Atualiza o estoque com base na movimentação
                         data = {
                             'stock_quantity': new_stock
                         }
                         if id_variacao is None:
+                            # Atualizar o estoque do produto
                             response = wcapi.put(f"products/{id_produto}", data).json()
                             st.success(f"Estoque atualizado para o produto ID {id_produto}: {new_stock}")
                         else:
+                            # Atualizar o estoque da variação do produto
                             response = wcapi.put(f"products/{id_produto}/variations/{id_variacao}", data).json()
                             st.success(f"Estoque atualizado para a variação ID {id_variacao} do produto ID {id_produto}: {new_stock}")
                     else:
@@ -175,67 +196,251 @@ def register_page():
                 except Exception as e:
                     st.error(f"Erro ao atualizar o estoque no WooCommerce: {e}")
 
+                # Reset form fields
+                name = ""
+                email = ""
+                whatsapp = ""
+                products = []
+                size = 34
+                method_of_payment = ""
+                value = 5
+                movimentacao = 0
+                movimentacao_type = ""
+                additional_info = ""
+
+
+
+
+# Imagem para exibir no menu lateral
+menu_lateral_imagem = "https://shop.quintaclandestina.pt/wp-content/uploads/2024/05/logo-2.png"
+
+# Exibir imagem no menu lateral
+st.sidebar.image(menu_lateral_imagem, use_column_width=True)
+
+# Display Title and Description
+st.title("Quinta Shop🛒")
+
+# Configuração da aplicação
+pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Registro","Análise","Woocomerce sync"])
+
 def get_sales_quantity(id_):
-    existing_data_reservations = load_existing_data("Reservations")
+   existing_data_reservations = load_existing_data("Reservations")
+   
+   # Verificar se os dados existem e se o ID está presente
+   if existing_data_reservations is None or id_ not in existing_data_reservations["ID"].values:
+       return 0
+   
+   # Filtrar dados com base no ID e tipo de movimentação
+   filtered_data = existing_data_reservations[(existing_data_reservations["ID"] == id_) &
+                                              (existing_data_reservations["Tipo de Movimentação"].isin(["Venda", "Oferta"]))]
 
-    if existing_data_reservations is None or id_ not in existing_data_reservations["ID"].values:
-        return 0
+   # Somar as quantidades de venda e oferta
+   sales_quantity = filtered_data["Movimentação de Stock"].sum()
 
-    filtered_data = existing_data_reservations[(existing_data_reservations["ID"] == id_) &
-                                               (existing_data_reservations["Tipo de Movimentação"].isin(["Venda", "Oferta"]))]
+   # Filtrar dados com base no ID e tipo de movimentação para subtração
+   subtraction_data = existing_data_reservations[(existing_data_reservations["ID"] == id_) &
+                                                 (existing_data_reservations["Tipo de Movimentação"] == "Entrada de Material")]
 
-    sales_quantity = filtered_data["Movimentação de Stock"].sum()
+   # Verificar se existem dados de subtração
+   if not subtraction_data.empty:
+       # Subtrair as quantidades de entrada de material
+       subtraction_quantity = subtraction_data["Movimentação de Stock"].sum()
 
-    subtraction_data = existing_data_reservations[(existing_data_reservations["ID"] == id_) &
-                                                  (existing_data_reservations["Tipo de Movimentação"] == "Entrada de Material")]
+       # Calcular o total líquido
+       net_quantity = sales_quantity - subtraction_quantity
+   else:
+       # Se não houver dados de subtração, a quantidade líquida é igual à quantidade de vendas e ofertas
+       net_quantity = sales_quantity
 
-    if not subtraction_data.empty:
-        subtraction_quantity = subtraction_data["Movimentação de Stock"].sum()
-        sales_quantity -= subtraction_quantity
+   return int(net_quantity)  # Convertendo para inteiro para remover o .0
 
-    return sales_quantity
 
-def shoes_page():
-    st.title("Shoes Inventory")
+# Atualização da página de verificação de estoque para subtrair a quantidade de venda da quantidade disponível
+if pagina_selecionada == "Verificação de estoque":
+    # Fetch existing shoes data
+    st.subheader("Busca de modelos disponíveis")
+    existing_data = conn.read(
+        worksheet="Shoes", 
+        usecols=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], 
+        ttl=6
+    )
+    existing_data.dropna(subset=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], inplace=True)
+
+    # Converter "Numero Brasileiro" para int
+    existing_data["Numero Brasileiro"] = existing_data["Numero Brasileiro"].astype(int)
+
+    # Sidebar filters
+    st.sidebar.header("Filtros")
+
+    modelos = existing_data["Modelo"].unique()
+    modelos_filtro = st.sidebar.multiselect("Filtrar por Modelo", modelos.astype(str), default=modelos.astype(str))
+
+    deslize_opcoes = existing_data["Deslize"].unique()
+    deslize_filtro = st.sidebar.multiselect("Filtrar por Deslize", deslize_opcoes, default=deslize_opcoes)
+
+    amortecimento_opcoes = existing_data["Amortecimento"].unique()
+    amortecimento_filtro = st.sidebar.multiselect("Filtrar por Amortecimento", amortecimento_opcoes, default=amortecimento_opcoes)
+
+    cor_sola_opcoes = existing_data["Cor da sola"].unique()
+    cor_sola_filtro = st.sidebar.multiselect("Filtrar por Cor da sola", cor_sola_opcoes, default=cor_sola_opcoes)
+
+    numero_brasileiro_opcoes = existing_data["Numero Brasileiro"].unique()
+    numero_brasileiro_filtro = st.sidebar.multiselect("Numero brasileiro (sem conversão)", numero_brasileiro_opcoes, default=numero_brasileiro_opcoes)
+
+    # Números disponíveis com base nos filtros aplicados
+    numeros_disponiveis = existing_data[existing_data["Modelo"].isin(modelos_filtro)]["Número"].unique()
+    numeros_europeus_selecionados = st.multiselect("Quais números europeus deseja consultar?", numeros_disponiveis.astype(int), default=[])
+
+    # Aplicar os filtros selecionados aos dados existentes
+    filtered_data = existing_data[
+        (existing_data["Modelo"].isin(modelos_filtro)) & 
+        (existing_data["Número"].isin(numeros_europeus_selecionados)) &
+        (existing_data["Deslize"].isin(deslize_filtro)) &
+        (existing_data["Amortecimento"].isin(amortecimento_filtro)) &
+        (existing_data["Numero Brasileiro"].isin(numero_brasileiro_filtro)) &
+        (existing_data["Cor da sola"].isin(cor_sola_filtro))
+    ]
+
+    # Remover o ".0" dos dados consultados
+    filtered_data["Número"] = filtered_data["Número"].astype(int)
+    
+    # Add a toggle button to show/hide shoes with zero stock
+    show_zero_stock = st.sidebar.checkbox("Mostrar sem stock")
+
+    # Apply filter to show/hide shoes with zero stock
+    if not show_zero_stock:
+        filtered_data = filtered_data[filtered_data["Estoque"] > 0]
+
+    # Display total stock count in the sidebar
+    total_stock = filtered_data["Estoque"].sum()
+    st.sidebar.header("Total do Estoque:")
+    st.sidebar.write(str(total_stock).split('.')[0])  # Displaying stock without .0
+
+    # Display shoes information separately
+    for index, row in filtered_data.iterrows():
+        id_unico = f"{row['Modelo']}_{int(row['Número'])}"  # Criar um ID único combinando modelo e número
+        st.subheader(f"{row['Modelo']}")
+        st.markdown(f"🇪🇺 **Número:** {int(row['Número'])}")  # Remove .0 and make bold
+        
+        # Display the image from the URL
+        if row['Imagem']:
+            st.image(row['Imagem'])
+        else:
+            st.text("Imagem não disponível")
+        
+        # Subtrair a quantidade de venda da quantidade disponível
+        id_ = row["ID"]
+        sales_quantity = get_sales_quantity(id_)
+        stock_after_sales = int(row["Estoque"]) - sales_quantity
+
+        st.markdown(f"🏂🏽 **Deslize:** {row['Deslize']}")
+        st.markdown(f"🦘 **Amortecimento:** {row['Amortecimento']}")
+        st.markdown(f"👟 **Cor da sola:** {row['Cor da sola']}")
+        st.markdown(f"📦 **Unidades em estoque:** {stock_after_sales}")
+        st.markdown(f"🇧🇷 **Numero:** {int(row['Numero Brasileiro'])}")
+        
+        preco = row.get('Preço')
+        if preco is not None:
+            st.markdown(f"🏷 **Preço:** {int(preco)}€")
+        else:
+            st.markdown("Preço não disponível")
+
+        st.markdown(f"📝 **Observações:** {row['Descrição']}")
+        st.markdown("---")
+
+
+# Página Registro
+def woocomerce_page():
+    st.title("Woocomerce sync")
     if protected_page():
-        existing_data = load_existing_data("Shoes")
-        if existing_data is not None:
-            st.write(existing_data)
+        
+        st.title("Gerenciamento de Estoque WooCommerce")
 
-        with st.form(key="shoes_form"):
-            id_ = st.number_input(label="ID")
-            modelo = st.text_input(label="Modelo*")
-            numero = st.number_input(label="Numeração", min_value=34, max_value=45)
-            estoque = st.number_input(label="Estoque")
-            id_produto = st.text_input(label="ID do Produto")
-            id_variacao = st.text_input(label="ID da Variação", value="")
-            submit_button = st.form_submit_button(label="Registrar sapatos")
+        # Formulário para entrada de dados
+        product_id = st.text_input("ID do Produto")
+        variation_id = st.text_input("ID da Variação (deixe em branco se não for uma variação)")
 
-            if submit_button:
-                sales_quantity = get_sales_quantity(id_)
-                new_row = {
-                    "ID": id_,
-                    "Modelo": modelo,
-                    "Número": numero,
-                    "Estoque": estoque - sales_quantity,
-                    "ID_Produto": id_produto,
-                    "ID_Variação": id_variacao,
+        if product_id:
+            # Recupera o estoque atual
+            if variation_id:
+                endpoint = f"products/{product_id}/variations/{variation_id}"
+            else:
+                endpoint = f"products/{product_id}"
+            
+            response = wcapi.get(endpoint).json()
+            
+            if "stock_quantity" in response:
+                current_stock = response["stock_quantity"]
+                st.write(f"Estoque atual: {current_stock}")
+            else:
+                st.error(f"Erro ao obter estoque atual: {response.get('message', 'Erro desconhecido')}")
+                current_stock = None
+        else:
+            current_stock = None
+
+        new_stock = st.number_input("Novo Estoque", min_value=0, step=1)
+
+        if st.button("Atualizar Estoque"):
+            if product_id and new_stock is not None and current_stock is not None:
+                if variation_id:
+                    # Atualiza o estoque de uma variação de produto no WooCommerce
+                    endpoint = f"products/{product_id}/variations/{variation_id}"
+                else:
+                    # Atualiza o estoque de um produto simples no WooCommerce
+                    endpoint = f"products/{product_id}"
+                
+                # Dados para atualização do estoque
+                data = {
+                    "stock_quantity": new_stock
                 }
+                
+                # Envia a solicitação para atualizar o produto ou variação
+                response = wcapi.put(endpoint, data).json()
+                
+                if "id" in response:
+                    st.success(f"Estoque do produto {'variação ' + variation_id if variation_id else product_id} atualizado de {current_stock} para {new_stock}.")
+                else:
+                    st.error(f"Erro ao atualizar estoque: {response.get('message', 'Erro desconhecido')}")
+            else:
+                st.warning("Por favor, insira um ID de produto válido e quantidade de estoque.")
+        
+        def sync_stock():
+            existing_data_shoes = load_existing_data("Shoes")
+            if existing_data_shoes is not None:
+                for index, row in existing_data_shoes.iterrows():
+                    try:
+                        id_produto = int(row["ID_Produto"])
+                        id_variacao = int(row["ID_Variação"]) if not pd.isna(row["ID_Variação"]) and row["ID_Variação"] != "" else None
+                        stock = int(row["Estoque"])
+                        sales_quantity = get_sales_quantity(id_variacao if id_variacao else id_produto)  # Usar ID_Variação se disponível
+                        new_stock = stock - sales_quantity
+                        data = {
+                            'stock_quantity': new_stock
+                        }
+                        if id_variacao is None:
+                            # Atualizar o estoque do produto
+                            response = wcapi.put(f"products/{id_produto}", data).json()
+                            st.success(f"Estoque atualizado para o produto ID {id_produto}: {new_stock}")
+                        else:
+                            # Atualizar o estoque da variação do produto
+                            response = wcapi.put(f"products/{id_produto}/variations/{id_variacao}", data).json()
+                            st.success(f"Estoque atualizado para a variação ID {id_variacao} do produto ID {id_produto}: {new_stock}")
+                    except ValueError as ve:
+                        st.error(f"Erro ao converter valores para int: {ve}")
+                    except Exception as e:
+                        st.error(f"Erro ao atualizar o estoque para o produto ID {id_produto} ou variação ID {id_variacao}: {e}")
+            else:
+                st.write("Nenhum dado encontrado na aba 'Shoes'.")
 
-                new_rows = existing_data.to_dict(orient="records")
-                new_rows.append(new_row)
+        if st.button("Google sheets ▶ Woocomerce"):
+            sync_stock()
 
-                conn.update(worksheet="Shoes", data=new_rows)
 
-                st.success("Details successfully submitted!")
-
-pages = {
-    "Active Reservations": active_reservations_page,
-    "Análise de Dados": analysis_page,
-    "Registro": register_page,
-    "Estoque de Sapatos": shoes_page,
-}
-
-selected_page = st.sidebar.selectbox("Select a page", options=list(pages.keys()))
-
-pages[selected_page]()
+if pagina_selecionada == "Active Reservations":
+    active_reservations_page()
+elif pagina_selecionada == "Registro":
+    register_page()
+elif pagina_selecionada == "Análise":
+    analysis_page()
+elif pagina_selecionada == "Woocomerce sync":
+    woocomerce_page()
