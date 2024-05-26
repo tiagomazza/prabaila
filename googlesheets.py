@@ -428,12 +428,13 @@ def woocomerce_page():
                     except ValueError as ve:
                         st.error(f"Erro ao converter valores para int: {ve}")
                     except Exception as e:
-                        st.error(f"Erro ao atualizar o estoque para o produto ID {id_produto} ou variação ID {id_variacao}: {e}")
+                        st.error(f"Erro ao atualizar o estoque para o produto ID {id_produto} ou variação ID {id_variacao if 'id_variacao' in locals() else 'desconhecida'}: {e}")
             else:
                 st.write("Nenhum dado encontrado na aba 'Shoes'.")
 
         if st.button("Google sheets ▶ Woocomerce"):
             sync_stock()
+
 
 
 if pagina_selecionada == "Active Reservations":
