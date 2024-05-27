@@ -69,7 +69,7 @@ def analysis_page():
         
         # Filtrar por tipo de movimentação
         all_movement_types = existing_data["Tipo de Movimentação"].unique()
-        default_movement_types = ["Venda"]
+        default_movement_types = ["Venda", "Entrada"]  # Inclua todos os tipos de movimentação padrão que você deseja exibir
         selected_movement_type = st.sidebar.multiselect("Filtrar por Tipo de Movimentação", 
                                                         all_movement_types, 
                                                         default=[x for x in default_movement_types if x in all_movement_types])
