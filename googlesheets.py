@@ -68,9 +68,11 @@ def analysis_page():
         existing_data['SubmissionDateTime'] = pd.to_datetime(existing_data['SubmissionDateTime'])
         
         # Filtrar por tipo de movimentação
+        all_movement_types = existing_data["Tipo de Movimentação"].unique()
+        default_movement_types = ["Venda"]
         selected_movement_type = st.sidebar.multiselect("Filtrar por Tipo de Movimentação", 
-                                                        existing_data["Tipo de Movimentação"].unique(), 
-                                                        default=["Venda"])
+                                                        all_movement_types, 
+                                                        default=[x for x in default_movement_types if x in all_movement_types])
         filtered_data = existing_data[existing_data["Tipo de Movimentação"].isin(selected_movement_type)]
         
         # Filtrar por data
@@ -87,16 +89,18 @@ def analysis_page():
                                           (filtered_data["SubmissionDateTime"] <= end_date)]
         
         # Filtrar por nome dos artigos
-        article_names = st.sidebar.multiselect("Nome dos Artigos", existing_data["Products"].unique(), 
-                                               default=existing_data["Products"].unique())
-        if article_names:
-            filtered_data = filtered_data[filtered_data["Products"].isin(article_names)]
+        all_article_names = existing_data["Products"].unique()
+        selected_article_names = st.sidebar.multiselect("Nome dos Artigos", 
+                                                        all_article_names, 
+                                                        default=all_article_names.tolist())
+        if selected_article_names:
+            filtered_data = filtered_data[filtered_data["Products"].isin(selected_article_names)]
         
         # Filtrar por numeração
-        existing_data['Size'] = existing_data['Size'].dropna().astype(int)
+        all_sizes = existing_data["Size"].dropna().astype(int).unique()
         selected_numbers = st.sidebar.multiselect("Filtrar por Numeração", 
-                                                  existing_data["Size"].unique(), 
-                                                  default=existing_data["Size"].unique())
+                                                  all_sizes, 
+                                                  default=all_sizes.tolist())
         if selected_numbers:
             filtered_data = filtered_data[filtered_data["Size"].astype(int).isin(selected_numbers)]
         
