@@ -54,49 +54,69 @@ def display_existing_data(existing_data):
 
 def analysis_page():
     st.title("Análise dos Dados de Reservations")
+    
     if protected_page():
         existing_data = load_existing_data("Reservations")
+        
+        # Certifique-se de que a coluna 'Movimentação de Stock' está carregada como numérica
+        existing_data['Movimentação de Stock'] = pd.to_numeric(existing_data['Movimentação de Stock'], errors='coerce')
+        
+        # Filtrar os dados que têm 'Tipo de Movimentação' e 'Products' não nulos
         existing_data.dropna(subset=["Tipo de Movimentação", "Products"], inplace=True)
+        
+        # Converter a coluna 'SubmissionDateTime' para datetime
         existing_data['SubmissionDateTime'] = pd.to_datetime(existing_data['SubmissionDateTime'])
-
-        selected_movement_type = st.sidebar.multiselect("Filtrar por Tipo de Movimentação", existing_data["Tipo de Movimentação"].unique(), default=["Venda"])
+        
+        # Filtrar por tipo de movimentação
+        selected_movement_type = st.sidebar.multiselect("Filtrar por Tipo de Movimentação", 
+                                                        existing_data["Tipo de Movimentação"].unique(), 
+                                                        default=["Venda"])
         filtered_data = existing_data[existing_data["Tipo de Movimentação"].isin(selected_movement_type)]
-
+        
+        # Filtrar por data
         end_date = datetime.now().date()
         start_date = end_date - timedelta(days=30)
-
+        
         start_date = st.sidebar.date_input("Data de Início", value=start_date)
         end_date = st.sidebar.date_input("Data de Fim", value=end_date)
-
+        
         if start_date and end_date:
             start_date = pd.to_datetime(start_date)
-            end_date = pd.to_datetime(end_date)
-            filtered_data = filtered_data[(filtered_data["SubmissionDateTime"] >= start_date) & (filtered_data["SubmissionDateTime"] <= end_date)]
-
-        article_names = st.sidebar.multiselect("Nome dos Artigos", existing_data["Products"].unique(), default=existing_data["Products"].unique())
+            end_date = pd.to_datetime(end_date) + timedelta(days=1) - timedelta(seconds=1)  # Inclui o dia final completo
+            filtered_data = filtered_data[(filtered_data["SubmissionDateTime"] >= start_date) & 
+                                          (filtered_data["SubmissionDateTime"] <= end_date)]
+        
+        # Filtrar por nome dos artigos
+        article_names = st.sidebar.multiselect("Nome dos Artigos", existing_data["Products"].unique(), 
+                                               default=existing_data["Products"].unique())
         if article_names:
             filtered_data = filtered_data[filtered_data["Products"].isin(article_names)]
-
-        selected_numbers = st.sidebar.multiselect("Filtrar por Numeração", existing_data["Size"].dropna().astype(int).unique(), default=existing_data["Size"].dropna().astype(int).unique())
+        
+        # Filtrar por numeração
+        existing_data['Size'] = existing_data['Size'].dropna().astype(int)
+        selected_numbers = st.sidebar.multiselect("Filtrar por Numeração", 
+                                                  existing_data["Size"].unique(), 
+                                                  default=existing_data["Size"].unique())
         if selected_numbers:
-            filtered_data = filtered_data[filtered_data["Size"].astype(float).isin(selected_numbers)]
-
-        total_articles_sold = int(filtered_data["Movimentação de Stock"].sum())
+            filtered_data = filtered_data[filtered_data["Size"].astype(int).isin(selected_numbers)]
+        
+        # Cálculos
+        total_articles_sold = filtered_data["Movimentação de Stock"].sum()
         st.write(f"Número total de artigos vendidos: {total_articles_sold}")
-
+        
         total_sold_by_model = filtered_data.groupby("Products")["Movimentação de Stock"].sum()
         st.write(total_sold_by_model)
-
+        
         total_sold_by_size = filtered_data.groupby("Size")["Movimentação de Stock"].sum()
         st.write(total_sold_by_size)
-
+        
         total_values_received = filtered_data["Value"].sum()
         st.write(f"Total de valores recebidos (filtrado): {total_values_received}")
-
+        
         st.write("Movimentação por forma de pagamento (filtrado):")
         total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum()
         st.write(total_by_payment_method)
-
+        
         st.write("Dados filtrados:")
         st.write(filtered_data)
 
@@ -435,8 +455,8 @@ def woocomerce_page():
         else:
             st.write("Nenhum dado encontrado na aba 'Shoes'.")
 
-if st.button("Google sheets ▶ Woocomerce"):
-        sync_stock()    
+        if st.button("Google sheets ▶ Woocomerce"):
+            sync_stock()    
 
 
 
