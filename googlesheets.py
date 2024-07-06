@@ -91,6 +91,9 @@ def extract_stocks_page():
 
         df_combined = pd.merge(df_woocommerce, df_google_sheets,
                                on=["ID_Produto", "ID_Variação"], how="left")
+        column_order = ['ID_Produto', 'ID_Variação', 'Name', 'Stock WooCommerce', 'Estoque', 'Type']
+        df_combined = df_combined.reindex(columns=column_order)
+        
         print(df_combined)
 
         st.subheader("Dataframe combinado:")
