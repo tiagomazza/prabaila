@@ -39,6 +39,23 @@ def display_existing_data(existing_data):
    else:
        st.write("No existing reservations.")
 
+def update_woocommerce_stock(df_combined):
+    for index, row in df_combined.iterrows():
+        if row["ID_Variação"] is None:
+            # Atualizar produto
+            data = {
+                "stock_quantity": row["Estoque Google Sheets"]
+            }
+            wcapi.put(f"products/{row['ID_Produto']}", data).json()
+        else:
+            # Atualizar variação
+            data = {
+                "stock_quantity": row["Estoque Google Sheets"]
+            }
+            wcapi.put(f"products/{row['ID_Produto']}/variations/{row['ID_Variação']}", data).json()
+
+    st.success("Estoque atualizado com sucesso!")
+
 def extract_stocks_page():
     st.title("Extrair Estoques")
 
@@ -98,6 +115,10 @@ def extract_stocks_page():
 
         st.subheader("Dataframe combinado:")
         st.write(df_combined)
+        
+        if st.button("Atualizar Estoque no WooCommerce"):
+            update_woocommerce_stock(df_combined)
+
 
         return df_woocommerce, df_google_sheets
 
