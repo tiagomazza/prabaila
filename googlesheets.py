@@ -83,7 +83,7 @@ def extract_stocks_page():
 
 
 # Página Active Reservations
-
+def active_reservations_page():
    st.title("Active Reservations")
 
    # Proteger a página com uma senha apenas se a página selecionada for "Active Reservations"
