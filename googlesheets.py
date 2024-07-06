@@ -89,7 +89,7 @@ def extract_stocks_page():
 
         df_google_sheets["ID"] = df_google_sheets["ID"].astype(int)
 
-        def extract_stocks_page():
+       
         # Combinar usando os identificadores de produto e variação como chave
         df_combined = pd.merge(df_woocommerce, df_google_sheets[["ID_Produto", "ID_Variação", "Estoque"]],
                             on=["ID_Variação", "ID_Variação"], how="left")
