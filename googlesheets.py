@@ -114,10 +114,11 @@ def extract_stocks_page():
         print(df_combined)
 
         st.subheader("Dataframe combinado:")
-        st.write(df_combined)
-        
         if st.button("Atualizar Estoque no WooCommerce"):
             update_woocommerce_stock(df_combined)
+        st.write(df_combined)
+        
+        
 
 
         return df_woocommerce, df_google_sheets
