@@ -52,7 +52,8 @@ def extract_stocks_page():
 
         for product in products:
             product_data = {
-                "ID": product["id"],
+                "ID_Produto": product["id"],  # Renomeando para ID_Produto
+                "ID_Variação": None,
                 "Name": product["name"],
                 "Stock WooCommerce": product["stock_quantity"],
                 "Type": "Product"
@@ -64,7 +65,8 @@ def extract_stocks_page():
                 variations = wcapi.get(f"products/{product['id']}/variations", params={"per_page": 100}).json()
                 for variation in variations:
                     variation_data = {
-                        "ID": variation["id"],
+                        "ID_Produto": product["id"],  # Renomeando para ID_Produto
+                        "ID_Variação": variation["id"],  # Adicionando ID_Variação
                         "Name": f"{product['name']} - {variation['attributes'][0]['option']}",
                         "Stock WooCommerce": variation["stock_quantity"],
                         "Type": "Variation"
