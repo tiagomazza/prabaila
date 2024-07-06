@@ -62,33 +62,53 @@ def extract_stocks_page():
     if protected_page():
         st.write("Obtendo informações de estoque dos produtos...")
 
+        # Função para obter produtos do WooCommerce com paginação
+        def get_all_products(page=1, products=[]):
+            response = wcapi.get("products", params={"per_page": 100, "page": page}).json()
+            if response:
+                products.extend(response)
+                return get_all_products(page + 1, products)
+            return products
+
+        # Função para obter variações de um produto
+        def get_variations(product_id):
+            variations = []
+            page = 1
+            while True:
+                response = wcapi.get(f"products/{product_id}/variations", params={"per_page": 100, "page": page}).json()
+                if not response:
+                    break
+                variations.extend(response)
+                page += 1
+            return variations
+
         # Obtendo estoque do WooCommerce
+        products = get_all_products()
         woocommerce_stocks = []
 
-        products = wcapi.get("products", params={"per_page": 100}).json()
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            for product in products:
+                product_data = {
+                    "ID_Produto": product["id"],  # Renomeando para ID_Produto
+                    "ID_Variação": None,
+                    "Name": product["name"],
+                    "Stock WooCommerce": product["stock_quantity"],
+                    "Type": "Product"
+                }
+                woocommerce_stocks.append(product_data)
 
-        for product in products:
-            product_data = {
-                "ID_Produto": product["id"],  # Renomeando para ID_Produto
-                "ID_Variação": None,
-                "Name": product["name"],
-                "Stock WooCommerce": product["stock_quantity"],
-                "Type": "Product"
-            }
-
-            woocommerce_stocks.append(product_data)
-
-            if product["variations"]:
-                variations = wcapi.get(f"products/{product['id']}/variations", params={"per_page": 100}).json()
-                for variation in variations:
-                    variation_data = {
-                        "ID_Produto": product["id"],  # Renomeando para ID_Produto
-                        "ID_Variação": variation["id"],  # Adicionando ID_Variação
-                        "Name": f"{product['name']} - {variation['attributes'][0]['option']}",
-                        "Stock WooCommerce": variation["stock_quantity"],
-                        "Type": "Variation"
-                    }
-                    woocommerce_stocks.append(variation_data)
+                if product["variations"]:
+                    future_variations = executor.submit(get_variations, product["id"])
+                    variations = future_variations.result()
+                    for variation in variations:
+                        variation_data = {
+                            "ID_Produto": product["id"],  # Renomeando para ID_Produto
+                            "ID_Variação": variation["id"],  # Adicionando ID_Variação
+                            "Name": f"{product['name']} - {variation['attributes'][0]['option']}",
+                            "Stock WooCommerce": variation["stock_quantity"],
+                            "Type": "Variation"
+                        }
+                        woocommerce_stocks.append(variation_data)
 
         df_woocommerce = pd.DataFrame(woocommerce_stocks)
 
@@ -106,20 +126,22 @@ def extract_stocks_page():
         st.write("Dados de estoque da planilha Google Sheets:")
         st.write(df_google_sheets)
 
+        # Combinar usando os identificadores de produto e variação como chave
         df_combined = pd.merge(df_woocommerce, df_google_sheets,
                                on=["ID_Produto", "ID_Variação"], how="left")
-        column_order = ['ID_Produto', 'ID_Variação', 'Name', 'Stock WooCommerce', 'Estoque', 'Type']
+
+        # Renomear a coluna "Estoque" do Google Sheets para evitar ambiguidades
+        df_combined.rename(columns={"Estoque": "Estoque Google Sheets"}, inplace=True)
+
+        # Reordenar as colunas
+        column_order = ['ID_Produto', 'ID_Variação', 'Name', 'Stock WooCommerce', 'Estoque Google Sheets', 'Type']
         df_combined = df_combined.reindex(columns=column_order)
-        
-        print(df_combined)
 
         st.subheader("Dataframe combinado:")
+        st.write(df_combined)
+
         if st.button("Atualizar Estoque no WooCommerce"):
             update_woocommerce_stock(df_combined)
-        st.write(df_combined)
-        
-        
-
 
         return df_woocommerce, df_google_sheets
 
