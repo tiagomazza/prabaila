@@ -45,10 +45,7 @@ def extract_stocks_page():
     if protected_page():
         st.write("Obtendo informações de estoque dos produtos...")
 
-        # Obter todos os produtos
         products = wcapi.get("products", params={"per_page": 100}).json()
-
-        # Lista para armazenar dados dos produtos
         all_products = []
 
         for product in products:
@@ -60,7 +57,6 @@ def extract_stocks_page():
             }
             all_products.append(product_data)
 
-            # Verificar se o produto possui variações
             if product["type"] == "variable":
                 variations = wcapi.get(f"products/{product['id']}/variations", params={"per_page": 100}).json()
                 for variation in variations:
@@ -72,15 +68,15 @@ def extract_stocks_page():
                     }
                     all_products.append(variation_data)
 
-        # Criar DataFrame e exibir os dados
         df = pd.DataFrame(all_products)
+
+        # Carregar dados da planilha "Shoes" para obter as quantidades de estoque
+        existing_data_shoes = load_existing_data("Shoes")
+
+        # Adicionar coluna com quantidades de estoque da planilha
+        df['Estoque na Planilha'] = df['ID'].apply(lambda x: get_sales_quantity(x))
+
         st.write(df)
-
-        # Opção para exportar os dados para o Google Sheets
-        if st.button("Exportar para Google Sheets"):
-            conn.update(worksheet="Estoque WooCommerce", data=df.to_dict(orient="records"))
-            st.success("Dados exportados para o Google Sheets com sucesso!")
-
 
 # Página Active Reservations
 def active_reservations_page():
