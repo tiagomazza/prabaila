@@ -44,13 +44,13 @@ def update_woocommerce_stock(df_combined):
         if row["ID_Variação"] is None:
             # Atualizar produto
             data = {
-                "stock_quantity": row["Estoque"]
+                "stock_quantity": row["Estoque Google Sheets"]
             }
             wcapi.put(f"products/{row['ID_Produto']}", data).json()
         else:
             # Atualizar variação
             data = {
-                "stock_quantity": row["Estoque"]
+                "stock_quantity": row["Estoque Google Sheets"]
             }
             wcapi.put(f"products/{row['ID_Produto']}/variations/{row['ID_Variação']}", data).json()
 
@@ -63,8 +63,9 @@ def extract_stocks_page():
         st.write("Obtendo informações de estoque dos produtos...")
 
         # Obtendo estoque do WooCommerce
-        products = get_all_products()
         woocommerce_stocks = []
+
+        products = wcapi.get("products", params={"per_page": 100}).json()
 
         for product in products:
             product_data = {
@@ -74,10 +75,11 @@ def extract_stocks_page():
                 "Stock WooCommerce": product["stock_quantity"],
                 "Type": "Product"
             }
+
             woocommerce_stocks.append(product_data)
 
             if product["variations"]:
-                variations = get_variations(product["id"])
+                variations = wcapi.get(f"products/{product['id']}/variations", params={"per_page": 100}).json()
                 for variation in variations:
                     variation_data = {
                         "ID_Produto": product["id"],  # Renomeando para ID_Produto
@@ -104,27 +106,22 @@ def extract_stocks_page():
         st.write("Dados de estoque da planilha Google Sheets:")
         st.write(df_google_sheets)
 
-        # Combinar usando os identificadores de produto e variação como chave
         df_combined = pd.merge(df_woocommerce, df_google_sheets,
                                on=["ID_Produto", "ID_Variação"], how="left")
-
-        # Renomear a coluna "Estoque" do Google Sheets para evitar ambiguidades
-        df_combined.rename(columns={"Estoque": "Estoque Google Sheets"}, inplace=True)
-
-        # Reordenar as colunas
-        column_order = ['ID_Produto', 'ID_Variação', 'Name', 'Stock WooCommerce', 'Estoque Google Sheets', 'Type']
+        column_order = ['ID_Produto', 'ID_Variação', 'Name', 'Stock WooCommerce', 'Estoque', 'Type']
         df_combined = df_combined.reindex(columns=column_order)
+        
+        print(df_combined)
 
         st.subheader("Dataframe combinado:")
-        st.write(df_combined)
-
-        if st.button("Atualizar Estoque no WooCommerce", key="update_stock_button"):
+        if st.button("Atualizar Estoque no WooCommerce"):
             update_woocommerce_stock(df_combined)
+        st.write(df_combined)
+        
+        
+
 
         return df_woocommerce, df_google_sheets
-
-# Código principal para executar a função
-extract_stocks_page()
 
 # Página Active Reservations
 def active_reservations_page():
