@@ -57,7 +57,7 @@ def extract_stocks_page():
             }
             all_products.append(product_data)
 
-            if product["type"] == "variable":
+            if product["variations"]:
                 variations = wcapi.get(f"products/{product['id']}/variations", params={"per_page": 100}).json()
                 for variation in variations:
                     variation_data = {
@@ -73,11 +73,15 @@ def extract_stocks_page():
         # Carregar dados da planilha "Shoes" para obter as quantidades de estoque
         existing_data_shoes = load_existing_data("Shoes")
 
+        st.write("Dados da planilha 'Shoes':")
+        st.write(existing_data_shoes)  # Debug print
+
         # Adicionar coluna com quantidades de estoque da planilha
         df['Estoque na Planilha'] = df['ID'].apply(lambda x: existing_data_shoes[existing_data_shoes['ID'] == x]['Estoque'].values[0] if x in existing_data_shoes['ID'].values else None)
 
+        st.write("Dados do estoque com quantidades da planilha:")
         st.write(df)
-
+        
 # Página Active Reservations
 def active_reservations_page():
    st.title("Active Reservations")
