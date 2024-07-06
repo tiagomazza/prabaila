@@ -45,17 +45,20 @@ def extract_stocks_page():
     if protected_page():
         st.write("Obtendo informações de estoque dos produtos...")
 
+        # Obtendo estoque do WooCommerce
+        woocommerce_stocks = []
+
         products = wcapi.get("products", params={"per_page": 100}).json()
-        all_products = []
 
         for product in products:
             product_data = {
                 "ID": product["id"],
                 "Nome": product["name"],
                 "Estoque": product["stock_quantity"],
-                "Tipo": "Produto Simples"
+                "Tipo": "Produto"
             }
-            all_products.append(product_data)
+
+            woocommerce_stocks.append(product_data)
 
             if product["variations"]:
                 variations = wcapi.get(f"products/{product['id']}/variations", params={"per_page": 100}).json()
@@ -66,22 +69,26 @@ def extract_stocks_page():
                         "Estoque": variation["stock_quantity"],
                         "Tipo": "Variação"
                     }
-                    all_products.append(variation_data)
+                    woocommerce_stocks.append(variation_data)
 
-        df = pd.DataFrame(all_products)
+        df_woocommerce = pd.DataFrame(woocommerce_stocks)
 
-        # Carregar dados da planilha "Shoes" para obter as quantidades de estoque
+        st.write("Dados de estoque do WooCommerce:")
+        st.write(df_woocommerce)
+
+        # Obtendo estoque da planilha "Shoes"
         existing_data_shoes = load_existing_data("Shoes")
 
         st.write("Dados da planilha 'Shoes':")
-        st.write(existing_data_shoes)  # Debug print
+        st.write(existing_data_shoes)
 
-        # Adicionar coluna com quantidades de estoque da planilha
-        df['Estoque na Planilha'] = df['ID'].apply(lambda x: existing_data_shoes[existing_data_shoes['ID'] == x]['Estoque'].values[0] if x in existing_data_shoes['ID'].values else None)
+        df_google_sheets = existing_data_shoes.copy()
 
-        st.write("Dados do estoque com quantidades da planilha:")
-        st.write(df)
-        
+        st.write("Dados de estoque da planilha Google Sheets:")
+        st.write(df_google_sheets)
+
+        return df_woocommerce, df_google_sheets
+
 # Página Active Reservations
 def active_reservations_page():
    st.title("Active Reservations")
