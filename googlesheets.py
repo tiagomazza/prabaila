@@ -89,9 +89,15 @@ def extract_stocks_page():
 
         df_google_sheets["ID"] = df_google_sheets["ID"].astype(int)
 
-        # Combinando os dataframes
-        df_combined = pd.merge(df_woocommerce, df_google_sheets[["ID", "Estoque"]], on="ID", how="left")
+        def extract_stocks_page():
+        # Combinar usando os identificadores de produto e variação como chave
+        df_combined = pd.merge(df_woocommerce, df_google_sheets[["ID_Produto", "ID_Variação", "Estoque"]],
+                            on=["ID_Variação", "ID_Variação"], how="left")
+        
+        # Renomear a coluna "Estoque" do Google Sheets para evitar ambiguidades
         df_combined.rename(columns={"Estoque": "Estoque Google Sheets"}, inplace=True)
+        
+        print(df_combined)
 
         st.subheader("Dataframe combinado:")
         st.write(df_combined)
