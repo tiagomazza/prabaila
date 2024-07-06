@@ -74,7 +74,7 @@ def extract_stocks_page():
         existing_data_shoes = load_existing_data("Shoes")
 
         # Adicionar coluna com quantidades de estoque da planilha
-        df['Estoque na Planilha'] = df['ID'].apply(lambda x: get_sales_quantity(x))
+        df['Estoque na Planilha'] = df['ID'].apply(lambda x: existing_data_shoes[existing_data_shoes['ID'] == x]['Estoque'].values[0] if x in existing_data_shoes['ID'].values else None)
 
         st.write(df)
 
