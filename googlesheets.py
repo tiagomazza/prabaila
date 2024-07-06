@@ -53,9 +53,9 @@ def extract_stocks_page():
         for product in products:
             product_data = {
                 "ID": product["id"],
-                "Nome": product["name"],
-                "Estoque": product["stock_quantity"],
-                "Tipo": "Produto"
+                "Name": product["name"],
+                "Stock WooCommerce": product["stock_quantity"],
+                "Type": "Product"
             }
 
             woocommerce_stocks.append(product_data)
@@ -65,13 +65,36 @@ def extract_stocks_page():
                 for variation in variations:
                     variation_data = {
                         "ID": variation["id"],
-                        "Nome": f"{product['name']} - {variation['attributes'][0]['option']}",
-                        "Estoque": variation["stock_quantity"],
-                        "Tipo": "Variação"
+                        "Name": f"{product['name']} - {variation['attributes'][0]['option']}",
+                        "Stock WooCommerce": variation["stock_quantity"],
+                        "Type": "Variation"
                     }
                     woocommerce_stocks.append(variation_data)
 
         df_woocommerce = pd.DataFrame(woocommerce_stocks)
+
+        st.write("Dados de estoque do WooCommerce:")
+        st.write(df_woocommerce)
+
+        # Obtendo estoque da planilha "Shoes"
+        existing_data_shoes = load_existing_data("Shoes")
+
+        st.write("Dados da planilha 'Shoes':")
+        st.write(existing_data_shoes)
+
+        df_google_sheets = existing_data_shoes.copy()
+
+        st.write("Dados de estoque da planilha Google Sheets:")
+        st.write(df_google_sheets)
+
+        # Combinando os dataframes
+        df_combined = pd.merge(df_woocommerce, df_google_sheets[["ID", "Estoque"]], on="ID", how="left")
+        df_combined.rename(columns={"Estoque": "Estoque Google Sheets"}, inplace=True)
+
+        st.subheader("Dataframe combinado:")
+        st.write(df_combined)
+
+        return df_woocommerce, df_google_sheets
 
         st.write("Dados de estoque do WooCommerce:")
         st.write(df_woocommerce)
