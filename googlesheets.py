@@ -96,35 +96,6 @@ def extract_stocks_page():
 
         return df_woocommerce, df_google_sheets
 
-        st.write("Dados de estoque do WooCommerce:")
-        st.write(df_woocommerce)
-
-        # Obtendo estoque da planilha "Shoes"
-        existing_data_shoes = load_existing_data("Shoes")
-
-        st.write("Dados da planilha 'Shoes':")
-        st.write(existing_data_shoes)
-
-        df_google_sheets = existing_data_shoes.copy()
-
-        st.write("Dados de estoque da planilha Google Sheets:")
-        st.write(df_google_sheets)
-
-        # Exibindo os dataframes com as colunas solicitadas
-        st.subheader("Dataframes com as colunas solicitadas:")
-
-        # Função para formatar o estoque conforme solicitado
-        def format_stock(row):
-            return f"{row['Estoque']} ({df_google_sheets.loc[df_google_sheets['ID'] == row['ID'], 'Estoque'].values[0]})"
-
-        df_woocommerce["Estoque Formatado"] = df_woocommerce.apply(format_stock, axis=1)
-
-        # Exibindo o primeiro dataframe com a coluna formatada
-        st.write("Estoque do WooCommerce com estoque da planilha à direita:")
-        st.write(df_woocommerce)
-
-        return df_woocommerce, df_google_sheets
-
 # Página Active Reservations
 def active_reservations_page():
    st.title("Active Reservations")
