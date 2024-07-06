@@ -39,6 +39,49 @@ def display_existing_data(existing_data):
    else:
        st.write("No existing reservations.")
 
+def extract_stocks_page():
+    st.title("Extrair Estoques")
+
+    if protected_page():
+        st.write("Obtendo informações de estoque dos produtos...")
+
+        # Obter todos os produtos
+        products = wcapi.get("products", params={"per_page": 100}).json()
+
+        # Lista para armazenar dados dos produtos
+        all_products = []
+
+        for product in products:
+            product_data = {
+                "ID": product["id"],
+                "Nome": product["name"],
+                "Estoque": product["stock_quantity"],
+                "Tipo": "Produto Simples"
+            }
+            all_products.append(product_data)
+
+            # Verificar se o produto possui variações
+            if product["type"] == "variable":
+                variations = wcapi.get(f"products/{product['id']}/variations", params={"per_page": 100}).json()
+                for variation in variations:
+                    variation_data = {
+                        "ID": variation["id"],
+                        "Nome": f"{product['name']} - {variation['attributes'][0]['option']}",
+                        "Estoque": variation["stock_quantity"],
+                        "Tipo": "Variação"
+                    }
+                    all_products.append(variation_data)
+
+        # Criar DataFrame e exibir os dados
+        df = pd.DataFrame(all_products)
+        st.write(df)
+
+        # Opção para exportar os dados para o Google Sheets
+        if st.button("Exportar para Google Sheets"):
+            conn.update(worksheet="Estoque WooCommerce", data=df.to_dict(orient="records"))
+            st.success("Dados exportados para o Google Sheets com sucesso!")
+
+
 # Página Active Reservations
 
    st.title("Active Reservations")
@@ -244,7 +287,7 @@ st.sidebar.image(menu_lateral_imagem, use_column_width=True)
 st.title("Quinta Shop🛒")
 
 # Configuração da aplicação
-pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Registro","Análise","Woocomerce sync"])
+pagina_selecionada = st.sidebar.radio("Página", ["Verificação de estoque","Registro","Análise","Woocomerce sync","Extrair Estoques"])
 
 def get_sales_quantity(id_):
    existing_data_reservations = load_existing_data("Reservations")
@@ -473,3 +516,5 @@ elif pagina_selecionada == "Análise":
     analysis_page()
 elif pagina_selecionada == "Woocomerce sync":
     woocomerce_page()
+elif pagina_selecionada == "Extrair Estoques":
+    extract_stocks_page()
