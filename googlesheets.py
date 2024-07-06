@@ -44,13 +44,13 @@ def update_woocommerce_stock(df_combined):
         if row["ID_Variação"] is None:
             # Atualizar produto
             data = {
-                "stock_quantity": row["Estoque Google Sheets"]
+                "stock_quantity": row["Estoque"]
             }
             wcapi.put(f"products/{row['ID_Produto']}", data).json()
         else:
             # Atualizar variação
             data = {
-                "stock_quantity": row["Estoque Google Sheets"]
+                "stock_quantity": row["Estoque"]
             }
             wcapi.put(f"products/{row['ID_Produto']}/variations/{row['ID_Variação']}", data).json()
 
