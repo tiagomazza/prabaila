@@ -87,6 +87,8 @@ def extract_stocks_page():
         st.write("Dados de estoque da planilha Google Sheets:")
         st.write(df_google_sheets)
 
+       df_google_sheets["ID"] = df_google_sheets["ID"].astype(int)
+
         # Combinando os dataframes
         df_combined = pd.merge(df_woocommerce, df_google_sheets[["ID", "Estoque"]], on="ID", how="left")
         df_combined.rename(columns={"Estoque": "Estoque Google Sheets"}, inplace=True)
