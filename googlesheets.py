@@ -28,7 +28,7 @@ def protected_page():
 
 # Função para carregar os dados existentes
 def load_existing_data(worksheet_name):
-   existing_data = conn.read(worksheet=worksheet_name, usecols=list(range(13)), ttl=5)
+   existing_data = conn.read(worksheet=worksheet_name, usecols=list(range(14)), ttl=5)
    return existing_data.dropna(how="all")
 
 # Função para exibir os dados existentes
@@ -89,14 +89,8 @@ def extract_stocks_page():
         st.write("Dados de estoque da planilha Google Sheets:")
         st.write(df_google_sheets)
 
-       
-        # Combinar usando os identificadores de produto e variação como chave
-        df_combined = pd.merge(df_woocommerce, df_google_sheets[["ID_Produto", "ID_Variação", "Estoque"]],
-                            on=["ID_Variação", "ID_Variação"], how="left")
-        
-        # Renomear a coluna "Estoque" do Google Sheets para evitar ambiguidades
-        df_combined.rename(columns={"Estoque": "Estoque Google Sheets"}, inplace=True)
-        
+        df_combined = pd.merge(df_woocommerce, df_google_sheets,
+                               on=["ID_Produto", "ID_Variação"], how="left")
         print(df_combined)
 
         st.subheader("Dataframe combinado:")
