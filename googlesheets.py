@@ -123,6 +123,9 @@ def extract_stocks_page():
 
         return df_woocommerce, df_google_sheets
 
+# Código principal para executar a função
+extract_stocks_page()
+
 # Página Active Reservations
 def active_reservations_page():
    st.title("Active Reservations")
