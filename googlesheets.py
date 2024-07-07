@@ -56,6 +56,34 @@ def update_woocommerce_stock(df_combined):
 
     st.success("Estoque atualizado com sucesso!")
 
+def sync_stock():
+            existing_data_shoes = load_existing_data("Shoes")
+            if existing_data_shoes is not None:
+                for index, row in existing_data_shoes.iterrows():
+                    try:
+                        id_produto = int(row["ID_Produto"])
+                        id_variacao = int(row["ID_Variação"]) if not pd.isna(row["ID_Variação"]) and row["ID_Variação"] != "" else None
+                        stock = int(row["Estoque"])
+                        sales_quantity = get_sales_quantity(id_variacao if id_variacao else id_produto)  # Usar ID_Variação se disponível
+                        new_stock = stock - sales_quantity
+                        data = {
+                            'stock_quantity': new_stock
+                        }
+                        if id_variacao is None:
+                            # Atualizar o estoque do produto
+                            response = wcapi.put(f"products/{id_produto}", data).json()
+                            st.success(f"Estoque atualizado para o produto ID {id_produto}: {new_stock}")
+                        else:
+                            # Atualizar o estoque da variação do produto
+                            response = wcapi.put(f"products/{id_produto}/variations/{id_variacao}", data).json()
+                            st.success(f"Estoque atualizado para a variação ID {id_variacao} do produto ID {id_produto}: {new_stock}")
+                    except ValueError as ve:
+                        st.error(f"Erro ao converter valores para int: {ve}")
+                    except Exception as e:
+                        st.error(f"Erro ao atualizar o estoque para o produto ID {id_produto} ou variação ID {id_variacao}: {e}")
+            else:
+                st.write("Nenhum dado encontrado na aba 'Shoes'.")
+
 def extract_stocks_page():
     st.title("Extrair Estoques")
 
@@ -515,33 +543,7 @@ def woocomerce_page():
             else:
                 st.warning("Por favor, insira um ID de produto válido e quantidade de estoque.")
         
-    def sync_stock():
-            existing_data_shoes = load_existing_data("Shoes")
-            if existing_data_shoes is not None:
-                for index, row in existing_data_shoes.iterrows():
-                    try:
-                        id_produto = int(row["ID_Produto"])
-                        id_variacao = int(row["ID_Variação"]) if not pd.isna(row["ID_Variação"]) and row["ID_Variação"] != "" else None
-                        stock = int(row["Estoque"])
-                        sales_quantity = get_sales_quantity(id_variacao if id_variacao else id_produto)  # Usar ID_Variação se disponível
-                        new_stock = stock - sales_quantity
-                        data = {
-                            'stock_quantity': new_stock
-                        }
-                        if id_variacao is None:
-                            # Atualizar o estoque do produto
-                            response = wcapi.put(f"products/{id_produto}", data).json()
-                            st.success(f"Estoque atualizado para o produto ID {id_produto}: {new_stock}")
-                        else:
-                            # Atualizar o estoque da variação do produto
-                            response = wcapi.put(f"products/{id_produto}/variations/{id_variacao}", data).json()
-                            st.success(f"Estoque atualizado para a variação ID {id_variacao} do produto ID {id_produto}: {new_stock}")
-                    except ValueError as ve:
-                        st.error(f"Erro ao converter valores para int: {ve}")
-                    except Exception as e:
-                        st.error(f"Erro ao atualizar o estoque para o produto ID {id_produto} ou variação ID {id_variacao}: {e}")
-            else:
-                st.write("Nenhum dado encontrado na aba 'Shoes'.")
+    
 
   
 
