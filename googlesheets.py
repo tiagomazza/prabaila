@@ -116,6 +116,10 @@ def extract_stocks_page():
         st.subheader("Dataframe combinado:")
         if st.button("Atualizar Estoque no WooCommerce"):
             update_woocommerce_stock(df_combined)
+
+        if st.button("Google sheets ▶ Woocomerce"):
+            sync_stock() 
+
         st.write(df_combined)
         
         
@@ -539,8 +543,7 @@ def woocomerce_page():
             else:
                 st.write("Nenhum dado encontrado na aba 'Shoes'.")
 
-    if st.button("Google sheets ▶ Woocomerce"):
-        sync_stock()   
+  
 
 
 
