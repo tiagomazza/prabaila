@@ -539,7 +539,7 @@ def woocomerce_page():
             else:
                 st.write("Nenhum dado encontrado na aba 'Shoes'.")
 
-        if st.button("Google sheets ▶ Woocomerce"):
+        if st.button("Google sheets ▶ Woocomerce")
             sync_stock()   
 
 
