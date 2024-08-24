@@ -1,3 +1,4 @@
+"""
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
@@ -542,13 +543,6 @@ def woocomerce_page():
                     st.error(f"Erro ao atualizar estoque: {response.get('message', 'Erro desconhecido')}")
             else:
                 st.warning("Por favor, insira um ID de produto válido e quantidade de estoque.")
-        
-    
-
-  
-
-
-
 
 
 if pagina_selecionada == "Active Reservations":
@@ -561,3 +555,5 @@ elif pagina_selecionada == "Woocomerce sync":
     woocomerce_page()
 elif pagina_selecionada == "Extrair Estoques":
     extract_stocks_page()
+
+"""
