@@ -12,7 +12,7 @@ wcapi = API(
             consumer_secret="cs_44ad7b5fc9a38d6212240cbded4119636d003545",
             version="wc/v3"
         )
-conn = st.experimental_connection("gsheets", type=GSheetsConnection)
+conn = st.connection("gsheets", type=GSheetsConnection)
 
 
 # Função para proteger a página com senha
