@@ -13,4 +13,5 @@ plotly.express
 woocommerce
 requests
 st-gsheets-connection==0.1.0
+streamlit>=1.22.0
 
