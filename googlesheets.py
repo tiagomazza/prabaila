@@ -1,6 +1,6 @@
 
 import streamlit as st
-#from streamlit_gsheets import GSheetsConnection
+from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 from datetime import datetime
 import plotly.express as px
@@ -15,6 +15,7 @@ wcapi = API(
             version="wc/v3"
         )
 conn = st.connection("gsheets", type=GSheetsConnection)
+
 
 
 # Função para proteger a página com senha
