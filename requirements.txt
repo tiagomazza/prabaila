@@ -8,10 +8,9 @@ gspread-pandas==3.3.0
 streamlit==1.32.2
 tenacity==8.2.3
 toml==0.10.2
-st-gsheets-connection
 datetime
 plotly.express
 woocommerce
 requests
-
+st-gsheets-connection==0.1.0
 
