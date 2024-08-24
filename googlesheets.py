@@ -1,4 +1,4 @@
-"""
+
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
@@ -556,4 +556,3 @@ elif pagina_selecionada == "Woocomerce sync":
 elif pagina_selecionada == "Extrair Estoques":
     extract_stocks_page()
 
-"""
