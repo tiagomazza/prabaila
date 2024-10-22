@@ -289,6 +289,11 @@ def register_page():
                 selected_model = products[0]  # Assumindo apenas um produto é selecionado
                 selected_id = get_id_from_shoes(selected_model, size)
                 
+                # Converte o DataFrame existente para um dicionário
+                existing_data_dict = existing_data_reservations.to_dict(orient="records")
+                print("DataFrame existente convertido para dicionário:", existing_data_dict)
+
+                # Cria o novo registro como um dicionário
                 new_row = {
                     "ID": selected_id,
                     "Name": name,
@@ -304,12 +309,13 @@ def register_page():
                     "SubmissionDateTime": submission_datetime,
                 }
 
-                # Adiciona a nova linha à lista de dicionários
-                new_rows = existing_data_reservations.to_dict(orient="records")
-                new_rows.append(new_row)
+                # Adiciona o novo registro ao dicionário existente
+                existing_data_dict.append(new_row)
+                print("Novo registro adicionado ao dicionário:", new_row)
 
                 # Atualiza a planilha com todas as informações
-                conn.update(worksheet="Reservations", data=new_rows)
+                conn.update(worksheet="Reservations", data=existing_data_dict)
+                print("Planilha atualizada com sucesso!")
 
                 st.success("Details successfully submitted!")
 
