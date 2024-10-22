@@ -18,6 +18,7 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 
 
 
+
 # Função para proteger a página com senha
 def protected_page():
    st.sidebar.title("Senha de Acesso")

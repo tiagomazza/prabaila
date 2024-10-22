@@ -7,6 +7,7 @@ gspread-formatting==1.1.2
 gspread-pandas==3.3.0
 tenacity==8.2.3
 toml==0.10.2
+
 st-gsheets-connection
 datetime
 plotly.express
