@@ -8,10 +8,7 @@ from datetime import datetime, timedelta
 
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-st.sidebar.image("https://aborgesdoamaral.pt/wp-content/uploads/2021/04/marca-de-75-anos.png", use_column_width=True)  # 
-
 pagina_selecionada = st.sidebar.radio("", ["✍🏽Marcação de Ponto"])
-
 
 dados = conn.read(worksheet="Dados", usecols=["Pin", "Nome"], ttl=5)
 
