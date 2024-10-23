@@ -310,7 +310,7 @@ def register_page():
                 }
 
                 # Adiciona o novo registro ao dicionário existente
-                existing_data_dict.append(new_row)
+                #existing_data_dict.append(new_row)
 
                 # Atualiza a planilha com todas as informações usando a abordagem do outro código
                 existing_data_reservations = pd.DataFrame(existing_data_dict).dropna(how='all').reset_index(drop=True)
