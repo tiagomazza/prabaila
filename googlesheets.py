@@ -405,10 +405,10 @@ if pagina_selecionada == "Verificação de estoque":
     st.subheader("Busca de modelos disponíveis")
     existing_data = conn.read(
         worksheet="Shoes", 
-        usecols=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], 
+        usecols=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola","Estoque"], 
         ttl=6
     )
-    existing_data.dropna(subset=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola"], inplace=True)
+    existing_data.dropna(subset=["ID", "Modelo", "Número", "Imagem", "Descrição", "Preço", "Estoque", "Numero Brasileiro", "Deslize", "Amortecimento", "Cor da sola","Estoque"], inplace=True)
 
     # Converter "Numero Brasileiro" para int
     existing_data["Numero Brasileiro"] = existing_data["Numero Brasileiro"].astype(int)
@@ -474,13 +474,13 @@ if pagina_selecionada == "Verificação de estoque":
         
         # Subtrair a quantidade de venda da quantidade disponível
         id_ = row["ID"]
-        sales_quantity = get_sales_quantity(id_)
-        stock_after_sales = int(row["Estoque"]) - sales_quantity
+        #sales_quantity = get_sales_quantity(id_)
+        #stock_after_sales = int(row["Estoque"]) - sales_quantity
 
         st.markdown(f"🏂🏽 **Deslize:** {row['Deslize']}")
         st.markdown(f"🦘 **Amortecimento:** {row['Amortecimento']}")
         st.markdown(f"👟 **Cor da sola:** {row['Cor da sola']}")
-        st.markdown(f"📦 **Unidades em estoque:** {stock_after_sales}")
+        st.markdown(f"📦 **Unidades em estoque:** {row["Estoque"]}")
         st.markdown(f"🇧🇷 **Numero:** {int(row['Numero Brasileiro'])}")
         
         preco = row.get('Preço')
