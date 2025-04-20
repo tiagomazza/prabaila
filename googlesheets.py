@@ -480,7 +480,7 @@ if pagina_selecionada == "Verificação de estoque":
         st.markdown(f"🏂🏽 **Deslize:** {row['Deslize']}")
         st.markdown(f"🦘 **Amortecimento:** {row['Amortecimento']}")
         st.markdown(f"👟 **Cor da sola:** {row['Cor da sola']}")
-        st.markdown(f"📦 **Unidades em estoque:** {row["Estoque"]}")
+        st.markdown(f"📦 **Unidades em estoque:** {row["Estoque"])}")
         st.markdown(f"🇧🇷 **Numero:** {int(row['Numero Brasileiro'])}")
         
         preco = row.get('Preço')
