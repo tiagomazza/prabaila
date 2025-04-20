@@ -268,7 +268,7 @@ def register_page():
             email = st.text_input("E-mail")
             whatsapp = st.text_input("WhatsApp with international code")
             products = st.multiselect("Shoes", options=modelos_existentes)
-            size = st.slider("Numeração", 36, 45, 34)
+            size = st.slider("Numeração", 36, 46, 34)
             method_of_payment = st.selectbox("Method of Payment", ["Dinheiro", "Mbway", "Transferência", "Wise", "Revolut", "Paypal"])
             value = st.slider("Valor (€)", 0, 150, 5, step=5)
             movimentacao = st.slider("Movimentação de Stock", 0, 10, 0)
