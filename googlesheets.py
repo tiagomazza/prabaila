@@ -359,7 +359,7 @@ def register_page():
 menu_lateral_imagem = "https://shop.quintaclandestina.pt/wp-content/uploads/2024/05/logo-2.png"
 
 # Exibir imagem no menu lateral
-st.sidebar.image(menu_lateral_imagem, use_column_width=True)
+st.sidebar.image(menu_lateral_imagem, use_container_width=True)
 
 # Display Title and Description
 st.title("Quinta Shop🛒")
