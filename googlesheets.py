@@ -225,7 +225,7 @@ def analysis_page():
         
         # Cálculos
         total_articles_sold = int(filtered_data["Movimentação de Stock"].sum())
-        st.write(f"Número total de artigos vendidos: {total_articles_sold}")
+        st.subheader(f"Número total de artigos vendidos: {total_articles_sold}")
         
         total_sold_by_model = filtered_data.groupby("Products")["Movimentação de Stock"].sum()
         st.write(total_sold_by_model)
@@ -234,13 +234,13 @@ def analysis_page():
         st.write(total_sold_by_size)
         
         total_values_received = filtered_data["Value"].sum()
-        st.write(f"Total de valores recebidos (filtrado): {total_values_received}")
+        st.subheader(f"Total de valores recebidos: {total_values_received}€")
         
-        st.write("Movimentação por forma de pagamento (filtrado):")
+        st.subheader("Movimentação por forma de pagamento:")
         total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum()
         st.write(total_by_payment_method)
         
-        st.write("Dados filtrados:")
+        st.subheader("Tabela de dados:")
         st.write(filtered_data)
 
 
