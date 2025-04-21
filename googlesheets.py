@@ -188,7 +188,7 @@ def analysis_page():
         
         # Filtrar por tipo de movimentação
         all_movement_types = existing_data["Tipo de Movimentação"].unique()
-        default_movement_types = ["Venda", "Entrada"]  # Inclua todos os tipos de movimentação padrão que você deseja exibir
+        default_movement_types = ["Venda", "Entrada","Oferta","Reserva","Entrada de Material"]  # Inclua todos os tipos de movimentação padrão que você deseja exibir
         selected_movement_type = st.sidebar.multiselect("Filtrar por Tipo de Movimentação", 
                                                         all_movement_types, 
                                                         default=[x for x in default_movement_types if x in all_movement_types])
@@ -196,7 +196,7 @@ def analysis_page():
         
         # Filtrar por data
         end_date = datetime.now().date()
-        start_date = end_date - timedelta(days=30)
+        start_date = end_date - timedelta(days=7)
         
         start_date = st.sidebar.date_input("Data de Início", value=start_date)
         end_date = st.sidebar.date_input("Data de Fim", value=end_date)
