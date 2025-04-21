@@ -236,7 +236,6 @@ def analysis_page():
         total_values_received = filtered_data["Value"].sum()
         st.subheader(f"Total de valores recebidos: {total_values_received}€")
         
-        st.subheader("Movimentação por forma de pagamento:")
         total_by_payment_method = filtered_data.groupby("Method of Payment")["Value"].sum()
         st.write(total_by_payment_method)
         
