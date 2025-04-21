@@ -224,8 +224,8 @@ def analysis_page():
             filtered_data = filtered_data[filtered_data["Size"].astype(int).isin(selected_numbers)]
         
         # Cálculos
-        total_articles_sold = filtered_data["Movimentação de Stock"].sum()
-        st.write(f"Número total de artigos vendidos: int({total_articles_sold}"))
+        total_articles_sold = int(filtered_data["Movimentação de Stock"].sum())
+        st.write(f"Número total de artigos vendidos: {total_articles_sold}")
         
         total_sold_by_model = filtered_data.groupby("Products")["Movimentação de Stock"].sum()
         st.write(total_sold_by_model)
