@@ -172,7 +172,7 @@ def active_reservations_page():
        display_existing_data(existing_data)
 
 def analysis_page():
-    st.title("Análise dos Dados de Reservations")
+    st.title("Análise dos Dados")
     
     if protected_page():
         existing_data = load_existing_data("Reservations")
