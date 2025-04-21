@@ -184,7 +184,7 @@ def analysis_page():
         existing_data.dropna(subset=["Tipo de Movimentação", "Products"], inplace=True)
         
         # Converter a coluna 'SubmissionDateTime' para datetime
-        existing_data['SubmissionDateTime'] = pd.to_datetime(existing_data['SubmissionDateTime'])
+        existing_data['SubmissionDateTime'] = pd.to_datetime(existing_data['SubmissionDateTime'],format="%Y-%m-%d %H:%M:%S")
         
         # Filtrar por tipo de movimentação
         all_movement_types = existing_data["Tipo de Movimentação"].unique()
